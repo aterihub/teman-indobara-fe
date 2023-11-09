@@ -75,7 +75,7 @@ import { onMounted, ref } from 'vue'
         
 <style scoped>
 .content {
-    @apply relative w-full h-full ml-[47px] mt-[47px] p-6 flex gap-6 
+    @apply relative w-full h-full ml-[47px] pt-[80px] px-6 flex gap-6 
 }
 .form {
   box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
