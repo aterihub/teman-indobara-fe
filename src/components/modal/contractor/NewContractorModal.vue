@@ -79,9 +79,9 @@ import { useContractorsStore } from '@/stores/master-data/contractorsStore'
   // const selectedSites = ref([])
 
   const onSubmit = async (values, { resetForm }) => {
-    let payload = {
-      deviceIds: selectedDevices.value
-    }
+    // let payload = {
+    //   deviceIds: selectedDevices.value
+    // }
     regButtonClick.value = ++regButtonClick.value
     if (regButtonClick.value == 1) {
       registerLabel.value = 'the data entered is correct?'
