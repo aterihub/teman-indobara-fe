@@ -61,4 +61,4 @@ jobs:
             sudo docker rmi serpents/teman-indobara-fe:main
             sudo docker pull serpents/teman-indobara-fe:main
 
-            sudo docker run -t -d -p 8080:80 --name teman-indobara-fe serpents/teman-indobara-fe
+            sudo docker run -t -d -p 8080:80 --name teman-indobara-fe serpents/teman-indobara-fe:main
