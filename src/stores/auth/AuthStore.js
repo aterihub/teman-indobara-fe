@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', {
     accessToken: localStorage.getItem('auth.accessToken'),
     refreshToken: localStorage.getItem('auth.refreshToken'),
     status: ref({
-      state:null,
+      isError:null,
       message: null,
       code: null,
     }),
@@ -44,14 +44,34 @@ export const useAuthStore = defineStore('auth', {
         this.refreshToken = res.data.refreshToken
         this.status.message = 'Login Successful'
         this.status.code = res.data.status
-        this.status.state = false
+        this.status.isError = false
         localStorage.setItem('auth.accessToken', res.data.accessToken)
         localStorage.setItem('auth.refreshToken', res.data.refreshToken)
         router.push({ name: 'Dashboard' })
       } catch (err) {
         console.error(err)
         this.isLoading = false
-        this.status.state = true
+        let errorMsg
+        let errorStatus = err.response.status
+        console.log(errorStatus)
+
+        switch (errorStatus) {
+          case 401:
+            errorMsg = err.response.data.data.username
+            break;
+          case 404:
+            errorMsg = err.response.data.data.message
+            var colonIndex = errorMsg.indexOf(':')
+            if (colonIndex !== -1) {
+              errorMsg = errorMsg.substring(colonIndex + 1).trim();
+                console.log(errorMsg);
+            } else {
+                console.log("Colon not found in the input text.");
+            }
+            break;
+        }
+        this.status.message = errorMsg
+        this.status.isError = true
         this.status.code = err.response.data.statusCode
 
         //define message 

@@ -2,7 +2,7 @@
   <alert 
     :message ="status.message"
     :modalActive="modalActive"
-    :isError="isError"
+    :isError="status.isError"
      @close="closeNotification" />
   <div class="absolute w-full h-full bg-cover bg-[url('@/assets/img/login-bg.png')] bg-center flex justify-center items-center"></div>
   <div class="content">
@@ -43,14 +43,8 @@
   const onSubmit = async (values, { resetForm }) => {
     await authStore.signIn(values)
     modalActive.value = true
-    if (status.value.state == true) {
-      isError.value = true
-      setTimeout(closeNotification, 5000)
-    } else {
-      isError.value = false
-      setTimeout(closeNotification, 5000)
-      resetForm()
-    }
+    setTimeout(closeNotification, 5000)
+    resetForm()
   }
 
   const closeNotification = () => {
