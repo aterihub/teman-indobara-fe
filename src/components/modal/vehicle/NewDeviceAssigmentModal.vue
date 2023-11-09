@@ -42,7 +42,7 @@
 import BaseButton from '@/components/button/BaseButton.vue'
 import { Form as VeeForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUpdate } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 
 import { useDevicesStore } from '@/stores/master-data/devicesStore'
@@ -66,7 +66,10 @@ import { useDeviceBindingStore } from '@/stores/transactions/deviceBindingStore'
   onMounted(() => {
     devicesStore.getDeviceDrafts()
   })
-  
+
+  onBeforeUpdate(()=> {
+    devicesStore.getDeviceDrafts()
+  })
 
   const modalActive = ref(false)
   const cancelLabel = ref('CANCEL')
