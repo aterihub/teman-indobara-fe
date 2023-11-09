@@ -34,9 +34,8 @@
         }
       ]
       const selectedComponent = ref('AdminMaster')
-        
       function changeNavigation(navigation) {
-        var subNavs = document.getElementsByClassName("smallNav")
+        var subNavs = document.getElementsByClassName("nav")
         console.log(subNavs)
         for (var i of subNavs) {
           i.classList.remove("active");
