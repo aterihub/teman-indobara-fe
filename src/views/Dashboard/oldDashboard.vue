@@ -1,6 +1,6 @@
 <template>
 
-  <sideNav :isDataActive="true" />
+  <sideNav :isDMActive="true" />
   <div class="content">
     <div class="device-container">
       <h1 class="title"> Dashboard </h1>
