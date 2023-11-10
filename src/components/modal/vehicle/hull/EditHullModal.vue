@@ -37,7 +37,7 @@ import BaseInput from '@/components/input/BaseInput.vue'
 import BaseButton from '@/components/button/BaseButton.vue'
 import { Form as VeeForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { ref, onBeforeUpdate } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { useHullsStore } from '@/stores/master-data/hullNumberStore'
  
@@ -72,11 +72,11 @@ import { useHullsStore } from '@/stores/master-data/hullNumberStore'
       modalActive.value = true
       if (!status.value.isError) {
         resetForm()
-        emits('close')
       }
       setTimeout(closeNotification, 3000)
       registerLabel.value = 'SUBMIT'
       regButtonClick.value = 0
+      emits('close')
       await delay(1000)
       hullsStore.getHulls()
     }

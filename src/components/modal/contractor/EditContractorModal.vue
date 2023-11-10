@@ -74,8 +74,8 @@ import { useContractorsStore } from '@/stores/master-data/contractorsStore'
       modalActive.value = true
       if (!status.value.isError) {
         resetForm()
-        emits('close')
       }
+      emits('close')
       setTimeout(closeNotification, 3000)
       registerLabel.value = 'SUBMIT'
       regButtonClick.value = 0

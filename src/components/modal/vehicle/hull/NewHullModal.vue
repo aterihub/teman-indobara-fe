@@ -77,6 +77,7 @@ import { useHullsStore } from '@/stores/master-data/hullNumberStore'
       }
       registerLabel.value = 'REGISTER'
       regButtonClick.value = 0
+      emits('close')
       await delay(300)
       hullsStore.getHulls()
     }

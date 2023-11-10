@@ -58,6 +58,7 @@ import { updateSiteSchema } from '@/composable/sitesSchema'
   const registerLabel = ref('SUBMIT')
   const regButtonClick = ref(0)
   const cancelButtonClick = ref(0)
+  const delay = (time) => new Promise((resolve) => setTimeout(resolve, time))
 
   const onSubmit = async (values, { resetForm }) => {
     regButtonClick.value = ++regButtonClick.value
@@ -70,10 +71,11 @@ import { updateSiteSchema } from '@/composable/sitesSchema'
       modalActive.value = true
       if (!status.value.isError) {
         resetForm()
-        emits('close')
       }
       setTimeout(closeNotification, 3000)
       registerLabel.value = 'SUBMIT'
+      emits('close')
+      await delay(300)
       regButtonClick.value = 0
       sitesStore.getSites()
 

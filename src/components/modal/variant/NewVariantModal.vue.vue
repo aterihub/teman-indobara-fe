@@ -89,6 +89,7 @@ import { addVariantSchema } from '@/composable/manufacturersSchema'
       }
       registerLabel.value = 'ADD'
       regButtonClick.value = 0
+      emits('close')
       await delay(300)
       manufacturerStore.getManufacturer(params)
     }

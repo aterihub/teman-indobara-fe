@@ -76,6 +76,7 @@ import { useVehicleTypesStore } from '@/stores/master-data/vehicleTypesStore'
       }
       registerLabel.value = 'REGISTER'
       regButtonClick.value = 0
+      emits('close')
       await delay(300)
       vehicleTypesStore.getVehicleTypes()
     }

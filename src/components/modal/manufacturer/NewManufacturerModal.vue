@@ -80,7 +80,8 @@ import { addManufacturerSchema } from '@/composable/manufacturersSchema'
       }
       registerLabel.value = 'REGISTER'
       regButtonClick.value = 0
-      delay(300)
+      emits('close')
+      await delay(300)
       manufacturerStore.getManufacturers()
 
     }

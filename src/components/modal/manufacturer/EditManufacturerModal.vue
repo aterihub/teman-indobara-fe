@@ -74,9 +74,9 @@ import { onClickOutside } from '@vueuse/core'
       modalActive.value = true
       if (!status.value.isError) {
         resetForm()
-        emits('close')
       }
       setTimeout(closeNotification, 3000)
+      emits('close')
       registerLabel.value = 'SUBMIT'
       regButtonClick.value = 0
       masterDataStore.getManufacturers()

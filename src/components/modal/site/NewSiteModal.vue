@@ -75,7 +75,8 @@ import { addSiteSchema } from '@/composable/sitesSchema'
       }
       registerLabel.value = 'REGISTER'
       regButtonClick.value = 0
-      delay(300)
+      emits('close')
+      await delay(300)
       sitesStore.getSites()
 
     }

@@ -164,11 +164,11 @@ import { useSitesStore } from '@/stores/master-data/sitesStore'
       modalActive.value = true
       if (!status.value.isError) {
         resetForm()
-        emits('close')
       }
       setTimeout(closeNotification, 3000)
       registerLabel.value = 'SUBMIT'
       regButtonClick.value = 0
+      emits('close')
       await delay(1000)
       vehiclesStore.getVehicles()
 

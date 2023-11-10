@@ -99,8 +99,8 @@ import { useDeviceBindingStore } from '@/stores/transactions/deviceBindingStore'
       }
       registerLabel.value = 'REGISTER'
       regButtonClick.value = 0
-      await delay(1000)
       emits('close')
+      await delay(1000)
       deviceBindingStore.getBindedDevices(props.vehicleId)
     }
   }

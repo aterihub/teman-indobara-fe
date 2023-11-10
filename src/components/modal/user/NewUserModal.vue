@@ -99,6 +99,7 @@ import { useContractorsStore } from '@/stores/master-data/contractorsStore'
       }
       registerLabel.value = 'REGISTER'
       regButtonClick.value = 0
+      emits('close')
       await delay(1000)
       usersStore.getUsers(params)
     }
