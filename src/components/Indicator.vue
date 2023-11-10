@@ -3,8 +3,8 @@
   :class="status? 'indicator-on' : 'indicator-off'">
   </div> -->
   <div class="relative flex h-3 w-3">
-    <span class="absolute inline-flex h-full w-full rounded-full opacity-75" :class="status? 'indicator-on' : 'indicator-off'"></span>
-    <span class="relative inline-flex rounded-full h-3 w-3" :class="status? 'status-on' : 'status-off'"></span>
+    <span class="absolute inline-flex h-full w-full rounded-full opacity-75" :class="status == 'ONLINE' ? 'indicator-on' : 'indicator-off'"></span>
+    <span class="relative inline-flex rounded-full h-3 w-3" :class="status == 'ONLINE' ?  'status-on' : 'status-off'"></span>
   </div> 
 </template>
 
