@@ -9,6 +9,7 @@ import DumpTruck from '@/views/Map/DumpTruck/MainMap.vue'
 import Excavator from '@/views/Map/Excavator/NotFound.vue'
 import LightVehicle from '@/views/Map/LightVehicle/NotFound.vue'
 import DM from '@/views/Map/DM/NotFound.vue'
+import DevicesRealtime from '@/views/Dashboard/DevicesRealtime'
 import Violation from '@/views/Map/Violation/ViolationMain.vue'
 import Report from '@/views/Map/Report/NotFound.vue'
 import DeviceDetails from '@/views/Devices/DeviceDetails.vue'
@@ -26,6 +27,7 @@ const routes = [
   { path: '/excavator', name: 'Excavator', component: Excavator, meta: { requiresAuth:true } },
   { path: '/lightvehicle', name: 'LightVehicle', component: LightVehicle, meta: { requiresAuth:true } },
   { path: '/dm', name: 'DM', component: DM, meta: { requiresAuth:true } },
+  { path: '/devices-realtime', name: 'DevicesRealtime', component: DevicesRealtime, meta: { requiresAuth:true } },
   { path: '/violation', name: 'Violation', component: Violation, meta: { requiresAuth:false } },
   { path: '/report', name: 'Report', component: Report, meta: { requiresAuth:true } },
   
