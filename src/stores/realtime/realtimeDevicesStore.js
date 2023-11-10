@@ -24,6 +24,7 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
         this.adasData = res.data.vehicles[0].adas
         this.adasData.deviceHealth.time = moment(this.adasData.deviceHealth.time).format("YYYY-MM-DD hh:mm")
         this.adasData.adasDetail.time = moment(this.adasData.adasDetail.time).format("YYYY-MM-DD hh:mm")
+        this.adasData.events.timeTillCollision._value = this.adasData.events.timeTillCollision._value.toFixed(1)
         this.adasData.events.timeTillCollision.time = moment(this.adasData.events.timeTillCollision.time).format("YYYY-MM-DD hh:mm")
         this.adasData.events.leftTurnSignal.time = moment(this.adasData.events.leftTurnSignal.time).format("YYYY-MM-DD hh:mm")
         this.adasData.events.rightTurnSignal.time = moment(this.adasData.events.rightTurnSignal.time).format("YYYY-MM-DD hh:mm")
