@@ -9,7 +9,7 @@
     <!-- <h1 class="font-bold text-2xl">Fleet Management System</h1> -->
   </div>
   <aside class="sidebar">
-    <img src="@/assets/img/teman-indobara-logo.png" alt="blue-logogram" class="w-[47px]">
+    <div src="" alt="blue-logogram" class="w-[47px]"></div>
     <div class="sidebar-body">
       <sideNavIcon  :isActive="isDashboardActive" :route="{name: 'Dashboard'}" menuName="Dashboard" path="M3.33331 13H11.3333V3H3.33331V13ZM3.33331 21H11.3333V15H3.33331V21ZM13.3333 21H21.3333V11H13.3333V21ZM13.3333 3V9H21.3333V3H13.3333Z" />
       <div class="w-6 bg-[#CCD1D5] h-[1px]" ></div>
