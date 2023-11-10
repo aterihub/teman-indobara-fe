@@ -42,13 +42,13 @@ export default {
 <style scoped>
 
 .tab {
-  @apply w-full grid grid-rows-2 gap-[14px]
+  @apply w-fit grid grid-rows-2 gap-[14px] h-fit
 }
 button {
   @apply disabled:opacity-75 flex flex-col gap-4 justify-center items-center relative 
   text-[#353535] cursor-pointer p-4 rounded-md
     w-[full] text-[10px] sm:text-[14px] font-semibold
-    border border-[#D9D9D9]
+    border-2 border-[#D9D9D9]
     
 } 
 
