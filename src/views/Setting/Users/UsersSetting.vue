@@ -17,6 +17,8 @@
   import SmallChip from '@/components/tab/Tab.vue'
   import AdminMaster from './AdminMaster.vue'
   import UserMaster from './UserMaster.vue'
+  import { useLocalStorage } from '@vueuse/core'
+
     export default {
       components: {
         sideNav, Button, SmallChip, AdminMaster, UserMaster
@@ -33,7 +35,7 @@
           value: 'UserMaster',
         }
       ]
-      const selectedComponent = ref('AdminMaster')
+      const selectedComponent = useLocalStorage('SelectedUserSetting','AdminMaster')
       function changeNavigation(navigation) {
         var subNavs = document.getElementsByClassName("nav")
         console.log(subNavs)
@@ -46,7 +48,7 @@
       }
 
       onMounted(async() => {
-        var element = document.getElementById("Admin");
+        var element = document.getElementById(selectedComponent.value);
         element.classList.add("active");
       })
 

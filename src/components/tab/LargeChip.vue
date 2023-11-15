@@ -4,7 +4,7 @@
         @click="$emit('clicked', tab.value)"
         class="largeNav"
         :value="index"
-        :id="tab.title"
+        :id="tab.value"
         >
         <Icon width="30" height="30" viewBox="0 0 30 30" :path="tab.icon"/>
         {{tab.title}}

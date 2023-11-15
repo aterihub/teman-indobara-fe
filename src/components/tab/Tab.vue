@@ -4,7 +4,7 @@
         @click="$emit('clicked', tab.value)"
         class="nav"
         :value="index"
-        :id="tab.title"
+        :id="tab.value"
         >{{tab.title}}
       </button>
   </div>

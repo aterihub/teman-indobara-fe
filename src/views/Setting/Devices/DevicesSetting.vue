@@ -1,4 +1,5 @@
 <template>
+
 <sideNav :isSettingActive="true" /> 
 <div class="content">
   <div class="navigation">
@@ -20,6 +21,7 @@ import sideNav from '@/components/navigation/sideNav.vue'
 import Button from '@/components/button/BaseButton.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import { onMounted, ref } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 
   export default {
     components: {
@@ -28,7 +30,7 @@ import { onMounted, ref } from 'vue'
     props: ['id'],
 
     setup(props) {
-      const selectedComponent = ref('ManufacturesMaster')
+      const selectedComponent = useLocalStorage('SelectedDeviceSetting','ManufacturesMaster')
       const tabs = [
         {
           title: 'Manufacturer',
@@ -56,7 +58,7 @@ import { onMounted, ref } from 'vue'
       }
 
       onMounted(async() => {
-        var element = document.getElementById("Manufacturer");
+        var element = document.getElementById(selectedComponent.value);
         element.classList.add("active");
       })
 
