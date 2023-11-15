@@ -46,6 +46,13 @@ export const useHullsStore = defineStore('hulls', {
         })
         this.getHullIsLoading = false
       } catch (err) {
+        this.status.code = err.code
+        this.status.isError = true
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         this.getHullIsLoading = false
         console.error(err)
         return err

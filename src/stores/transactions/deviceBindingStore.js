@@ -61,6 +61,13 @@ export const useDeviceBindingStore = defineStore('deviceBinding', {
         this.bindedDevices = res.data.vehicle.devices
         this.getBindedDevicesIsLoading = false
       } catch (err) {
+        this.status.code = err.code
+        this.status.isError = true
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         this.getBindedDevicesIsLoading = false
         console.error(err)
         return err

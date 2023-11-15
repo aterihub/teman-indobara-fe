@@ -1,4 +1,10 @@
 <template>
+  <alert 
+    :message ="status.message"
+    :modalActive="status.isError"
+    :isError="status.isError"
+    @close="closeNotification" 
+  />
   <NewAdminModal 
     :isOpen="isModalPops"
     @close="newModalToggle"
@@ -72,7 +78,7 @@
     ]
 
     const usersStore = useUsersStore()
-    const { users, getUserIsLoading } = storeToRefs(useUsersStore())
+    const { users, getUserIsLoading, status } = storeToRefs(useUsersStore())
     const params = {
       role: 'ADMIN'
     }

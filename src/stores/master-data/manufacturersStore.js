@@ -70,6 +70,13 @@ export const useManufacturersStore = defineStore('manufacturers', {
         })
         this.getManufacturersIsLoading = false
       } catch (err) {
+        this.status.code = err.code
+        this.status.isError = true
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         this.getManufacturersIsLoading = false
         console.error(err)
         return err

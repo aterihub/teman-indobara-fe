@@ -1,4 +1,10 @@
 <template>
+  <alert 
+    :message ="status.message"
+    :modalActive="status.isError"
+    :isError="status.isError"
+    @close="closeNotification" 
+  />
   <NewVehicleModal 
     :isOpen="isModalPops"
     @close="newModalToggle"
@@ -76,7 +82,7 @@
     ]
 
     const vehiclesStore = useVehiclesStore()
-    const { getVehiclesIsLoading } = storeToRefs(useVehiclesStore())
+    const { getVehiclesIsLoading, status } = storeToRefs(useVehiclesStore())
 
     onBeforeMount(() => {
       vehiclesStore.getVehicles()

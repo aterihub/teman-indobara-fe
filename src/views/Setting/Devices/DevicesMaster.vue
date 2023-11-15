@@ -1,4 +1,10 @@
 <template>
+  <alert 
+    :message ="status.message"
+    :modalActive="status.isError"
+    :isError="status.isError"
+    @close="closeNotification" 
+  />
   <sideNav :isDevicesActive="true" />
   <NewDeviceModal 
     :isOpen="isModalPops"
@@ -75,7 +81,7 @@
     ]
   
     const devicesStore = useDevicesStore()
-    const { devices, getDevicesIsLoading } = storeToRefs(useDevicesStore())
+    const { devices, getDevicesIsLoading, status } = storeToRefs(useDevicesStore())
   
     onMounted( async () => {
       await devicesStore.getDevices()

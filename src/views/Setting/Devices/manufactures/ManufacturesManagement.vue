@@ -1,4 +1,10 @@
 <template>
+  <alert 
+    :message ="status.message"
+    :modalActive="status.isError"
+    :isError="status.isError"
+    @close="closeNotification" 
+  />
   <NewManufacturerModal 
     :isOpen="isModalPops"
     @close="newModalToggle"
@@ -64,7 +70,7 @@
 
 
     const manufacturerStore = useManufacturersStore()
-    const { manufacturers, getManufacturersIsLoading } = storeToRefs(useManufacturersStore())
+    const { manufacturers, getManufacturersIsLoading, status } = storeToRefs(useManufacturersStore())
 
     onBeforeMount( async () => {
       await manufacturerStore.getManufacturers()

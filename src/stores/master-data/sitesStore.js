@@ -45,6 +45,13 @@ export const useSitesStore = defineStore('sites', {
         })
         this.getSitesIsLoading = false
       } catch (err) {
+        this.status.code = err.code
+        this.status.isError = true
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         this.getSitesIsLoading = false
         console.error(err)
         return err

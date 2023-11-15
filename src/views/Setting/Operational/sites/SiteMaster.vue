@@ -1,4 +1,10 @@
 <template>
+  <alert 
+    :message ="status.message"
+    :modalActive="status.isError"
+    :isError="status.isError"
+    @close="closeNotification" 
+  />
   <NewSiteModal 
     :isOpen="isModalPops"
     @close="newModalToggle"
@@ -72,7 +78,7 @@ import { storeToRefs } from 'pinia'
     ]
 
     const sitesStore = useSitesStore()
-    const { getSitesIsLoading } = storeToRefs(useSitesStore())
+    const { getSitesIsLoading, status } = storeToRefs(useSitesStore())
 
     onBeforeMount(() => {
       sitesStore.getSites()

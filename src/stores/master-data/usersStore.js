@@ -34,7 +34,12 @@ export const useUsersStore = defineStore('user', {
         console.error(err)
         this.getUserIsLoading = false
         this.status.isError = true
-        this.status.code = err.response.data.status
+        this.status.code = err.code
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         return err
       }
     },

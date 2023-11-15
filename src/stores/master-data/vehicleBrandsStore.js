@@ -45,6 +45,13 @@ export const useVehicleBrandsStore = defineStore('vehicleBrands', {
         })
         this.getBrandIsLoading = false
       } catch (err) {
+        this.status.code = err.code
+        this.status.isError = true
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         this.getBrandIsLoading = false
         console.error(err)
         return err

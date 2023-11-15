@@ -21,6 +21,7 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
       try {
         const res = await realtimeAPI.getRealtimeDevices()
         console.log(res)
+        this.status.isError = false
         this.adasData = res.data.vehicles[0].adas
         this.adasData.deviceHealth.time = moment(this.adasData.deviceHealth.time).format("YYYY-MM-DD hh:mm")
         this.adasData.adasDetail.time = moment(this.adasData.adasDetail.time).format("YYYY-MM-DD hh:mm")
@@ -59,6 +60,13 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
         this.dsmData.events.gsensor.time = moment(this.dsmData.events.gsensor.time).format("YYYY-MM-DD hh:mm")
         this.getRealtimeDataIsLoading = false
       } catch (err) {
+        this.status.isError = true
+        this.status.code = err.code
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         this.getRealtimeDataIsLoading = false
         console.error(err)
         return err

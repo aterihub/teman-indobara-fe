@@ -1,11 +1,17 @@
 <template>
+  <alert 
+  :message ="status.message"
+  :modalActive="status.isError"
+  :isError="status.isError"
+  @close="closeNotification" 
+/>
   <sideNav :isDMActive="true" />
   <div class="content">
     <div class="device-container">
-      <h1 class="title"> Dashboard </h1>
+      <h1 class="title"> Dashboard</h1>
       <div class="card-wrapper">
-        <lazyCard v-if="loading" v-for="card in 3" />
-        <div v-if="!loading" class="card">
+        <lazyCard v-if="loading || status.isError" v-for="card in 3" />
+        <div v-else class="card">
           <div class="flex justify-between pb-4 border-b">
             <div class="flex flex-col gap-2">
               <div class="flex items-center gap-4">
@@ -202,7 +208,7 @@
             </div>
           </div>
         </div>
-        <div v-if="!loading" class="card">
+        <div v-else class="card">
           <div class="flex justify-between pb-4 border-b">
             <div class="flex flex-col gap-2">
               <div class="flex items-center gap-4">
@@ -471,7 +477,7 @@ import { useRealtimeDevicesStore } from '@/stores/realtime/realtimeDevicesStore'
 import { storeToRefs } from 'pinia'
 
 const realtimeDevicesStore = useRealtimeDevicesStore()
-const { adasData, dsmData, getRealtimeDataIsLoading } = storeToRefs(useRealtimeDevicesStore())
+const { adasData, dsmData, getRealtimeDataIsLoading, status } = storeToRefs(useRealtimeDevicesStore())
 
 const delay = require('delay')
 const whileState = ref(true)
@@ -489,7 +495,9 @@ onBeforeMount( async () => {
 onUnmounted(() => {
   whileState.value = false
 })
-
+const closeNotification = () => {
+  modalActive.value = false
+}
 
 ///DUMMIES
 let cardList = 6

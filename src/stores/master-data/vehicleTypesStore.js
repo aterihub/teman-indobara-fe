@@ -46,6 +46,13 @@ export const useVehicleTypesStore = defineStore('vehicleTypes', {
         })
         this.getTypeIsLoading = false
       } catch (err) {
+        this.status.code = err.code
+        this.status.isError = true
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         this.getTypeIsLoading = false
         console.error(err)
         return err

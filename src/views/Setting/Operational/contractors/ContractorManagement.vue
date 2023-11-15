@@ -1,4 +1,10 @@
 <template>
+  <alert 
+    :message ="status.message"
+    :modalActive="status.isError"
+    :isError="status.isError"
+    @close="closeNotification" 
+  />
   <NewContractorModal 
     :isOpen="isModalPops"
     @close="newModalToggle"
@@ -78,7 +84,7 @@
 
 
     const contractorsStore = useContractorsStore()
-    const { getContractorsIsLoading } = storeToRefs(useContractorsStore())
+    const { getContractorsIsLoading, status } = storeToRefs(useContractorsStore())
 
     onBeforeMount(() => {
       contractorsStore.getContractors()

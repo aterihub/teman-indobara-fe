@@ -1,4 +1,10 @@
 <template>
+  <alert 
+    :message ="status.message"
+    :modalActive="status.isError"
+    :isError="status.isError"
+    @close="closeNotification" 
+  />
   <NewUserModal 
     :isOpen="isModalPops"
     @close="newModalToggle"
@@ -72,13 +78,17 @@
     ]
 
     const usersStore = useUsersStore()
-    const { users, getUserIsLoading } = storeToRefs(useUsersStore())
+    const { users, getUserIsLoading, status } = storeToRefs(useUsersStore())
     const params = {
       role: 'USER'
     }
     onBeforeMount(() => {
       usersStore.getUsers(params)
     })
+
+    function closeNotification() {
+      window.location.reload()
+    }
   
     function newModalToggle() {
       isModalPops.value = !isModalPops.value

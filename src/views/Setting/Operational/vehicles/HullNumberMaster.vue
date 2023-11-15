@@ -1,4 +1,10 @@
 <template>
+  <alert 
+    :message ="status.message"
+    :modalActive="status.isError"
+    :isError="status.isError"
+    @close="closeNotification" 
+  />
   <NewHullModal 
     :isOpen="isNewHullModalPops"
     @close="newModalToggle()"
@@ -76,7 +82,7 @@ import { storeToRefs } from 'pinia'
 
     //store
     const hullsStore = useHullsStore()
-    const { getHullIsLoading } = storeToRefs(useHullsStore())
+    const { getHullIsLoading, status } = storeToRefs(useHullsStore())
     onBeforeMount(() => {
       hullsStore.getHulls()
     })

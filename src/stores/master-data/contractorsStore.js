@@ -49,6 +49,13 @@ export const useContractorsStore = defineStore('contractors', {
         this.getContractorIsLoading = false
       } catch (err) {
         this.getContractorIsLoading = false
+        this.status.isError = true
+        this.status.code = err.code
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         console.error(err)
         return err
       }

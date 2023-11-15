@@ -61,6 +61,13 @@ export const useDevicesStore = defineStore('devices', {
         this.getDevicesIsLoading = false
       } catch (err) {
         this.getDevicesIsLoading = false
+        this.status.isError = true
+        this.status.code = err.code
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
         console.error(err)
         return err
       }
