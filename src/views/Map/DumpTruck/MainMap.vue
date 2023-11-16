@@ -1,12 +1,11 @@
 <template>
-  <div class="content">
     <sideNav :isDumptruckActive="true" />
-    <div class="menu">
+    <div class="bg-[#fefefe] absolute left-14 top-14 w-fit flex h-fit z-10 p-4 rounded-lg">
       <div class="tab-wrapper">
         <h1>Mapping Type</h1>
         <Chip :tabs="tabs" @clicked= "changeNavigation" />
       </div>
-      <div class="tab-wrapper">
+      <!-- <div class="tab-wrapper">
         <h1>Filter</h1>
         <div class="flex gap-[14px]">
           <select name="contractorFilter" id="contractorFilter" v-model="selectedContractor" class="text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md">
@@ -115,10 +114,9 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <component :is="selectedComponent" :selectedVehicle="selectedVehicle" @dataUpdated="dataUpdated" @clearData="clearData"/>
-  </div>
   </template>
   
 <script >
@@ -140,13 +138,17 @@
   },
   setup() {
     const masterDataStore = useMasterDataStore()
-    const selectedComponent = ref('Heatmap')
+    const selectedComponent = ref('Route')
     const selectedVehicle = ref({id: '0', registrationNumber: 'XXXX'})
     const selectedContractor = ref('0')
     const vehicleList = ref([])
     const vehicleDetailData = ref([])
     const isVehicleDetailDataReady = ref(false)
     const tabs = [
+      {
+        title: 'Route',
+        value: 'Route'
+      },
       {
         title: 'Heatmap',
         value: 'Heatmap'
@@ -158,10 +160,6 @@
       {
         title: 'Quickcount',
         value: 'Quickcount'
-      },
-      {
-        title: 'Route',
-        value: 'Route'
       }
     ]
 
@@ -179,7 +177,7 @@
       await masterDataStore.getVehicles()
       vehicleList.value = masterDataStore.vehicles
       selectedVehicle.value = {id: masterDataStore.vehicles[0].id, registrationNumber: masterDataStore.vehicles[0].registrationNumber}
-      var element = document.getElementById("Heatmap");
+      var element = document.getElementById("Route");
       element.classList.add("active");
     })
 
@@ -215,7 +213,7 @@
 }
 .tab-wrapper{
   @apply
-   w-full text-left gap-[20px] flex flex-col 
+   w-full text-left gap-[10px] flex flex-col 
 }
 .tab-wrapper h1 {
   @apply text-sm font-bold
