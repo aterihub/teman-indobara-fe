@@ -43,6 +43,7 @@ import { useHullsStore } from '@/stores/master-data/hullNumberStore'
 
  const schema = yup.object({
   number: yup.string().required().label('Hull Number'),
+  notes: yup.string().required().label('Notes'),
 })
   const props = defineProps({
       isOpen: Boolean,

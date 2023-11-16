@@ -12,7 +12,7 @@
      <div class="modal-inner" v-show="isOpen" ref="target">
        <div class="modal-content">
        <h1 class="title">{{title}}</h1>
-       <VeeForm  v-slot="{ handleSubmit }" as="div" ref="form" >
+       <VeeForm :validation-schema="schema" v-slot="{ handleSubmit }" as="div" ref="form" >
          <form  @submit="handleSubmit($event, onSubmit)" class="form-wrapper" >
           <BaseInput v-model="props.formData.number" name="number" type="text" placeholder="Define Hull Number" class="outlined" label="Hull Number"/>
           <TextArea v-model="props.formData.notes" name="notes" placeholder="Write notes for this hull" class="outlined" label="Notes"></TextArea>
@@ -34,6 +34,7 @@
 <script setup>
 import TextArea from '@/components/input/TextArea.vue'
 import BaseInput from '@/components/input/BaseInput.vue'
+import * as yup from 'yup'
 import BaseButton from '@/components/button/BaseButton.vue'
 import { Form as VeeForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
@@ -49,7 +50,10 @@ import { useHullsStore } from '@/stores/master-data/hullNumberStore'
         default: () => ({name: ''})
       }
   })
-
+  const schema = yup.object({
+    number: yup.string().required().label('Hull Number'),
+    notes: yup.string().required().label('Notes'),
+  })
   const modalActive = ref(false)
   const hullsStore = useHullsStore()
   const { status, updateHullIsLoading } = storeToRefs(useHullsStore())
