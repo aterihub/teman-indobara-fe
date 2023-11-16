@@ -64,7 +64,8 @@ import { onClickOutside } from '@vueuse/core'
       setTimeout(closeNotification, 3000)
       resetButton()
       closeModal()
-      manufacturersStore.getManufacturer(params)
+      await manufacturersStore.getManufacturer(params)
+      emits('deleted')
     }
   }
 
@@ -72,7 +73,7 @@ import { onClickOutside } from '@vueuse/core'
     modalActive.value = false
   }
   // Define custom events
-  const emits = defineEmits(['close'])
+  const emits = defineEmits(['close','deleted'])
   
   function closeModal() {
     resetButton()

@@ -16,6 +16,7 @@
     :manufacturerName=props.manufacturerName 
     :isOpen="isDelModalPops"
     @close="isDelModalPops = !isDelModalPops"
+    @deleted="isAllVariantDeleted"
     :deviceInfo="items"/>
 
   <div class="flex justify-between mb-6">
@@ -60,12 +61,10 @@
   import NewVariantModal from '@/components/modal/variant/NewVariantModal.vue'
   import EditVariantModal from '@/components/modal/variant/EditVariantModal.vue'
   import DeleteVariantModal from '@/components/modal/variant/DeleteVariantModal.vue'
-  import SearchField from '@/components/SearchField.vue'
   import Button from '@/components/button/BaseButton.vue'
   import { onMounted, ref } from 'vue'
   import { useManufacturersStore } from '@/stores/master-data/manufacturersStore'
   import { storeToRefs } from 'pinia'
-import ManufacturerMasterVue from '../ManufacturerMaster.vue'
   
     const isNewModalPops = ref(false)
     const isEditModalPops = ref(false)
@@ -90,7 +89,7 @@ import ManufacturerMasterVue from '../ManufacturerMaster.vue'
     onMounted(async() => {
       await manufacturerStore.getManufacturer(params)
     })
-  
+   
     function newModalToggle() {
       items.value = manufacturer.value
       isNewModalPops.value = !isNewModalPops.value
@@ -107,6 +106,11 @@ import ManufacturerMasterVue from '../ManufacturerMaster.vue'
       emits('manageManufactures')
     }
 
+    function isAllVariantDeleted() {
+      if (manufacturer.value.length == 0) {
+        emits('manageManufactures')
+      }
+    }
     
   </script>
       
