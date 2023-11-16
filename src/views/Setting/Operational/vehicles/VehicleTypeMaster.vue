@@ -1,8 +1,8 @@
 <template>
   <alert 
-    :message ="status.message"
-    :modalActive="status.isError"
-    :isError="status.isError"
+    :message ="getStatus.message"
+    :modalActive="getStatus.isError"
+    :isError="getStatus.isError"
     @close="closeNotification" 
   />
   <NewTypeModal 
@@ -80,7 +80,7 @@ import { storeToRefs } from 'pinia'
     ]
     //store
     const vehicleTypesStore = useVehicleTypesStore()
-    const { getTypeIsLoading, status } = storeToRefs(useVehicleTypesStore())
+    const { getTypeIsLoading, status, getStatus } = storeToRefs(useVehicleTypesStore())
     
     onBeforeMount(() => {
       vehicleTypesStore.getVehicleTypes()

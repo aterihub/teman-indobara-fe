@@ -6,6 +6,11 @@ import moment from 'moment'
 export const useVehicleTypesStore = defineStore('vehicleTypes', {
   state: () => ({
     vehicleTypes: ref(''),
+    getStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
     status: ref({
       isError:null,
       message: null,
@@ -29,9 +34,11 @@ export const useVehicleTypesStore = defineStore('vehicleTypes', {
       } catch (err) {
         console.error(err)
         this.createTypeIsLoading = false        
+        this.status.code = err.response.status
         this.status.isError = true
-        this.status.message = err.response.data.message
-        this.status.code = err.response.data.statusCode
+        if (this.status.code == 409) {
+          this.status.message = 'Already Registered'
+        }
         return err
       }
     },
@@ -45,12 +52,14 @@ export const useVehicleTypesStore = defineStore('vehicleTypes', {
           return { ...item, createdAt, no}
         })
         this.getTypeIsLoading = false
-      } catch (err) {
-        this.status.code = err.code
-        this.status.isError = true
-        switch (this.status.code) {
+        this.getStatus.code = res.status
+        this.getStatus.isError = false
+      } catch (err) {        
+        this.getStatus.code = err.code
+        this.getStatus.isError = true
+        switch (this.getStatus.code) {
           case 'ERR_NETWORK':
-            this.status.message = 'Network Error'
+            this.getStatus.message = 'Network Error'
             break;
         }
         this.getTypeIsLoading = false
@@ -69,10 +78,12 @@ export const useVehicleTypesStore = defineStore('vehicleTypes', {
         this.status.code = res.status
       } catch (err) {
         console.error(err)
-        this.updateTypeIsLoading = false        
+        this.updateTypeIsLoading = false                
+        this.status.code = err.response.status
         this.status.isError = true
-        this.status.message = err.response.data.message
-        this.status.code = err.response.data.statusCode
+        if (this.status.code == 409) {
+          this.status.message = 'Already Registered'
+        }
         return err
       }
     },

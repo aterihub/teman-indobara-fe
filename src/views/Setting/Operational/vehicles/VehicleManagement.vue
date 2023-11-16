@@ -1,8 +1,8 @@
 <template>
   <alert 
-    :message ="status.message"
-    :modalActive="status.isError"
-    :isError="status.isError"
+    :message ="getStatus.message"
+    :modalActive="getStatus.isError"
+    :isError="getStatus.isError"
     @close="closeNotification" 
   />
   <NewVehicleModal 
@@ -82,7 +82,7 @@
     ]
 
     const vehiclesStore = useVehiclesStore()
-    const { getVehiclesIsLoading, status } = storeToRefs(useVehiclesStore())
+    const { getVehiclesIsLoading, getStatus } = storeToRefs(useVehiclesStore())
 
     onBeforeMount(() => {
       vehiclesStore.getVehicles()

@@ -10,6 +10,11 @@ export const useVehicleBrandsStore = defineStore('vehicleBrands', {
       message: null,
       code: null, 
     }),
+    getStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
     createBrandIsLoading: ref(false),
     getBrandIsLoading: ref(false),
     updateBrandIsLoading: ref(false),
@@ -28,9 +33,11 @@ export const useVehicleBrandsStore = defineStore('vehicleBrands', {
       } catch (err) {
         console.error(err)
         this.createBrandIsLoading = false        
+        this.status.code = err.response.status
         this.status.isError = true
-        this.status.message = err.response.data.message
-        this.status.code = err.response.data.statusCode
+        if (this.status.code == 409) {
+          this.status.message = 'Already Registered'
+        }
         return err
       }
     },
@@ -45,11 +52,11 @@ export const useVehicleBrandsStore = defineStore('vehicleBrands', {
         })
         this.getBrandIsLoading = false
       } catch (err) {
-        this.status.code = err.code
-        this.status.isError = true
-        switch (this.status.code) {
+        this.getStatus.code = err.code
+        this.getStatus.isError = true
+        switch (this.getStatus.code) {
           case 'ERR_NETWORK':
-            this.status.message = 'Network Error'
+            this.getStatus.message = 'Network Error'
             break;
         }
         this.getBrandIsLoading = false
@@ -68,10 +75,12 @@ export const useVehicleBrandsStore = defineStore('vehicleBrands', {
         this.status.code = res.status
       } catch (err) {
         console.error(err)
-        this.updateBrandIsLoading = false        
+        this.updateBrandIsLoading = false                
+        this.status.code = err.response.status
         this.status.isError = true
-        this.status.message = err.response.data.message
-        this.status.code = err.response.data.statusCode
+        if (this.status.code == 409) {
+          this.status.message = 'Already Registered'
+        }
         return err
       }
     },

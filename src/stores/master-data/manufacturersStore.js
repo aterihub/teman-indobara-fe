@@ -27,7 +27,7 @@ export const useManufacturersStore = defineStore('manufacturers', {
         console.log(res)
         this.createManufactureIsLoading = false        
         this.status.isError = false
-        this.status.message = 'Manufacture Created'
+        this.status.message = 'Entity Created'
         this.status.code = res.status
       } catch (err) {
         console.error(err)
@@ -42,12 +42,17 @@ export const useManufacturersStore = defineStore('manufacturers', {
       this.getManufacturerIsLoading = true
       try {
         const res = await manufacturersAPI.getManufacturer(params)
-        console.log(res)
-        this.manufacturer = res.data.manufacturers[0].manufacturerName
-        this.variants = res.data.manufacturers[0].variants.map((item, index) => {
-          const no = index+1
-          return { ...item, no}
-        })
+        console.log(res.data.manufacturers)
+        if (res.data.manufacturers.length != 0) {
+          this.manufacturer = res.data.manufacturers[0].manufacturerName
+          this.variants = res.data.manufacturers[0].variants.map((item, index) => {
+            const no = index+1
+            return { ...item, no}
+          })
+        } else {
+          this.manufacturer = []
+          this.variants = []
+        }
         this.getManufacturerIsLoading = false
       } catch (err) {
         this.getManufacturerIsLoading = false

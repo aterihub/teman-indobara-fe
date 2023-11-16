@@ -10,6 +10,11 @@ export const useVehiclesStore = defineStore('vehicles', {
       message: null,
       code: null, 
     }),
+    getStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
     createVehicleIsLoading: ref(false),
     getVehicleIsLoading: ref(false),
     updateVehicleIsLoading: ref(false),
@@ -27,10 +32,12 @@ export const useVehiclesStore = defineStore('vehicles', {
         this.status.code = res.status
       } catch (err) {
         console.error(err)
-        this.createVehicleIsLoading = false        
+        this.createVehicleIsLoading = false                
+        this.status.code = err.response.status
         this.status.isError = true
-        this.status.message = err.response.data.message
-        this.status.code = err.response.data.statusCode
+        if (this.status.code == 409) {
+          this.status.message = 'Already Registered'
+        }
         return err
       }
     },
@@ -44,11 +51,11 @@ export const useVehiclesStore = defineStore('vehicles', {
         })
         this.getVehicleIsLoading = false
       } catch (err) {
-        this.status.code = err.code
-        this.status.isError = true
-        switch (this.status.code) {
+        this.getStatus.code = err.code
+        this.getStatus.isError = true
+        switch (this.getStatus.code) {
           case 'ERR_NETWORK':
-            this.status.message = 'Network Error'
+            this.getStatus.message = 'Network Error'
             break;
         }
         this.getVehicleIsLoading = false
@@ -67,10 +74,12 @@ export const useVehiclesStore = defineStore('vehicles', {
         this.status.code = res.status
       } catch (err) {
         console.error(err)
-        this.updateVehicleIsLoading = false        
+        this.updateVehicleIsLoading = false            
+        this.status.code = err.response.status
         this.status.isError = true
-        this.status.message = err.response.data.message
-        this.status.code = err.response.data.statusCode
+        if (this.status.code == 409) {
+          this.status.message = 'Already Registered'
+        }
         return err
       }
     },

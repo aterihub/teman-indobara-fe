@@ -11,6 +11,11 @@ export const useHullsStore = defineStore('hulls', {
       message: null,
       code: null, 
     }),
+    getStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
     createHullIsLoading: ref(false),
     getHullIsLoading: ref(false),
     updateHullIsLoading: ref(false),
@@ -29,9 +34,11 @@ export const useHullsStore = defineStore('hulls', {
       } catch (err) {
         console.error(err)
         this.createHullIsLoading = false        
+        this.status.code = err.response.status
         this.status.isError = true
-        this.status.message = err.response.data.message
-        this.status.code = err.response.data.statusCode
+        if (this.status.code == 409) {
+          this.status.message = 'Already Registered'
+        }
         return err
       }
     },
@@ -46,11 +53,11 @@ export const useHullsStore = defineStore('hulls', {
         })
         this.getHullIsLoading = false
       } catch (err) {
-        this.status.code = err.code
-        this.status.isError = true
-        switch (this.status.code) {
+        this.getStatus.code = err.code
+        this.getStatus.isError = true
+        switch (this.getStatus.code) {
           case 'ERR_NETWORK':
-            this.status.message = 'Network Error'
+            this.getStatus.message = 'Network Error'
             break;
         }
         this.getHullIsLoading = false
@@ -69,10 +76,12 @@ export const useHullsStore = defineStore('hulls', {
         this.status.code = res.status
       } catch (err) {
         console.error(err)
-        this.updateHullIsLoading = false        
+        this.updateHullIsLoading = false                
+        this.status.code = err.response.status
         this.status.isError = true
-        this.status.message = err.response.data.message
-        this.status.code = err.response.data.statusCode
+        if (this.status.code == 409) {
+          this.status.message = 'Already Registered'
+        }
         return err
       }
     },
