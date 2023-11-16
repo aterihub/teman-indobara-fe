@@ -30,8 +30,9 @@
                 </div>
                 <div class="flex flex-col gap-1 text-left">
                   <label for="contractorId" class="text-xs font-bold">Hull Number</label>
-                  <select name="contractorId" v-model="hullNumber" class="cursor-pointer select-option text-sm" required>
-                    <option v-if="!hulls.length" class="text-sm" value="0" disabled selected>No Hull Number Available</option>
+                  <select name="contractorId" v-model="hullNumber" class="cursor-pointer select-option text-sm">
+                    <!-- <option v-if="!hulls.length" class="text-sm" value="0" disabled selected>No Hull Number Available</option> -->
+                    <option class="text-sm" value="" >Not Selected</option>
                     <option class="text-sm" v-for="hull in hulls" :key="hull.id" :value="hull.number">{{ hull.number }}</option>
                   </select> 
                 </div>
@@ -141,7 +142,7 @@ import { useSitesStore } from '@/stores/master-data/sitesStore'
     values.name = values.name.toUpperCase()
     values.fabricationYear = values.fabricationYear.toString()
     values.purchaseYear = values.purchaseYear.toString()
-    values.registrationNumber = values.registrationNumber.toUpperCase()
+    values.registrationNumber = values.registrationNumber.replace(/\s/g, '').toUpperCase()
     let newValues = values
     newValues.brandName = brandName.value
     newValues.type = type.value
