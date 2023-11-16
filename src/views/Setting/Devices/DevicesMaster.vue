@@ -77,6 +77,7 @@
       { text: "Type", value: "type", sortable: true },
       { text: "Manufacturer Name", value: "manufacturerName", sortable: true },
       { text: "Variant", value: "variantName" ,sortable: true},
+      { text: "Notes", value: "notes" },
       { text: "", value: "operation", width: 100 },
     ]
   
