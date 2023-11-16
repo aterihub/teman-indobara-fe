@@ -12,7 +12,7 @@
      <div class="modal-inner" v-show="isOpen" ref="target">
        <div class="modal-content">
        <h1 class="title">{{title}}</h1>
-       <VeeForm  v-slot="{ handleSubmit }" as="div" ref="form" >
+       <VeeForm :validation-schema="addVariantSchema" v-slot="{ handleSubmit }" as="div" ref="form" >
          <form  @submit="handleSubmit($event, onSubmit)" class="form-wrapper" >
             <BaseInput v-model="props.formData.variant" name="variant" type="text" placeholder="Define Variant name" class="outlined" label="Variant Name"/>
             <TextArea v-model="props.formData.variantNotes" name="variantNotes" placeholder="Write notes for this manufacturer" class="outlined" label="Notes"></TextArea>
@@ -40,6 +40,7 @@ import { useManufacturersStore } from '@/stores/master-data/manufacturersStore'
 import { storeToRefs } from 'pinia'
 import { ref, onMounted } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { addVariantSchema } from '@/composable/manufacturersSchema'
  
   const props = defineProps({
       manufacturerName: String,
