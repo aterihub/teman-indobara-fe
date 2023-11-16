@@ -28,7 +28,7 @@ const routes = [
   { path: '/lightvehicle', name: 'LightVehicle', component: LightVehicle, meta: { requiresAuth:true } },
   { path: '/dm', name: 'DM', component: DM, meta: { requiresAuth:true } },
   { path: '/devices-realtime', name: 'DevicesRealtime', component: DevicesRealtime, meta: { requiresAuth:true } },
-  { path: '/violation', name: 'Violation', component: Violation, meta: { requiresAuth:false } },
+  { path: '/violation', name: 'Violation', component: Violation, meta: { requiresAuth:true } },
   { path: '/report', name: 'Report', component: Report, meta: { requiresAuth:true } },
   
   { path: '/devices', name: 'Devices List', component: DevicesList, meta: { requiresAuth:true }},
@@ -51,7 +51,7 @@ router.beforeEach(async (to, from,  next) => {
   } else if (to.meta.requiresAuth && localStorage.getItem('auth.accessToken') || to.meta.freeAccess){
     next()
   } else if (!to.meta.requiresAuth && localStorage.getItem('auth.accessToken')){
-    next({name: 'Devices List'})
+    next({name: 'Dashboard'})
   } else next()
   }) 
 
