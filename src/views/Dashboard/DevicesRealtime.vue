@@ -32,6 +32,14 @@
                   <label for="batt" class="font-medium text-sm text-[#353535]/70">Elapsed Time:</label>
                   <h1 class="font-medium text-sm text-[#353535]">{{adasData.deviceHealth.elapsedTime}}</h1>
                 </div>
+                <div class="flex gap-1">
+                  <label for="batt" class="font-medium text-sm text-[#353535]/70">Latitude:</label>
+                  <h1 class="font-medium text-sm text-[#353535]">{{adasData.deviceHealth.latitude}}</h1>
+                </div>
+                <div class="flex gap-1">
+                  <label for="batt" class="font-medium text-sm text-[#353535]/70">Longitude:</label>
+                  <h1 class="font-medium text-sm text-[#353535]">{{adasData.deviceHealth.longitude}}</h1>
+                </div>
               </div>
                 <div class="flex flex-col gap-4">
                   <div class="flex items-center gap-4">
@@ -42,16 +50,6 @@
                     <GPSIndicator :status="true" />
                     <SatellitesNumberIndicator :status="adasData.deviceHealth.satellite" />
                   </div>
-                </div>
-              </div>
-              <div class="flex justify-between">
-                <div class="flex gap-1">
-                  <label for="batt" class="font-medium text-xl text-[#353535]/70">Latitude:</label>
-                  <h1 class="font-medium text-xl text-[#353535]">{{adasData.deviceHealth.latitude}}</h1>
-                </div>
-                <div class="flex gap-1">
-                  <label for="batt" class="font-medium text-xl text-[#353535]/70">Longitude:</label>
-                  <h1 class="font-medium text-xl text-[#353535]">{{adasData.deviceHealth.longitude}}</h1>
                 </div>
               </div>
             </div>
@@ -74,7 +72,15 @@
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Elapsed Time:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.deviceHealth.elapsedTime}}</h1>
                   </div>
+                  <div class="flex gap-1">
+                    <label for="batt" class="font-medium text-sm text-[#353535]/70">Latitude:</label>
+                    <h1 class="font-medium text-sm text-[#353535]">{{dsmData.deviceHealth.latitude}}</h1>
                   </div>
+                  <div class="flex gap-1">
+                    <label for="batt" class="font-medium text-sm text-[#353535]/70">Longitude:</label>
+                    <h1 class="font-medium text-sm text-[#353535]">{{dsmData.deviceHealth.longitude}}</h1>
+                  </div>
+                </div>
                   <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-4">
                       <SignalIndicator :status="dsmData.deviceHealth.gsmSignal" />
@@ -84,16 +90,6 @@
                     <GPSIndicator :status="true" />
                     <SatellitesNumberIndicator :status="dsmData.deviceHealth.satellite" />
                   </div>
-                </div>
-              </div>
-              <div class="flex justify-between">
-                <div class="flex gap-1">
-                  <label for="batt" class="font-medium text-xl text-[#353535]/70">Latitude:</label>
-                  <h1 class="font-medium text-xl text-[#353535]">{{dsmData.deviceHealth.latitude}}</h1>
-                </div>
-                <div class="flex gap-1">
-                  <label for="batt" class="font-medium text-xl text-[#353535]/70">Longitude:</label>
-                  <h1 class="font-medium text-xl text-[#353535]">{{dsmData.deviceHealth.longitude}}</h1>
                 </div>
               </div>
             </div>
@@ -300,7 +296,7 @@
             </div>
             <h1 class="text-lg text-[#353535] mt-2">DSM Violation</h1>
             <div class="grid grid-cols-1 gap-4">
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                     :class="{
                       'grey-chip': dsmData.events.drowsiness._value === 0,
@@ -309,7 +305,7 @@
                   >
                   Drowsiness
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col col-span-2 gap-1">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.drowsiness.time}}</h1>
@@ -321,7 +317,7 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                   :class="{
                     'grey-chip': dsmData.events.distraction._value === 0,
@@ -330,7 +326,7 @@
                 >
                   Disctraction
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 col-span-2">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.distraction.time}}</h1>
@@ -341,7 +337,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                   :class="{
                     'grey-chip': dsmData.events.yawning._value === 0,
@@ -350,7 +346,7 @@
                 >
                   Yawning
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 col-span-2">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.yawning.time}}</h1>
@@ -361,7 +357,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                   :class="{
                     'grey-chip': dsmData.events.phone._value === 0,
@@ -370,7 +366,7 @@
                 >
                   Phone
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 col-span-2">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.phone.time}}</h1>
@@ -381,7 +377,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                   :class="{
                     'grey-chip': dsmData.events.smoking._value === 0,
@@ -390,7 +386,7 @@
                 >
                   Smoking
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 col-span-2">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.smoking.time}}</h1>
@@ -401,7 +397,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                   :class="{
                     'grey-chip': dsmData.events.driverAbsence._value === 0,
@@ -410,7 +406,7 @@
                 >
                   Driver Absence
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 col-span-2">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.driverAbsence.time}}</h1>
@@ -421,7 +417,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                   :class="{
                     'grey-chip': dsmData.events.mask._value === 0,
@@ -430,7 +426,7 @@
                 >
                   Mask
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 col-span-2">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.mask.time}}</h1>
@@ -441,7 +437,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                   :class="{
                     'grey-chip': dsmData.events.seatbelt._value === 0,
@@ -450,7 +446,7 @@
                 >
                   Seatbelt
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 col-span-2">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.seatbelt.time}}</h1>
@@ -461,7 +457,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 items-center">
+              <div class="grid grid-cols-3 gap-4 items-center">
                 <div class="rounded-full p-2 text-center text-sm text-white font-medium h-fit" 
                   :class="{
                     'grey-chip': dsmData.events.gsensor._value === 0,
@@ -470,7 +466,7 @@
                 >
                   G-Sensor
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 col-span-2">
                   <div class="flex gap-1">
                     <label for="batt" class="font-medium text-sm text-[#353535]/70">Last Update:</label>
                     <h1 class="font-medium text-sm text-[#353535]">{{dsmData.events.gsensor.time}}</h1>
