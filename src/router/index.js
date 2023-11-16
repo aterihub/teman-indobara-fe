@@ -44,16 +44,16 @@ const router = createRouter({
   routes
 })
 
-// router.beforeEach(async (to, from,  next) => {
-//   document.title = 'Intellisense Fleet Management System | Connecting Assets'
-//   if (to.meta.requiresAuth && !localStorage.getItem('auth.accessToken')){
-//     next({ name: 'Login Page'})
-//   } else if (to.meta.requiresAuth && localStorage.getItem('auth.accessToken') || to.meta.freeAccess){
-//     next()
-//   } else if (!to.meta.requiresAuth && localStorage.getItem('auth.accessToken')){
-//     next({name: 'Devices List'})
-//   } else next()
-//   }) 
+router.beforeEach(async (to, from,  next) => {
+  document.title = 'Teman Indobara | Terukur dan Aman'
+  if (to.meta.requiresAuth && !localStorage.getItem('auth.accessToken')){
+    next({ name: 'Login Page'})
+  } else if (to.meta.requiresAuth && localStorage.getItem('auth.accessToken') || to.meta.freeAccess){
+    next()
+  } else if (!to.meta.requiresAuth && localStorage.getItem('auth.accessToken')){
+    next({name: 'Devices List'})
+  } else next()
+  }) 
 
   //loading
 // router.beforeEach(async (to, from, next) => {
