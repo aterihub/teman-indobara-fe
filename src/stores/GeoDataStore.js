@@ -120,31 +120,32 @@ export const useGeoDataStore = defineStore('geo', {
       this.isLoading = true
       try {
         const res = await dataAPI.getVehicleHistoryDeviceGeo(id,params)
-        res.data.devices.map((data) => {
-          if (data.variant.manufacturer.name === 'Istartek') {
-            data.historyData.map((data) => {
-              let gsm_signal = Math.floor((data.gsm_signal/31)*5)
-              data.gsm_signal = gsm_signal
-              // console.log(gsm_signal)
-            })
-          }
-          if (data.variant.manufacturer.name === 'Teltonika') {
-            data.historyData.map((data) => {
-              let gsm_signal = Math.floor(data.gsm_signal)
-              data.gsm_signal = gsm_signal
-              // console.log(gsm_signal)
-            })
-          }
+        console.log(res.data)
+        res.data.vehicle.devices.map((data) => {
+          // if (data.variant.manufacturer.name === 'Istartek') {
+          //   data.historyData.map((data) => {
+          //     let gsm_signal = Math.floor((data.gsm_signal/31)*5)
+          //     data.gsm_signal = gsm_signal
+          //     // console.log(gsm_signal)
+          //   })
+          // }
+          // if (data.variant.manufacturer.name === 'Teltonika') {
+          //   data.historyData.map((data) => {
+          //     let gsm_signal = Math.floor(data.gsm_signal)
+          //     data.gsm_signal = gsm_signal
+          //     // console.log(gsm_signal)
+          //   })
+          // }
           
-          data.historyData.map((data) => {
+          data.history.map((data) => {
             let radius = parseFloat(data.hdop) * 2.5
             let diameter = radius * 2
             data.radius = diameter
-            let unix_stored_time = Math.floor(new Date(data.stored_time).getTime() / 1000)
-            let unix_time = Math.floor(new Date(data._time).getTime() / 1000)
+            let unix_stored_time = Math.floor(new Date(data.storedTime).getTime() / 1000)
+            let unix_time = Math.floor(new Date(data.deviceTime).getTime() / 1000)
             data.diff_time = Math.abs(unix_stored_time - unix_time)
-            data._time = new Date(data._time).toLocaleString()
-            data.stored_time = new Date(data.stored_time).toLocaleString()
+            data.deviceTime = new Date(data.deviceTime).toLocaleString()
+            data.storedTime = new Date(data.storedTime).toLocaleString()
           })
         })
 

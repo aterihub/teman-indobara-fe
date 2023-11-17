@@ -5,6 +5,7 @@ import { ref } from 'vue'
 export const useVehiclesStore = defineStore('vehicles', {
   state: () => ({
     vehicles: ref(''),
+    vehicle: ref(''),
     status: ref({
       isError:null,
       message: null,
@@ -49,6 +50,26 @@ export const useVehiclesStore = defineStore('vehicles', {
           const no = index+1
           return { ...item, no}
         })
+        this.getVehicleIsLoading = false
+      } catch (err) {
+        this.getStatus.code = err.code
+        this.getStatus.isError = true
+        switch (this.getStatus.code) {
+          case 'ERR_NETWORK':
+            this.getStatus.message = 'Network Error'
+            break;
+        }
+        this.getVehicleIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    async getVehicle(id) {
+      this.getVehicleIsLoading = true
+      try {
+        const res = await vehiclesAPI.getVehicle(id)
+        console.log(res.data)
+        this.vehicle = res.data.vehicle
         this.getVehicleIsLoading = false
       } catch (err) {
         this.getStatus.code = err.code

@@ -9,46 +9,83 @@
     </div>
   </div>
   <div class="form-wrapper">
-    <form @submit.prevent="filterVehicle" class="filter-form">
-      <h1 class="text-left font-bold text-lg mb-4 ">Select Vehicle</h1>
-      <div class="grid grid-cols-2 gap-4 items-end justify-between mb-4 ">
-        <select v-model="selectedVehicle" class="select-option">
-          <option v-for="item in masterDataStore.vehicles" :key="item.id" :value="item">
-            <p class="font-semibold">{{ item.name }}</p>
-          </option>
-        </select>
-        <p class="font-bold px-3 py-2 border-b border-[#3a3a3e] w-full cursor-default">
-          {{ selectedVehicle.registrationNumber }}</p>
-      </div>
-      <div class="grid grid-cols-1 px-3 py-2 border-b border-[#3a3a3e] cursor-default mb-6 gap-4">
-        <div class="flex gap-4 my-4 w-full text-left items-center" v-for="(item, index) in selectedVehicle.devices">
-          <input class="cursor-pointer w-4" type="checkbox" v-model="selectedVariant" :name="item.IMEINumber"
-            :disabled="geoDataStore.status.isError" @change="changeVariant" :value="item.IMEINumber">
-          <label :for="item.deviceName" class="w-full items-center flex gap-4 font-semibold cursor-default">
-            {{ item.deviceName }}
-          </label>
-          <div :class="{ 'blue-circle': index == 0, 'green-circle': index == 1 , 'purple-circle': index == 2 , 'red-circle': index == 3 }"></div>
+    <div 
+      class="vehicle-info">
+      <div class="flex items-center justify-between" @click="toggleAccordion()">
+        <div class="flex items-center justify-between">
+          <h1 class="text-left font-bold text-lg mb-2">Filter Route</h1>
+        </div>
+        <div>
+          <button
+          class="flex items-center space-x-3"
+          :aria-expanded="isOpen"
+          :aria-controls="`collapse`"
+          >
+            <svg
+            class="w-3 transition-all duration-200 transform"
+            :class="{
+              'rotate-180': isOpen,
+              'rotate-0': !isOpen,
+              }"
+              fill="none"
+              stroke="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 10"
+              aria-hidden="true"
+            >
+              <path
+              d="M15 1.2l-7 7-7-7"
+              stroke-width="2"
+              stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
         </div>
       </div>
-      <div class="text-left flex flex-col gap-2 ">
-        <h2 class="font-semibold">From</h2>
-        <div class="flex gap-6 ">
-          <input class="cursor-pointer bg-transparent" type="date" name="startDate" id="startDate" v-model="startDate">
-          <input class="cursor-pointer bg-transparent" type="time" name="startTime" id="startTime" v-model="startTime">
-        </div>
+      <div class="content" 
+        :class="{'active': isOpen}">
+        <form @submit.prevent="filterVehicle">
+          <div class="grid grid-cols-2 gap-4 items-end justify-between mb-4 ">
+            <select v-model="selectedVehicle" class="select-option" @change="changeVehicle(selectedVehicle.id)">
+              <option v-for="item in vehicles" :key="item.id" :value="item">
+                <p class="font-semibold">{{ item.name }}</p>
+              </option>
+            </select>
+            <p class="font-bold px-3 py-2 border-b border-[#3a3a3e] w-full cursor-default">
+              {{ selectedVehicle.registrationNumber }}</p>
+          </div>
+          <div class="grid grid-cols-1 px-3 py-2 border-b border-[#3a3a3e] cursor-default mb-6 gap-4">
+            <div class="flex gap-2 w-full text-left items-center" v-for="(item, index) in vehicle.devices">
+              <input class="cursor-pointer w-4" type="checkbox" v-model="selectedVariant" :name="item.imeiNumber"
+                :disabled="geoDataStore.status.isError" @change="changeVariant" :value="item.imeiNumber">
+              <label :for="item.type" class="w-full items-center flex gap-4 font-semibold cursor-default">
+                {{ item.type }}
+              </label>
+              <div :class="{ 'blue-circle': index == 0, 'green-circle': index == 1 , 'purple-circle': index == 2 , 'red-circle': index == 3 }"></div>
+            </div>
+          </div>
+          <div class="text-left flex flex-col gap-2 ">
+            <h2 class="font-semibold">From</h2>
+            <div class="flex gap-6 ">
+              <input class="cursor-pointer bg-transparent" type="date" name="startDate" id="startDate" v-model="startDate">
+              <input class="cursor-pointer bg-transparent" type="time" name="startTime" id="startTime" v-model="startTime">
+            </div>
+          </div>
+          <div class="text-left flex flex-col gap-2">
+            <h2 class="font-semibold">To</h2>
+            <div class="flex gap-6">
+              <input class="cursor-pointer bg-transparent" type="date" name="endDate" id="endDate" v-model="endDate">
+              <input class="cursor-pointer bg-transparent" type="time" name="endTime" id="endTime" v-model="endTime">
+            </div>
+          </div>
+          <BaseButton type="submit" class="filled__green mt-4" label="Filter" />
+        </form>
       </div>
-      <div class="text-left flex flex-col gap-2">
-        <h2 class="font-semibold">To</h2>
-        <div class="flex gap-6">
-          <input class="cursor-pointer bg-transparent" type="date" name="endDate" id="endDate" v-model="endDate">
-          <input class="cursor-pointer bg-transparent" type="time" name="endTime" id="endTime" v-model="endTime">
-        </div>
-      </div>
-      <BaseButton type="submit" class="filled__green mt-4" label="Filter" />
-    </form>
+    </div>
     <div class="legend">
       <div class="outlined-circle"></div>
-      <h2>Buffer Data Point</h2>
+      <h2>Event</h2>
     </div>
   </div>
 </template>
@@ -65,11 +102,11 @@ import Point from 'ol/geom/Point'
 import { Style, Circle, Fill, Stroke } from 'ol/style'
 import LineString from 'ol/geom/LineString'
 import { useGeoDataStore } from '@/stores/GeoDataStore'
-import { useMasterDataStore } from '@/stores/MasterDataStore'
+import { useVehiclesStore } from '@/stores/master-data/vehiclesStore'
 import { storeToRefs } from 'pinia'
 import distanceFilter from '@/composable/distanceFilter.js'
 import Select from 'ol/interaction/Select'
-import { pointerMove, singleClick } from 'ol/events/condition';
+import { click, pointerMove, singleClick } from 'ol/events/condition';
 import { blue } from 'tailwindcss/colors'
 import MapLoading from '@/components/MapLoading.vue'
 import { useMapLoadingStore } from '@/stores/MapLoadingStore'
@@ -78,9 +115,11 @@ let map
 let popupOverlay
 let vectorSource
 let layers = []
+const isOpen = ref(false)
 const mapContainer = ref(null)
 const geoDataStore = useGeoDataStore()
-const masterDataStore = useMasterDataStore()
+const vehiclesStore = useVehiclesStore()
+const { vehicles, vehicle } = storeToRefs(useVehiclesStore())
 const loadingStore = useMapLoadingStore()
 const selectedVehicle = ref({ id: null, registrationNumber: null })
 const selectedVariant = ref([])
@@ -96,7 +135,10 @@ const modalActive = ref(false)
 const closeNotification = () => {
   modalActive.value = false
 }
-
+function toggleAccordion() {
+  isOpen.value = !isOpen.value
+  console.log(isOpen.value)
+}
 const queryParams = ref({
   startTime: null,
   endTime: null
@@ -175,9 +217,13 @@ function changeVariant() {
   // }
 }
 onMounted(async () => {
-  await masterDataStore.getVehicles()
+  await vehiclesStore.getVehicles()
   initializeMap()
 })
+
+async function changeVehicle(id) {
+  await vehiclesStore.getVehicle(id)
+}
 
 function initializeMap() {
   map = new Map({
@@ -221,13 +267,14 @@ async function filterVehicle() {
   layers.length = 0
   if (!geoDataStore.status.isError) {
 
-    let geolocations = geoDataStore.vehicleHistoryGeo.devices
+    let geolocations = geoDataStore.vehicleHistoryGeo.vehicle.devices
     geolocations.forEach((geolocation, index) => {
-      let variant = geolocation.variant.name
-      let filteredData = geolocation.historyData.filter(geo => geo.latitude != 0)
+      console.log('gelolocation data', geolocation)
+      let variant = geolocation.type
+      let filteredData = geolocation.history.filter(geo => geo.latitude != 0)
       let route = distanceFilter.filter(minimumDistance, filteredData).route
       if (route.length != 0) {
-        selectedVariant.value.push(geolocation.IMEINumber)
+        selectedVariant.value.push(geolocation.imeiNumber)
         let coordinates = route.map(item => fromLonLat([item.longitude, item.latitude]))
         let lineString = new LineString(coordinates)
         let lineFeature = new Feature({
@@ -243,7 +290,7 @@ async function filterVehicle() {
         })
         identifyLayers.push({
           layer: layer,
-          type: geolocation.IMEINumber
+          type: geolocation.imeiNumber
         })
         layers.push(layer)
         map.addLayer(layer)
@@ -258,7 +305,7 @@ async function filterVehicle() {
       //     map.removeLayer(blueVectorLayer)
       //   }
       //   if (route.length != 0) {
-      //     selectedVariant.value.push(geolocation.IMEINumber)
+      //     selectedVariant.value.push(geolocation.imeiNumber)
       //     let coordinates = route.map(item => fromLonLat([item.longitude, item.latitude]))
       //     let lineString = new LineString(coordinates)
       //     let lineFeature = new Feature({
@@ -281,7 +328,7 @@ async function filterVehicle() {
       //     })
       //     identifyLayers.push({
       //       layer: blueVectorLayer,
-      //       type: geolocation.IMEINumber
+      //       type: geolocation.imeiNumber
       //     })
       //     map.addLayer(blueVectorLayer)
       //     map.getView().fit(lineString.getExtent(), {
@@ -293,7 +340,7 @@ async function filterVehicle() {
       //     map.removeLayer(purpleVectorLayer)
       //   }
       //   if (route.length != 0) {
-      //     selectedVariant.value.push(geolocation.IMEINumber)
+      //     selectedVariant.value.push(geolocation.imeiNumber)
       //     let coordinates = route.map(item => fromLonLat([item.longitude, item.latitude]))
       //     let lineString = new LineString(coordinates)
       //     let lineFeature = new Feature({
@@ -317,7 +364,7 @@ async function filterVehicle() {
       //     })
       //     identifyLayers.push({
       //       layer: purpleVectorLayer,
-      //       type: geolocation.IMEINumber
+      //       type: geolocation.imeiNumber
       //     })
       //     map.addLayer(purpleVectorLayer)
       //     map.getView().fit(lineString.getExtent(), {
@@ -336,26 +383,35 @@ async function filterVehicle() {
     layers: [...layers],
   })
 
+  const clickInteraction = new Select({
+    condition: click,
+    style: null,
+    layers: [...layers],
+  })
+  clickInteraction.on('select', (event) => {
+    console.log(event)
+  })
   selectInteraction.on('select', (event) => {
     const selectedFeatures = event.target.getFeatures()
     if (selectedFeatures.getLength() > 0) {
       const selectedFeature = selectedFeatures.item(0)
       const isLineString = selectedFeature.getGeometry().getType() === 'LineString'
       if (!isLineString) {
-        let fix_flag = selectedFeature.get('value').fix_flag
+        let fix_flag = selectedFeature.get('value').fixFlag
         let latitude = selectedFeature.get('value').latitude
         let longitude = selectedFeature.get('value').longitude
         let altitude = selectedFeature.get('value').altitude
-        let angle = selectedFeature.get('value').angle
+        let angle = selectedFeature.get('value').course
         let satellites = selectedFeature.get('value').satellites
         let hdop = selectedFeature.get('value').hdop
         let speed = selectedFeature.get('value').speed
-        let gsm_signal = selectedFeature.get('value').gsm_signal
-        let internal_battery = selectedFeature.get('value').internal_battery
-        let external_power = selectedFeature.get('value').external_power
-        let stored_time = selectedFeature.get('value').stored_time
-        let time = selectedFeature.get('value')._time
+        let gsm_signal = selectedFeature.get('value').gsmSignal
+        let internal_battery = selectedFeature.get('value').internalBattery
+        let external_power = selectedFeature.get('value').externalPower
+        let stored_time = selectedFeature.get('value').storedTime
+        let time = selectedFeature.get('value').deviceTime
         let diff_time = selectedFeature.get('value').diff_time
+        let event_io = selectedFeature.get('value').eventIo
         let popupContent =
           'GPS status: ' + fix_flag + '<br>'
           + 'Latitude: ' + latitude + '<br>'
@@ -371,6 +427,7 @@ async function filterVehicle() {
           + 'Stored time : ' + stored_time + '<br>'
           + 'Device time : ' + time + '<br>'
           + 'Different time : ' + diff_time + ' second <br>'
+          + 'Event : ' + event_io + ' <br>'
         document.getElementById('popup').innerHTML = popupContent
         popupOverlay.setPosition(selectedFeature.getGeometry().getCoordinates())
         popupOverlay.getElement().style.display = 'block'
@@ -381,6 +438,7 @@ async function filterVehicle() {
   })
 
   map.addInteraction(selectInteraction)
+  map.addInteraction(clickInteraction)
   modalActive.value = true
   loadingStore.stopLoading()
   setTimeout(closeNotification, 3000)
@@ -389,23 +447,24 @@ async function filterVehicle() {
 
 function addDotsMarker(color, data, variant) {
   data.forEach((item, index) => {
-    console.log(
-      variant,
-      "\n","GPS status: " , item.fix_flag , 
-      "\n","Latitude: " , item.latitude , 
-      "\n","Longitude:" , item.longitude , 
-      "\n","Altitude: " , item.altitude , 
-      "\n","Satellite number: " , item.satellites , 
-      "\n","HDOP: " , item.hdop , 
-      "\n","Angle: " , item.angle , 
-      "\n","Speed: " , item.speed , 
-      "\n","GSM signal: " , item.gsm_signal , 
-      "\n","Battery voltage: " , item.internal_battery , 
-      "\n","External voltage: " , item.external_power , 
-      "\n","Stored time : " , item.stored_time , 
-      "\n","Device time : " , item._time , 
-      "\n","Different time : " , item.diff_time)
-    const { latitude, longitude, diff_time } = item
+    // console.log(
+    //   variant,
+    //   "\n","GPS status: " , item.fixFlag , 
+    //   "\n","Latitude: " , item.latitude , 
+    //   "\n","Longitude:" , item.longitude , 
+    //   "\n","Altitude: " , item.altitude , 
+    //   "\n","Satellite number: " , item.satellites , 
+    //   "\n","HDOP: " , item.hdop , 
+    //   "\n","Angle: " , item.course , 
+    //   "\n","Speed: " , item.speed , 
+    //   "\n","GSM signal: " , item.gsmSignal , 
+    //   "\n","Battery voltage: " , item.internalBattery , 
+    //   "\n","External voltage: " , item.externalPower , 
+    //   "\n","Stored time : " , item.storedTime , 
+    //   "\n","Device time : " , item.deviceTime , 
+    //   "\n","Different time : " , item.diff_time,
+    //   "\n","Event : " , item.eventIo)
+    const { latitude, longitude, eventIo } = item
     const marker = new Feature({
       geometry: new Point(fromLonLat([longitude, latitude])),
       value: item,
@@ -430,7 +489,7 @@ function addDotsMarker(color, data, variant) {
         }),
       })
     } else {
-      if (diff_time < 10) {
+      if (eventIo == '0') {
         markerStyle = new Style({
           image: new Circle({
             radius: 6,
@@ -443,7 +502,7 @@ function addDotsMarker(color, data, variant) {
           image: new Circle({
             radius: 6,
             fill: new Fill({ color: `${color}` }),
-            stroke: new Stroke({ color: 'white', width: 2 }),
+            stroke: new Stroke({ color: 'red', width: 1 }),
           }),
         })
       }
@@ -507,7 +566,7 @@ function addDotsMarker(color, data, variant) {
 }
 
 .form-wrapper {
-  @apply flex flex-col gap-4 absolute right-[20px] top-[30px] items-end
+  @apply flex flex-col gap-4 absolute right-2 top-14 items-end
 }
 
 .filter-form {
@@ -516,7 +575,7 @@ function addDotsMarker(color, data, variant) {
 }
 
 .legend {
-  @apply text-[#3a3a3e] font-semibold text-base px-4 py-4 backdrop-blur-sm z-0 flex gap-2 rounded-lg w-fit h-fit items-center bg-[#3a3a3e]/10
+  @apply text-[#3a3a3e] font-semibold text-base px-4 py-4 backdrop-blur-sm z-0 flex gap-2 rounded-lg h-fit items-center bg-[#3a3a3e]/10 w-full
 }
 
 .blue-circle {
@@ -551,8 +610,27 @@ function addDotsMarker(color, data, variant) {
   height: 20px;
   border-radius: 100%;
   background-color: transparent;
-  border: 2px solid white;
+  border: 2px solid red;
+}
+.vehicle-info {
+  @apply     
+    shadow-sm
+    shadow-blue-300/50
+    backdrop-blur-md
+    bg-gradient-to-b from-slate-50/80
+    rounded-lg w-fit h-full px-4 py-6 gap-2 flex flex-col
+    min-w-[300px]
+    cursor-pointer
+    select-none
 }
 
+.active {
+  @apply flex !important
+}
+
+.content {
+  @apply hidden h-fit flex-col
+  text-left gap-4 mb-2 
+}
 /* drop-shadow-[0_0_6px_5px_rgba(0,0,0,0.05)] */
 </style>
