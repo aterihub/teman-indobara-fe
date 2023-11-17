@@ -619,13 +619,13 @@ function addDotsMarker(color, data, variant) {
     backdrop-blur-md
     bg-gradient-to-b from-slate-50/80
     rounded-lg w-fit h-full px-4 py-6 gap-2 flex flex-col
-    min-w-[300px]
+    min-w-[360px]
     cursor-pointer
     select-none
 }
 
 .active {
-  @apply flex !important
+  @apply flex  !important
 }
 
 .content {
