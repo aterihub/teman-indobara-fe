@@ -123,7 +123,7 @@
   import Chip from '@/components/tab/Chip.vue';
   import sideNav from '@/components/navigation/sideNav.vue'
   import Heatmap from '@/views/Map/DumpTruck/Heatmap.vue'
-  import Route from '@/views/Map/RouteMap.vue'
+  import Route from '@/views/Map/RouteMapAnimation.vue'
   import Realtime from '@/views/Map/DumpTruck/Realtime.vue'
   import { useMasterDataStore } from '@/stores/MasterDataStore'
   import { onMounted, ref, onBeforeMount} from 'vue'
