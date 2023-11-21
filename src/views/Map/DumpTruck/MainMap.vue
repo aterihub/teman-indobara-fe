@@ -125,7 +125,6 @@
   import Heatmap from '@/views/Map/DumpTruck/Heatmap.vue'
   import Route from '@/views/Map/RouteMapAnimation.vue'
   import Realtime from '@/views/Map/DumpTruck/Realtime.vue'
-  import { useMasterDataStore } from '@/stores/MasterDataStore'
   import { onMounted, ref, onBeforeMount} from 'vue'
 
   export default {
@@ -137,7 +136,6 @@
       sideNav 
   },
   setup() {
-    const masterDataStore = useMasterDataStore()
     const selectedComponent = ref('Route')
     const selectedVehicle = ref({id: '0', registrationNumber: 'XXXX'})
     const selectedContractor = ref('0')
@@ -173,10 +171,7 @@
       event.target.className += " active"
       selectedComponent.value = navigation
     }
-    onBeforeMount(async() => {
-      await masterDataStore.getVehicles()
-      vehicleList.value = masterDataStore.vehicles
-      selectedVehicle.value = {id: masterDataStore.vehicles[0].id, registrationNumber: masterDataStore.vehicles[0].registrationNumber}
+    onMounted(async() => {
       var element = document.getElementById("Route");
       element.classList.add("active");
     })

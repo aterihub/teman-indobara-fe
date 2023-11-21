@@ -86,7 +86,6 @@
     <div class="legend">
       <div class="outlined-circle"></div>
       <h2 class="select-none">Event</h2>
-      <h2 class="select-none">{{isPlay}}</h2>
     </div>
   </div>
   <div class="absolute left-14 bottom-2 z-50 bg-[#fefefe] rounded-lg p-4 flex gap-2">
