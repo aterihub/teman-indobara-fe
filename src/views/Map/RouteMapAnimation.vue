@@ -55,7 +55,7 @@
             <p class="font-bold px-3 py-2 border-b border-[#3a3a3e] w-full cursor-default">
               {{ selectedVehicle.registrationNumber }}</p>
           </div>
-          <!-- <div class="grid grid-cols-1 px-3 py-2 border-b border-[#3a3a3e] cursor-default mb-6 gap-4">
+          <!-- <div class="grid grid-cols-1 px-3 p  y-2 border-b border-[#3a3a3e] cursor-default mb-6 gap-4">
             <div class="flex gap-2 w-full text-left items-center" v-for="(item, index) in vehicle.devices">
               <input class="cursor-pointer w-4" type="checkbox" v-model="selectedVariant" :name="item.imeiNumber"
                 :disabled="geoDataStore.status.isError" @change="hideRoute" :value="item.imeiNumber">
@@ -580,6 +580,8 @@ function hideRoute() {
   })
 }
 
+let animationFrameId = [null,null]
+
 async function markerAnimation(index) {
   isPlay.value[index] = false
   const lineFeature = layers[index].getSource().getFeatures().filter((feature) => {
@@ -608,7 +610,6 @@ async function markerAnimation(index) {
 
   //animation
   let count = 0
-  let animationFrameId = [null,null]
 
   async function moveFeature(event) {
     const coordinates = lineString.getCoordinates()
@@ -659,7 +660,9 @@ async function markerAnimation(index) {
 }
 
 onUnmounted(() => {
-  clearInterval(animationFrameId)
+  if (animationFrameId) {
+    clearInterval(animationFrameId)
+  }
 })
 
 </script>
