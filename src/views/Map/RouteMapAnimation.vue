@@ -298,6 +298,9 @@ let minimumDistance = 0
 let geolocations
 
 async function filterVehicle() {
+  isPlay.value = [false,false]
+  viewPoints.value = [true, true]
+  isStartPlayBack.value = [false, false]
   loadingStore.startLoading()
   queryParams.value.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
   queryParams.value.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
