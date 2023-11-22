@@ -97,18 +97,21 @@ export const useGeoDataStore = defineStore('geo', {
         return err
       }
     },
-    async getVehicleLastDeviceGeo(id) {
+    async getVehicleLastDeviceGeo(id,params) {
       this.isLoading = true
       try {
-        const res = await dataAPI.getVehicleLastDeviceGeo(id)
+        const res = await dataAPI.getVehicleLastDeviceGeo(id,params)
         this.vehicleLastGeo = res.data
-        res.data.devices.map((data, index) => {
-          let radius = parseFloat(data.lastData.hdop) * 2.5
+        res.data.vehicle.devices.map((data, index) => {
+          console.log(data.history[0])
+          let radius = parseFloat(data.history[0].hdop) * 2.5
           let diameter = radius * 2
-          this.vehicleLastGeo.devices[index].lastData.radius = diameter
-          this.vehicleLastGeo.devices[index].lastData._time = new Date(data.lastData._time).toLocaleString()
-          this.vehicleLastGeo.devices[index].lastData.stored_time = new Date(data.lastData.stored_time).toLocaleString()
+          this.vehicleLastGeo.vehicle.devices[index].history[0].radius = diameter
+          this.vehicleLastGeo.vehicle.devices[index].history[0].deviceTime = new Date(data.history[0].deviceTime).toLocaleString()
+          this.vehicleLastGeo.vehicle.devices[index].history[0].storedTime = new Date(data.history[0].storedTime).toLocaleString()
         })
+        console.log(this.vehicleLastGeo)
+
         this.isLoading = false
       } catch (err) {
         console.error(err)

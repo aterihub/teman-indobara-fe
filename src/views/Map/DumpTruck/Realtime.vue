@@ -6,6 +6,122 @@
     <div id="popup-content">
     </div>
   </div>
+  <div class="filter-form">
+    <h1 class="text-left font-bold text-lg mb-4">Select Vehicle</h1>
+    <div class="flex gap-4 items-center">
+      <select v-model="selectedVehicle" class="select-option">
+        <option v-for="item in vehicles" :key="item.id" :value="{id: item.id, registrationNumber: item.registrationNumber}">
+          {{ item.name }}
+        </option>
+      </select>
+      <p class="font-bold px-3 py-2 border-b border-[#3a3a3e] w-full cursor-default">{{selectedVehicle.registrationNumber}}</p>
+    </div>
+  </div>
+  <!-- <div class="absolute right-2 top-14 flex gap-6">
+    <div 
+      v-for="(vehicle, index) in geoDataStore.vehicleLastGeo.vehicle.devices" 
+      class="vehicle-info"
+        @click="toggleAccordion(index)">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between">
+          <h1 class="text-left font-bold text-lg mb-2">Vehicle Information</h1>
+        </div>
+        <div>
+          <button
+          class="flex items-center space-x-3"
+          :aria-expanded="isOpen[index]"
+          :aria-controls="`collapse`"
+          >
+            <svg
+            class="w-3 transition-all duration-200 transform"
+            :class="{
+              'rotate-180': isOpen[index],
+              'rotate-0': !isOpen[index],
+              }"
+              fill="none"
+              stroke="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 10"
+              aria-hidden="true"
+            >
+              <path
+              d="M15 1.2l-7 7-7-7"
+              stroke-width="2"
+              stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="content" 
+        :class="{'active': isOpen[index]}">
+        <div class="flex justify-between">
+          <Indicator :status="vehicle.status.tcpstatus.indicator"/>
+          <div class="flex flex-col">
+            <label for="batt" class="text-sm text-[#353535]">GPS model</label>
+            <h1 class="font-bold text-sm text-[#353535]">{{vehicle.geo.variant.name}}</h1>
+          </div>     
+          <div class="flex flex-col">
+            <label for="batt" class="text-sm text-[#353535]">IMEI number</label>
+            <h1 class="font-bold text-sm text-[#353535]">{{vehicle.geo.imeiNumber}}</h1>
+          </div> 
+        </div>
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">GPS status:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].fix_flag}}</h1>
+        </div> 
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Latitude:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].latitude}}</h1>
+        </div>    
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Longitude:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].longitude}}</h1>
+        </div>    
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Altitude:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].altitude}}</h1>
+        </div>     
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Angle:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].angle}}</h1>
+        </div>   
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Satellite number:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].satellites}}</h1>
+        </div>    
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">HDOP:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].hdop}}</h1>
+        </div>   
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Speed:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].speed}}</h1>
+        </div>    
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">GSM signal:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].gsm_signal}}</h1>
+        </div>    
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Battery voltage:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].internal_battery}}</h1>
+        </div>   
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">External voltage:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].external_power}}</h1>
+        </div>   
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Device time:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0]._time}}</h1>
+        </div>  
+        <div class="flex gap-2 justify-between">
+          <label for="batt" class="text-sm text-[#353535]">Stored time:</label>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].stored_time}}</h1>
+        </div>
+      </div>
+    </div>
+  </div> -->
 </template>
 
 <script setup>
@@ -21,7 +137,7 @@ import Icon from 'ol/style/Icon'
 import { storeToRefs } from 'pinia'
 import Indicator from '@/components/Indicator.vue'
 import { useVehicleStatus } from '@/stores/StatusStore'
-import { useMasterDataStore } from '@/stores/MasterDataStore'
+import { useVehiclesStore } from '@/stores/master-data/vehiclesStore'
 import { useGeoDataStore } from '@/stores/GeoDataStore'
 import Select from 'ol/interaction/Select'
 import { pointerMove, singleClick } from 'ol/events/condition'
@@ -33,42 +149,28 @@ let popupOverlay
 const isOpen = ref([false,false])
 const mapContainer = ref(null)
 const geoDataStore = useGeoDataStore()
-const masterDataStore = useMasterDataStore()
+const vehiclesStore = useVehiclesStore()
+const { vehicles, vehicle } = storeToRefs(useVehiclesStore())
 const vehicleStatusStore = useVehicleStatus()
 const loadingStore = useMapLoadingStore()
 const selectedVehicle = ref({imei:null, registrationNumber:null})
 let dataInterval
-const mergedList = ref([])
+const mergedList = ref({})
 
-const props = defineProps([
-  'selectedVehicle'
-])
-const emits = defineEmits([
-  'dataUpdated', 'clearData'
-])
+const queryParams = ref({ 
+  startTime: "-10d",
+})
 
-const delay = require('delay')
-const whileState = ref(true)
 onMounted( async () => {
-
-  // await masterDataStore.getVehicles()
-  console.log(props.selectedVehicle)
-  selectedVehicle.value = {id: props.selectedVehicle.id, registrationNumber: props.selectedVehicle.id}
+  await vehiclesStore.getVehicles()
+  selectedVehicle.value = {id: vehicles.value[0].id, registrationNumber: vehicles.value[0].registrationNumber}
   initializeMap()
   getCoordinates()
-  emits('dataUpdated', mergedList.value)
-  while (whileState.value) {
-    await getCoordinates()
-    emits('dataUpdated', mergedList.value,)
-    await delay(5000)
-  }
-  // dataInterval = setInterval(getCoordinates, 5000)
+  dataInterval = setInterval(getCoordinates, 5000)
 })  
 
 onUnmounted( async () => {
-  whileState.value = false
-  emits('clearData')
-  // clearInterval(dataInterval)
+  clearInterval(dataInterval)
 })
 
 function toggleAccordion(index) {
@@ -85,7 +187,7 @@ function initializeMap() {
     ],
     view: new View({
       center: fromLonLat([0, 0]),
-      zoom: 20,
+      zoom: 14,
     }),
     controls:[]
   })
@@ -106,9 +208,10 @@ function initializeMap() {
     const selectedFeature = event.selected[0]
     if (selectedFeature) {
       const coordinates = selectedFeature.getGeometry().getCoordinates()
-      let variant = selectedFeature.get('value').variant.name
-      let imei = selectedFeature.get('value').lastData.imei
-      let popupContent = 'GPS Model: ' + variant + '<br>' + 'IMEI Number:' + imei
+      console.log(selectedFeature.get('value'))
+      let type = selectedFeature.get('value').type
+      let imei = selectedFeature.get('value').imeiNumber
+      let popupContent = 'GPS Model: ' + type + '<br>' + 'IMEI Number:' + imei
       document.getElementById('popup').innerHTML = popupContent
       popupOverlay.setPosition(coordinates)
     } else {
@@ -132,29 +235,29 @@ async function getCoordinates() {
     return
   }
   isRequestPending = true
-  await geoDataStore.getVehicleLastDeviceGeo(selectedVehicle.value.id)
-  await vehicleStatusStore.getLastVehicleStatus(selectedVehicle.value.id)
-  mergedList.value = geoDataStore.vehicleLastGeo.devices.map(data => {
-    return {
-      geo : data,
-      status : vehicleStatusStore.vehicleStatus.devices.find(statusData => statusData.imei === data.imei)
-    }
-  })
+  await geoDataStore.getVehicleLastDeviceGeo(selectedVehicle.value.id, queryParams.value)
+  // await vehicleStatusStore.getLastVehicleStatus(selectedVehicle.value.id)
+  // mergedList.value = geoDataStore.vehicleLastGeo.devices.map(data => {
+  //   return {
+  //     geo : data,
+  //     status : vehicleStatusStore.vehicleStatus.devices.find(statusData => statusData.imei === data.imei)
+  //   }
+  // })
 
   const vectorSource = new VectorSource()
-  let geolocations = geoDataStore.vehicleLastGeo.devices
+  let geolocations = geoDataStore.vehicleLastGeo.vehicle.devices
 
   geolocations.forEach((geolocation,index) => {
-    let angleInRadians = (geolocation.lastData.angle * Math.PI) / 180
+    let angleInRadians = (geolocation.history[0].course * Math.PI) / 180
 
     const feature = new Feature({
-      geometry: new Point(fromLonLat([geolocation.lastData.longitude, geolocation.lastData.latitude])),
+      geometry: new Point(fromLonLat([geolocation.history[0].longitude, geolocation.history[0].latitude])),
       value: geolocation,
     })
     let scale = 10
     let offset = 350
     if (index == 0) {
-      let radiusHDOP = (geolocation.lastData.radius * map.getView().getZoom() * scale) - offset
+      let radiusHDOP = (geolocation.history[0].radius * map.getView().getZoom() * scale) - offset
       if (radiusHDOP <= 1 ) {
         radiusHDOP = 1
       }
@@ -171,9 +274,9 @@ async function getCoordinates() {
           stroke: new Stroke({ color: 'rgba(10,110,189,0.5)', width: 1, lineCap: 'butt'}),
         }),
       })
-      feature.setStyle([HDOPArea,point])
+      feature.setStyle([point])
     } else {
-      let radiusHDOP = (geolocation.lastData.radius * map.getView().getZoom() * scale) - offset
+      let radiusHDOP = (geolocation.history[0].radius * map.getView().getZoom() * scale) - offset
       if (radiusHDOP <= 1 ) {
         radiusHDOP = 1
       }
@@ -190,7 +293,7 @@ async function getCoordinates() {
           stroke: new Stroke({ color: 'rgba(0,223,162,0.5)', width: 1, lineCap: 'butt'}),
         }),
       })
-      feature.setStyle([HDOPArea,point])
+      feature.setStyle([point])
     }
     vectorSource.addFeature(feature)
   })
@@ -206,13 +309,13 @@ async function getCoordinates() {
   if (geolocations.length > 1) {
     let midPoint
     for (let index = 0; index < geolocations.length-1; index++) {
-      let midpointX = (parseFloat(geolocations[index].lastData.longitude) + parseFloat(geolocations[index+1].lastData.longitude)) / 2
-      let midpointY = (parseFloat(geolocations[index].lastData.latitude) + parseFloat(geolocations[index+1].lastData.latitude)) / 2
+      let midpointX = (parseFloat(geolocations[index].history[0].longitude) + parseFloat(geolocations[index+1].history[0].longitude)) / 2
+      let midpointY = (parseFloat(geolocations[index].history[0].latitude) + parseFloat(geolocations[index+1].history[0].latitude)) / 2
       midPoint = [midpointX,midpointY]
     }
-    map.getView().setCenter(fromLonLat([geolocations[0].lastData.longitude, geolocations[0].lastData.latitude]))
+    map.getView().setCenter(fromLonLat([geolocations[0].history[0].longitude, geolocations[0].history[0].latitude]))
   } else {
-    map.getView().setCenter(fromLonLat([geolocations[0].lastData.longitude, geolocations[0].lastData.latitude]))
+    map.getView().setCenter(fromLonLat([geolocations[0].history[0].longitude, geolocations[0].history[0].latitude]))
   }
 
   
@@ -234,8 +337,8 @@ function clearLayer(){
 
 <style scoped>
 .map-container {
-  height: 100vh;
-  @apply w-full
+  width: 100%;
+  height: 100vh
 }
 
 .ol-popup {
@@ -283,7 +386,7 @@ function clearLayer(){
 .filter-form {
   @apply 
     text-[#3a3a3e] text-base px-4 py-4
-    absolute left-[70px] top-[72px] z-0
+    absolute right-2 top-14
     flex flex-col gap-2
     rounded-lg w-fit h-fit
     shadow-blue-300/50

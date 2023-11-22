@@ -42,8 +42,8 @@ export default {
     return apiClient.get(`data-device/geolocation/history`,{ params }) 
   },
 
-  getVehicleLastDeviceGeo(id) {
-    return apiClient.get(`vehicles/geolocation/last/${id}`)
+  getVehicleLastDeviceGeo(id, params) {
+    return apiClient.get(`vehicles/geolocation/last/${id}`, {params})
   },
 
   getVehicleHistoryDeviceGeo(id,params) {
