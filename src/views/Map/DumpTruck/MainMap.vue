@@ -148,12 +148,12 @@
         value: 'Route'
       },
       {
-        title: 'Heatmap',
-        value: 'Heatmap'
-      },
-      {
         title: 'Realtime',
         value: 'Realtime'
+      },
+      {
+        title: 'Heatmap',
+        value: 'Heatmap'
       },
       {
         title: 'Quickcount',
