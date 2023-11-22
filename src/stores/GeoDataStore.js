@@ -103,12 +103,12 @@ export const useGeoDataStore = defineStore('geo', {
         const res = await dataAPI.getVehicleLastDeviceGeo(id,params)
         this.vehicleLastGeo = res.data
         res.data.vehicle.devices.map((data, index) => {
-          console.log(data.history[0])
-          let radius = parseFloat(data.history[0].hdop) * 2.5
+          console.log(data.last)
+          let radius = parseFloat(data.last.hdop) * 2.5
           let diameter = radius * 2
-          this.vehicleLastGeo.vehicle.devices[index].history[0].radius = diameter
-          this.vehicleLastGeo.vehicle.devices[index].history[0].deviceTime = new Date(data.history[0].deviceTime).toLocaleString()
-          this.vehicleLastGeo.vehicle.devices[index].history[0].storedTime = new Date(data.history[0].storedTime).toLocaleString()
+          this.vehicleLastGeo.vehicle.devices[index].last.radius = diameter
+          this.vehicleLastGeo.vehicle.devices[index].last.deviceTime = new Date(data.last.deviceTime).toLocaleString()
+          this.vehicleLastGeo.vehicle.devices[index].last.storedTime = new Date(data.last.storedTime).toLocaleString()
         })
         console.log(this.vehicleLastGeo)
 
@@ -145,10 +145,12 @@ export const useGeoDataStore = defineStore('geo', {
             let diameter = radius * 2
             data.radius = diameter
             let unix_stored_time = Math.floor(new Date(data.storedTime).getTime() / 1000)
-            let unix_time = Math.floor(new Date(data.deviceTime).getTime() / 1000)
+            let unix_time = Math.floor(new Date(data._time).getTime() / 1000)
             data.diff_time = Math.abs(unix_stored_time - unix_time)
-            data.deviceTime = new Date(data.deviceTime).toLocaleString()
+            data._time = new Date(data._time).toLocaleString()
             data.storedTime = new Date(data.storedTime).toLocaleString()
+            data.batteryVoltage = data.batteryVoltage/1000
+            data.externalVoltage = data.externalVoltage/1000
           })
         })
 

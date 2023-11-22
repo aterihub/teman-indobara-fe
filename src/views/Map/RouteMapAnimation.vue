@@ -316,11 +316,11 @@ async function filterVehicle() {
       console.log('gelolocation data', geolocation)
       let variant = geolocation.type
       let filteredData = geolocation.history.filter(geo => geo.latitude != 0)
+
       let route = distanceFilter.filter(minimumDistance, filteredData).route
       if (route.length != 0) {
         selectedVariant.value.push(geolocation.imeiNumber)
-        let coordinates = route.map(item => fromLonLat([item.longitude, item.latitude]))
-
+        let coordinates = route.map(item => fromLonLat([(item.longitude), (item.latitude)]))
         let lineString = new LineString(coordinates)
         let lineFeature = new Feature({
           geometry: lineString,
@@ -373,19 +373,19 @@ async function filterVehicle() {
       const isLineString = selectedFeature.getGeometry().getType() === 'LineString'
       if (!isLineString) {
         console.log(selectedFeature)
-        let fix_flag = selectedFeature.get('value').fixFlag
+        let fix_flag = selectedFeature.get('value').gnssStatus
         let latitude = selectedFeature.get('value').latitude
         let longitude = selectedFeature.get('value').longitude
         let altitude = selectedFeature.get('value').altitude
         let angle = selectedFeature.get('value').course
         let satellites = selectedFeature.get('value').satellites
-        let hdop = selectedFeature.get('value').hdop
+        let hdop = selectedFeature.get('value').gnssHdop
         let speed = selectedFeature.get('value').speed
         let gsm_signal = selectedFeature.get('value').gsmSignal
-        let internal_battery = selectedFeature.get('value').internalBattery
-        let external_power = selectedFeature.get('value').externalPower
+        let internal_battery = selectedFeature.get('value').batteryVoltage
+        let external_power = selectedFeature.get('value').externalVoltage
         let stored_time = selectedFeature.get('value').storedTime
-        let time = selectedFeature.get('value').deviceTime
+        let time = selectedFeature.get('value')._time
         let diff_time = selectedFeature.get('value').diff_time
         let event_io = selectedFeature.get('value').eventIo
         let popupContent =
@@ -634,7 +634,7 @@ async function markerAnimation(index) {
   }
 
   function startAnimation() {
-    animationFrameId[index] = setInterval(moveFeature, 100)
+    animationFrameId[index] = setInterval(moveFeature, 10)
     // hide geoMarker and trigger map render through change event
     // geoMarker.setGeometry(null);
     console.log(animationFrameId[index])

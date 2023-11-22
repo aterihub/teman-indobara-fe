@@ -69,55 +69,55 @@
         </div>
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">GPS status:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].fix_flag}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.fix_flag}}</h1>
         </div> 
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Latitude:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].latitude}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.latitude}}</h1>
         </div>    
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Longitude:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].longitude}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.longitude}}</h1>
         </div>    
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Altitude:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].altitude}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.altitude}}</h1>
         </div>     
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Angle:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].angle}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.angle}}</h1>
         </div>   
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Satellite number:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].satellites}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.satellites}}</h1>
         </div>    
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">HDOP:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].hdop}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.hdop}}</h1>
         </div>   
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Speed:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].speed}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.speed}}</h1>
         </div>    
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">GSM signal:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].gsm_signal}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.gsm_signal}}</h1>
         </div>    
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Battery voltage:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].internal_battery}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.internal_battery}}</h1>
         </div>   
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">External voltage:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].external_power}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.external_power}}</h1>
         </div>   
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Device time:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0]._time}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last._time}}</h1>
         </div>  
         <div class="flex gap-2 justify-between">
           <label for="batt" class="text-sm text-[#353535]">Stored time:</label>
-          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.history[0].stored_time}}</h1>
+          <h1 class="font-semibold text-sm text-[#353535]">{{vehicle.geo.last.stored_time}}</h1>
         </div>
       </div>
     </div>
@@ -248,16 +248,16 @@ async function getCoordinates() {
   let geolocations = geoDataStore.vehicleLastGeo.vehicle.devices
 
   geolocations.forEach((geolocation,index) => {
-    let angleInRadians = (geolocation.history[0].course * Math.PI) / 180
+    let angleInRadians = (geolocation.last.course * Math.PI) / 180
 
     const feature = new Feature({
-      geometry: new Point(fromLonLat([geolocation.history[0].longitude, geolocation.history[0].latitude])),
+      geometry: new Point(fromLonLat([geolocation.last.longitude, geolocation.last.latitude])),
       value: geolocation,
     })
     let scale = 10
     let offset = 350
     if (index == 0) {
-      let radiusHDOP = (geolocation.history[0].radius * map.getView().getZoom() * scale) - offset
+      let radiusHDOP = (geolocation.last.radius * map.getView().getZoom() * scale) - offset
       if (radiusHDOP <= 1 ) {
         radiusHDOP = 1
       }
@@ -276,7 +276,7 @@ async function getCoordinates() {
       })
       feature.setStyle([point])
     } else {
-      let radiusHDOP = (geolocation.history[0].radius * map.getView().getZoom() * scale) - offset
+      let radiusHDOP = (geolocation.last.radius * map.getView().getZoom() * scale) - offset
       if (radiusHDOP <= 1 ) {
         radiusHDOP = 1
       }
@@ -309,13 +309,13 @@ async function getCoordinates() {
   if (geolocations.length > 1) {
     let midPoint
     for (let index = 0; index < geolocations.length-1; index++) {
-      let midpointX = (parseFloat(geolocations[index].history[0].longitude) + parseFloat(geolocations[index+1].history[0].longitude)) / 2
-      let midpointY = (parseFloat(geolocations[index].history[0].latitude) + parseFloat(geolocations[index+1].history[0].latitude)) / 2
+      let midpointX = (parseFloat(geolocations[index].last.longitude) + parseFloat(geolocations[index+1].last.longitude)) / 2
+      let midpointY = (parseFloat(geolocations[index].last.latitude) + parseFloat(geolocations[index+1].last.latitude)) / 2
       midPoint = [midpointX,midpointY]
     }
-    map.getView().setCenter(fromLonLat([geolocations[0].history[0].longitude, geolocations[0].history[0].latitude]))
+    map.getView().setCenter(fromLonLat([geolocations[0].last.longitude, geolocations[0].last.latitude]))
   } else {
-    map.getView().setCenter(fromLonLat([geolocations[0].history[0].longitude, geolocations[0].history[0].latitude]))
+    map.getView().setCenter(fromLonLat([geolocations[0].last.longitude, geolocations[0].last.latitude]))
   }
 
   
