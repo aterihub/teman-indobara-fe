@@ -116,7 +116,7 @@
         </div>
       </div> -->
     </div>
-    <component :is="selectedComponent" :selectedVehicle="selectedVehicle" @dataUpdated="dataUpdated" @clearData="clearData"/>
+    <component :is="selectedComponent" />
   </template>
   
 <script >
