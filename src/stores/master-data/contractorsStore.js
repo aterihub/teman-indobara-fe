@@ -5,6 +5,7 @@ import moment from 'moment'
 
 export const useContractorsStore = defineStore('contractors', {
   state: () => ({
+    siteInContractors: ref(''),
     contractors: ref(''),
     status: ref({
       isError:null,
@@ -35,10 +36,10 @@ export const useContractorsStore = defineStore('contractors', {
         return err
       }
     },
-    async getContractors() {
+    async getContractors(params) {
       this.getContractorIsLoading = true
       try {
-        const res = await contractorsAPI.getContractors()
+        const res = await contractorsAPI.getContractors(params)
         this.contractors = res.data.contractors.map((item, index) => {
           const no = index+1
           const formattedContractStart = moment(item.contractStart).format("YYYY-MM-DD")
@@ -46,6 +47,32 @@ export const useContractorsStore = defineStore('contractors', {
           return { ...item, formattedContractStart, formattedContractEnd, no}
         })
         console.log(this.contractors)
+        this.getContractorIsLoading = false
+      } catch (err) {
+        this.getContractorIsLoading = false
+        this.status.isError = true
+        this.status.code = err.code
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
+        console.error(err)
+        return err
+      }
+    },
+    async getSites(params) {
+      this.getContractorIsLoading = true
+      try {
+        const res = await contractorsAPI.getSites(params)
+        this.siteInContractors = res.data.sites
+        // this.contractors = res.data.contractors.map((item, index) => {
+        //   const no = index+1
+        //   const formattedContractStart = moment(item.contractStart).format("YYYY-MM-DD")
+        //   const formattedContractEnd = moment(item.contractEnd).format("YYYY-MM-DD")
+        //   return { ...item, formattedContractStart, formattedContractEnd, no}
+        // })
+        console.log(this.siteInContractors)
         this.getContractorIsLoading = false
       } catch (err) {
         this.getContractorIsLoading = false

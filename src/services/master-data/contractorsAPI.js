@@ -3,8 +3,8 @@ import apiClient from "../API"
 
 
 export default {
-  getContractors() {
-    return apiClient.get('contractors')
+  getContractors(params) {
+    return apiClient.get('contractors', {params})
   },
   getContractor(uuid) {
     return apiClient.get(`contractors/${uuid}`)
@@ -18,4 +18,7 @@ export default {
   deleteContractor(uuid) {
     return apiClient.delete(`contractors/${uuid}`)
   },
+  getSites(id) {
+    return apiClient.get(`contractors/${id}/sites`)
+  }
 }

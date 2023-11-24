@@ -3,8 +3,8 @@ import apiClient from "../API"
 
 
 export default {
-  getVehicles() {
-    return apiClient.get('vehicles')
+  getVehicles(params) {
+    return apiClient.get('vehicles', {params})
   },
   getVehicle(id) {
     return apiClient.get(`vehicles/${id}`)

@@ -42,13 +42,14 @@ export const useVehiclesStore = defineStore('vehicles', {
         return err
       }
     },
-    async getVehicles() {
+    async getVehicles(params) {
       this.getVehicleIsLoading = true
       try {
-        const res = await vehiclesAPI.getVehicles()
+        const res = await vehiclesAPI.getVehicles(params)
         this.vehicles = res.data.vehicles.map((item, index) => {
           const no = index+1
-          return { ...item, no}
+          const contractorName = item.contractor.name
+          return { ...item, no, contractorName}
         })
         this.getVehicleIsLoading = false
       } catch (err) {
