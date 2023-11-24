@@ -18,7 +18,7 @@
               <div class="flex flex-col gap-4">
                 <div class="flex justify-between">
                   <div  class="text-left flex gap-2">
-                    <h1 class="font-semibold">Events: </h1>
+                    <h1 class="font-semibold">Violation: </h1>
                     <h1 class="font-normal">{{eventData.event}}</h1>
                   </div>
                   <div  class="text-left flex gap-2">
@@ -97,6 +97,8 @@ import{ useEventDevicesStore } from '@/stores/event/eventDevicesStore'
     await eventStore.getEventDevices(props.imei, props.queryParams)
     if (!eventStatus.value.isError) {
       if (eventFootageData.value.length > 0) {
+        let txtPath = eventFootageData.value[0].filename + '.txt'
+        eventStore.getEventMeta(props.imei, txtPath)
         eventImageSrc.value = process.env.VUE_APP_IMG_URL + eventFootageData.value[0].imei + '/' + eventFootageData.value[0].filename + '.jpg'
         imageKey += 1
       } else {

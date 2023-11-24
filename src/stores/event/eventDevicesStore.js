@@ -5,6 +5,7 @@ import moment from 'moment'
 
 export const useEventDevicesStore = defineStore('eventDevices', {
   state: () => ({
+    eventMeta: ref(''),
     eventData: ref(''),
     eventFootageData: ref(''),
     eventStatus: ref({
@@ -12,7 +13,13 @@ export const useEventDevicesStore = defineStore('eventDevices', {
       message: null,
       code: null, 
     }),
+    eventMetaStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
     getEventDataIsLoading: ref(false),
+    getEventMetaIsLoading: ref(false),
   }),
   actions: {
     async getEventDevices(imei,params) {
@@ -47,6 +54,27 @@ export const useEventDevicesStore = defineStore('eventDevices', {
         console.error(err)
         return err
       }
-    }
+    },
+    async getEventMeta(imei,path) {
+      this.getEventMetaIsLoading = true
+      try {
+        const res = await eventAPI.getEventMeta(imei,path)
+        this.eventMeta = res.data
+        console.log('event meta', res.data)
+        this.eventMetaStatus.isError = false
+        this.getEventMetaIsLoading = false
+      } catch (err) {
+        this.eventMetaStatus.isError = true
+        this.eventMetaStatus.code = err.code
+        switch (this.eventMetaStatus.code) {
+          case 'ERR_NETWORK':
+            this.eventMetaStatus.message = 'Network Error'
+            break;
+        }
+        this.getEventMetaIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
   }
 })
