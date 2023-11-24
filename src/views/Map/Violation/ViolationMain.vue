@@ -11,43 +11,48 @@
     <div class="table-wrap">
       <div class="table-header">
         <h1 class="title">Violation Table</h1>
-        <div class="grid grid-cols-6 gap-4">
-          <div class="text-left flex flex-col gap-2 border rounded-md border-[#D9D9D9] p-2">
-            <h2 class="font-semibold text-xs">From</h2>
-            <div class="flex gap-6 ">
-              <input class="cursor-pointer bg-transparent text-xs" type="date" name="startDate" id="startDate" v-model="startDate">
-              <input class="cursor-pointer bg-transparent text-xs" type="time" name="startTime" id="startTime" v-model="startTime">
+        <div class="flex">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
+              <h2 class="font-semibold text-xs">From</h2>
+              <div class="flex gap-6 ">
+                <input class="cursor-pointer bg-transparent text-xs" type="date" name="startDate" id="startDate" v-model="startDate">
+                <input class="cursor-pointer bg-transparent text-xs" type="time" name="startTime" id="startTime" v-model="startTime">
+              </div>
+            </div>
+            <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
+              <h2 class="font-semibold text-xs">To</h2>
+              <div class="flex gap-6">
+                <input class="cursor-pointer bg-transparent text-xs" type="date" name="endDate" id="endDate" v-model="endDate">
+                <input class="cursor-pointer bg-transparent text-xs" type="time" name="endTime" id="endTime" v-model="endTime">
+              </div>
             </div>
           </div>
-          <div class="text-left flex flex-col gap-2 border rounded-md border-[#D9D9D9] p-2">
-            <h2 class="font-semibold text-xs">To</h2>
-            <div class="flex gap-6">
-              <input class="cursor-pointer bg-transparent text-xs" type="date" name="endDate" id="endDate" v-model="endDate">
-              <input class="cursor-pointer bg-transparent text-xs" type="time" name="endTime" id="endTime" v-model="endTime">
-            </div>
+          <div class="grid grid-cols-4 gap-4">
+            <select name="contractorFilter" id="contractorFilter" 
+              class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+              v-model="selectedSite"  
+              @change="getContractorsList(selectedSite)">
+              <option class="p-2 cursor-pointer" value="0" >All Site</option>
+              <option class="p-2 cursor-pointer" v-for="site in sites" :value="site.id" >{{site.name}}</option>
+            </select>
+            <select name="contractorFilter" id="contractorFilter" 
+              class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+              v-model="selectedContractor" 
+              @change="getHullsList(selectedContractor)">
+              <option class="p-2 cursor-pointer" value="0" >All Contractor</option>
+              <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.id" >{{contractor.name}}</option>
+            </select>
+            <select name="contractorFilter" id="contractorFilter" 
+              v-model="selectedHull" 
+              class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
+              <option class="p-2 cursor-pointer" value="0" >All Hull</option>
+              <option class="p-2 cursor-pointer" v-for="vehicle in vehicles" :value="vehicle.hullNumber" >{{vehicle.hullNumber}}</option>
+            </select>
+            <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getViolationReportIsLoading" @click="loadViolationReport" />
           </div>
-          <select name="contractorFilter" id="contractorFilter" 
-            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-            v-model="selectedSite"  
-            @change="getContractorsList(selectedSite)">
-            <option class="p-2 cursor-pointer" value="0" >All Site</option>
-            <option class="p-2 cursor-pointer" v-for="site in sites" :value="site.id" >{{site.name}}</option>
-          </select>
-          <select name="contractorFilter" id="contractorFilter" 
-            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-            v-model="selectedContractor" 
-            @change="getHullsList(selectedContractor)">
-            <option class="p-2 cursor-pointer" value="0" >All Contractor</option>
-            <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.id" >{{contractor.name}}</option>
-          </select>
-          <select name="contractorFilter" id="contractorFilter" 
-            v-model="selectedHull" 
-            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
-            <option class="p-2 cursor-pointer" value="0" >All Hull</option>
-            <option class="p-2 cursor-pointer" v-for="vehicle in vehicles" :value="vehicle.hullNumber" >{{vehicle.hullNumber}}</option>
-          </select>
-          <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getViolationReportIsLoading" @click="loadViolationReport" />
         </div>
+
       </div>
       <SearchField class="outlined" v-model="searchValue" placeholder="Search by IMEI, variant, device name..."/>
       <EasyDataTable
