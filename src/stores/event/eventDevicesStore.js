@@ -59,8 +59,22 @@ export const useEventDevicesStore = defineStore('eventDevices', {
       this.getEventMetaIsLoading = true
       try {
         const res = await eventAPI.getEventMeta(imei,path)
-        this.eventMeta = res.data
-        console.log('event meta', res.data)
+        const properties = {}
+        const lines = res.data.split('\n')
+        lines.forEach((line) => {
+          const match = line.match(/([^:]+):(.+)/)
+          if (match) {
+            const key = match[1].trim()
+            const value = match[2].trim()
+            properties[key] = value
+          }
+        })
+        this.eventMeta = properties
+        Object.entries(this.eventMeta).map(([keys,value]) => {
+          console.log(keys)
+          console.log(value)
+        })
+        // console.log('event meta', this.eventMeta)
         this.eventMetaStatus.isError = false
         this.getEventMetaIsLoading = false
       } catch (err) {

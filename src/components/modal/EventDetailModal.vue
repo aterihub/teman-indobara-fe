@@ -56,8 +56,12 @@
                 </div>
                 <div class="text-left flex flex-col gap-4 ">
                   <h1 class="font-semibold">Meta Data: </h1>
-                  <div class="w-full h-full border rounded-lg">
-
+                  <div class="w-full h-full border rounded-lg p-6 gap-4 flex flex-col">
+                    <div v-for="([key, value]) in Object.entries(eventMeta)" :key="key"
+                      class="flex gap-2">
+                      <p>{{ key }}: </p>
+                      <p class="font-medium">{{ value }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -82,7 +86,7 @@ import{ useEventDevicesStore } from '@/stores/event/eventDevicesStore'
       queryParams: Object
   })
   const eventStore = useEventDevicesStore()
-  const { eventStatus, eventData, eventFootageData, getEventDataIsLoading } = storeToRefs(useEventDevicesStore())
+  const { eventStatus, eventData, eventFootageData,eventMeta, getEventDataIsLoading } = storeToRefs(useEventDevicesStore())
 
   // let eventImageSrc = process.env.VUE_APP_IMG_URL + '866728069247798/2023-11-22%2012:58:21.000.jpg'
   const eventImageSrc = ref('')
