@@ -46,8 +46,8 @@
                 <div class="flex flex-col gap-1 text-left">
                   <label for="contractorId" class="text-xs font-bold">Site</label>
                   <select name="contractorId" v-model="siteId" class="cursor-pointer select-option text-sm" required>
-                    <option v-if="!site.length" class="text-sm" disabled selected>No Site Available</option>
-                    <option class="text-sm" v-for="data in site" :key="data.id" :value="data.id">{{ data.name }}</option>
+                    <option v-if="!siteInContractors.length" class="text-sm" disabled selected>No Site Available</option>
+                    <option class="text-sm" v-for="site in siteInContractors" :key="site.id" :value="site.id">{{ site.name }}</option>
                   </select> 
                 </div>
                 <BaseInput name="fabricationYear" type="number" placeholder="Input the fabrication year" class="outlined" label="Fabrication Year"/>
@@ -114,7 +114,7 @@ import { useSitesStore } from '@/stores/master-data/sitesStore'
   const { vehicleTypes } = storeToRefs(useVehicleTypesStore())
   const { vehicleBrands } = storeToRefs(useVehicleBrandsStore())
   const { hulls } = storeToRefs(useHullsStore())
-  const { contractors } = storeToRefs(useContractorsStore())
+  const { contractors, siteInContractors } = storeToRefs(useContractorsStore())
   const { site } = storeToRefs(useSitesStore())
 
   onMounted(() => {
@@ -125,10 +125,7 @@ import { useSitesStore } from '@/stores/master-data/sitesStore'
   })
   
   function fillSitesList(item) {
-    let params = {
-      contractorId: item
-    }
-    sitesStore.getSite(params)
+    contractorsStore.getSites(item)
   }
 
   const modalActive = ref(false)
