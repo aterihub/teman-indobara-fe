@@ -45,9 +45,13 @@ export const useViolationsStore = defineStore('violationData', {
       } catch (err) {
         this.violationStatus.isError = true
         this.violationStatus.code = err.code
+        this.violationStatus.message = 'Network Error'
         switch (this.violationStatus.code) {
           case 'ERR_NETWORK':
             this.violationStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.violationStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
         }
         this.getViolationReportIsLoading = false
