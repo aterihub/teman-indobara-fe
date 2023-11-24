@@ -1,4 +1,11 @@
 <template>
+  <EventDetailModal
+  :isOpen="isEventModalPops"
+  @close="eventModalToggle()"
+  title="Event Details"
+  :queryParams="eventParams"
+  :imei="imei"
+  />
   <MapLoading :loading="loadingStore.loading" />
   <alert :message="geoDataStore.status.message" :modalActive="modalActive" :isError="geoDataStore.status.isError"
     @close="closeNotification" />
@@ -86,9 +93,10 @@
     <div class="legend">
       <div class="outlined-circle"></div>
       <h2 class="select-none">Event</h2>
+      
     </div>
   </div>
-  <div class="absolute left-14 bottom-2 z-50 bg-[#fefefe] rounded-lg p-4 flex gap-2">
+  <div class="absolute left-14 bottom-2 bg-[#fefefe] rounded-lg p-4 flex gap-2">
     <div class="grid grid-cols-1 px-3 py-2 cursor-default gap-4">
       <div class="flex gap-2 w-full text-left items-center" v-for="(item, index) in vehicle.devices">
         <input class="cursor-pointer w-4" type="checkbox" v-model="selectedVariant" :name="item.imeiNumber"
@@ -122,10 +130,14 @@
           </svg>
         </div>
       </div>
+      <div class="flex flex-col gap-2 text-left">
+        <h1 class="font-medium text-sm">Playback Speed</h1>
+        <div class="grid grid-cols-4 gap-4">
+          <input class="col-span-3" type="range" name="playSpeed" v-model="playSpeed" min="10" max="1000" step="10" :disabled="isPlay[0] || isPlay[1]">
+          <h1 class="col-span-1 text-sm font-medium">{{ playSpeed }} ms</h1>
+        </div>
+      </div>
     </div>
-
-
-    
   </div>
 </template>
 
@@ -152,6 +164,8 @@ import { storeToRefs } from 'pinia'
 import distanceFilter from '@/composable/distanceFilter.js'
 import MapLoading from '@/components/MapLoading.vue'
 import { useMapLoadingStore } from '@/stores/MapLoadingStore'
+import EventDetailModal from '@/components/modal/EventDetailModal.vue'
+
 
 let map
 let popupOverlay
@@ -173,13 +187,19 @@ const startTime = ref(tempStartTime.toLocaleTimeString('en-US', { hour12: false,
 const endDate = ref(new Date().toLocaleDateString('en-CA'))
 const endTime = ref(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }))
 
+//Event Detail
+const isEventModalPops = ref(false)
+const imei = ref('')
+const eventParams = ref({})
+function eventModalToggle() {
+  isEventModalPops.value = !isEventModalPops.value
+}
 const modalActive = ref(false)
 const closeNotification = () => {
   modalActive.value = false
 }
 function toggleAccordion() {
   isOpen.value = !isOpen.value
-  console.log(isOpen.value)
 }
 const queryParams = ref({ 
   startTime: null,
@@ -313,7 +333,6 @@ async function filterVehicle() {
   if (!geoDataStore.status.isError) {
     geolocations = geoDataStore.vehicleHistoryGeo.vehicle.devices
     geolocations.forEach((geolocation, index) => {
-      console.log('gelolocation data', geolocation)
       let variant = geolocation.type
       let filteredData = geolocation.history.filter(geo => geo.latitude != 0)
 
@@ -347,9 +366,7 @@ async function filterVehicle() {
         })
       }
     })
-    console.log(layers)
   }
-  console.log('init', selectedVariant.value)
 
   //route interaction
   const selectInteraction = new Select({
@@ -364,7 +381,26 @@ async function filterVehicle() {
     layers: [...layers],
   })
   clickInteraction.on('select', (event) => {
-    console.log(event)
+    const selectedFeatures = event.target.getFeatures()
+    if (selectedFeatures.getLength() > 0) {
+      const selectedFeature = selectedFeatures.item(0)
+      const isLineString = selectedFeature.getGeometry().getType() === 'LineString'
+      if (!isLineString) {
+        let event = selectedFeature.get('value').eventIo
+        if (event !== '0') {
+          let eventTime = selectedFeature.get('value')._time
+          let eventStartTime = new Date(eventTime)
+          eventParams.value = {
+            event: event,
+            eventTime: eventTime,
+            eventStartTime: new Date(eventStartTime.getTime() - 3000),
+            eventEndTime: new Date(eventStartTime.getTime() + 3000),
+          }
+          imei.value = selectedFeature.get('value').imei
+          isEventModalPops.value = true
+        }
+      }
+    }
   })
   selectInteraction.on('select', (event) => {
     const selectedFeatures = event.target.getFeatures()
@@ -372,7 +408,6 @@ async function filterVehicle() {
       const selectedFeature = selectedFeatures.item(0)
       const isLineString = selectedFeature.getGeometry().getType() === 'LineString'
       if (!isLineString) {
-        console.log(selectedFeature)
         let fix_flag = selectedFeature.get('value').gnssStatus
         let latitude = selectedFeature.get('value').latitude
         let longitude = selectedFeature.get('value').longitude
@@ -385,7 +420,7 @@ async function filterVehicle() {
         let internal_battery = selectedFeature.get('value').batteryVoltage
         let external_power = selectedFeature.get('value').externalVoltage
         let stored_time = selectedFeature.get('value').storedTime
-        let time = selectedFeature.get('value')._time
+        let time = selectedFeature.get('value').deviceTime
         let diff_time = selectedFeature.get('value').diff_time
         let event_io = selectedFeature.get('value').eventIo
         let popupContent =
@@ -421,7 +456,6 @@ async function filterVehicle() {
 }
 
 function addDotsMarker(color, data) {
-  console.log(data)
   for (let index = 0; index < data.length; index++) {
     const { latitude, longitude, eventIo } = data[index]
     const marker = new Feature({
@@ -535,6 +569,7 @@ async function ressurectPoints(color, geolocation, layersIndex) {
 const isPlay = ref([false,false])
 const viewPoints = ref([true, true])
 const isStartPlayBack = ref([false, false])
+const playSpeed = ref(100)
 
 function startPlayBack(imei, index) {
   isStartPlayBack.value[index] = true
@@ -574,10 +609,8 @@ function renderPoints(imei, index) {
 function hideRoute() {
   layers.forEach((value) => {
     if (selectedVariant.value.includes(value.values_.type)) {
-      console.log('yes')
       value.setVisible(true)
     } else {
-      console.log('no')
       value.setVisible(false)
     }
   })
@@ -591,11 +624,9 @@ async function markerAnimation(index) {
     return feature.getGeometry().getType() === 'LineString'
   })
   const pointsValue = lineFeature[0].get('value')
-  console.log(pointsValue)
   const lineString = lineFeature[0].getGeometry()
 
   let position = new Point (lineString.getFirstCoordinate())
-  console.log(position)
 
   const startMarker = new Feature({
     type: 'startMarker',
@@ -619,11 +650,11 @@ async function markerAnimation(index) {
     // Increment count to move to the next coordinate
     count = (count + 1) % coordinates.length
     const currentCoordinate = coordinates[count]
-    // console.log(coordinates, count)
     position.setCoordinates(currentCoordinate)
     geoMarker.set('value', pointsValue[count-1])
     geoMarker.setStyle(animationFeatureStyle.geoMarker)
     geoMarker.setGeometry(position)
+    console.log(index,count, coordinates.length)
 
     // If the animation reaches the end, stop the animation
     if (count === coordinates.length - 1) {
@@ -634,24 +665,21 @@ async function markerAnimation(index) {
   }
 
   function startAnimation() {
-    animationFrameId[index] = setInterval(moveFeature, 10)
+    clearInterval(animationFrameId[index])
+    animationFrameId[index] = setInterval(moveFeature, playSpeed.value)
     // hide geoMarker and trigger map render through change event
     // geoMarker.setGeometry(null);
-    console.log(animationFrameId[index])
   }
 
   function stopAnimation() {
     // Keep marker at current animation position
     clearInterval(animationFrameId[index])
     geoMarker.setGeometry(position)
-    console.log(animationFrameId[index])
   }
 
   watch(
     () => isPlay.value,
     (newArray, oldArray) => {
-      console.log('Array changed:', newArray);
-      console.log('Old array:', oldArray);
       if (newArray[index]) {
         startAnimation()
       } else {
@@ -668,12 +696,13 @@ onUnmounted(() => {
   }
 })
 
+
 </script>
 
 <style scoped>
 .map-container {
   width: 100%;
-  height: 100vh
+  height: 100vh;
 }
 
 .ol-popup {
@@ -791,5 +820,7 @@ onUnmounted(() => {
 .disable-svg {
   @apply cursor-none pointer-events-none opacity-40
 }
+
+
 /* drop-shadow-[0_0_6px_5px_rgba(0,0,0,0.05)] */
 </style>
