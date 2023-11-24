@@ -6,6 +6,12 @@
     :queryParams="eventParams"
     :imei="imei"
   />
+  <alert 
+    :message ="violationStatus.message"
+    :modalActive="modalActive"
+    :isError="violationStatus.isError"
+    @close="closeNotification" 
+  />
   <sideNav :is-violation-active="true" />
   <div class="content">
     <div class="table-wrap">
@@ -38,8 +44,7 @@
             </select>
             <select name="contractorFilter" id="contractorFilter" 
               class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-              v-model="selectedContractor" 
-              @change="getHullsList(selectedContractor)">
+              v-model="selectedContractor" >
               <option class="p-2 cursor-pointer" value="0" >All Contractor</option>
               <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.id" >{{contractor.name}}</option>
             </select>
@@ -47,7 +52,7 @@
               v-model="selectedHull" 
               class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
               <option class="p-2 cursor-pointer" value="0" >All Hull</option>
-              <option class="p-2 cursor-pointer" v-for="vehicle in vehicles" :value="vehicle.hullNumber" >{{vehicle.hullNumber}}</option>
+              <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number" >{{vehicle.number}}</option>
             </select>
             <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getViolationReportIsLoading" @click="loadViolationReport" />
           </div>
@@ -84,6 +89,7 @@ import sideNav from '@/components/navigation/sideNav.vue'
 import SearchField from '@/components/SearchField.vue'
 import { onMounted, ref } from 'vue'
 import { useVehiclesStore } from '@/stores/master-data/vehiclesStore'
+import { useHullsStore } from '@/stores/master-data/hullNumberStore'
 import { useContractorsStore } from '@/stores/master-data/contractorsStore'
 import { useSitesStore } from '@/stores/master-data/sitesStore'
 import { useViolationsStore } from '@/stores/violation/violationsStore'
@@ -95,6 +101,7 @@ const searchValue = ref('')
 const selectedSite = ref('0')
 const selectedContractor = ref('0')
 const selectedHull = ref('0')
+const modalActive = ref(false)
 
 const getDateNdaysAgo = (n) => {
   const date = new Date()
@@ -115,11 +122,14 @@ const contractorsStore = useContractorsStore()
 const { contractors } = storeToRefs(useContractorsStore())
 const vehiclesStore = useVehiclesStore()
 const { vehicles } = storeToRefs(useVehiclesStore())
+const hullNumberStore = useHullsStore()
+const { hulls } = storeToRefs(useHullsStore())
 
 onMounted(() => {
   sitesStore.getSites()
   contractorsStore.getContractors()
-  vehiclesStore.getVehicles()
+  hullNumberStore.getHulls()
+  // vehiclesStore.getVehicles()
 })
 
 function getContractorsList(item) {
@@ -133,19 +143,22 @@ function getContractorsList(item) {
   }
 }
 
-function getHullsList(item) {
-  if (item !== '0') {
-    let params = {
-      contractorId: item
-    }
-    vehiclesStore.getVehicles(params)
-  } else {
-    vehiclesStore.getVehicles()
-  }
-
+const closeNotification = () => {
+  modalActive.value = false
 }
+// function getHullsList(item) {
+//   if (item !== '0') {
+//     let params = {
+//       contractorId: item
+//     }
+//     vehiclesStore.getVehicles(params)
+//   } else {
+//     vehiclesStore.getVehicles()
+//   }
 
-function loadViolationReport() {
+// }
+
+async function loadViolationReport() {
   const queryParams = {}
   if (selectedSite.value !== '0') {
     queryParams.siteId = selectedSite.value
@@ -159,7 +172,9 @@ function loadViolationReport() {
   queryParams.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
   queryParams.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
   console.log(queryParams)
-  violationsStore.getViolationReport(queryParams)
+  await violationsStore.getViolationReport(queryParams)
+  modalActive.value = true
+  setTimeout(closeNotification, 3000)
 }
 
 const isEventModalPops = ref(false)

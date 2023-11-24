@@ -18,9 +18,9 @@ export const useViolationsStore = defineStore('violationData', {
       this.getViolationReportIsLoading = true
       try {
         const res = await violationAPI.getViolationReport(params)
-
+        let violation = []
         if (res.data.violation.length > 0) {
-          const violation = res.data.violation.map((item) => {
+          violation = res.data.violation.map((item) => {
             return {
               imei: item.imei,
               eventIo: item.eventIo,
@@ -35,9 +35,11 @@ export const useViolationsStore = defineStore('violationData', {
               coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude},${item.longitude}`}
             }
           })
-          this.violationsReport = violation
+          this.violationStatus.message = 'Violation Fetched'
+        } else {
+          this.violationStatus.message = 'No Violation Avaialable'
         }
-
+        this.violationsReport = violation
         this.violationStatus.isError = false
         this.getViolationReportIsLoading = false
       } catch (err) {
