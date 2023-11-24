@@ -166,7 +166,6 @@
     border-collapse: collapse;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    overflow: hidden;
   }
 
   .card-wrapper {

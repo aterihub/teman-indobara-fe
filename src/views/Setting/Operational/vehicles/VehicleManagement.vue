@@ -74,6 +74,7 @@
       { text: "Name", value: "name", sortable: true },
       { text: "Type", value: "type", sortable: true },
       { text: "Brand", value: "brandName", sortable: true },
+      { text: "Contractor", value: "contractorName", sortable: true },
       { text: "Hull Number", value: "hullNumber", sortable: true },
       { text: "Registration Number", value: "registrationNumber", sortable: true },
       { text: "Fabrication Year", value: "fabricationYear", sortable: true },
@@ -154,7 +155,7 @@
     border-collapse: collapse;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    overflow: hidden;
+   
   }
   </style>
   
