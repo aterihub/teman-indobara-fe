@@ -57,7 +57,7 @@
                 <div class="text-left flex flex-col gap-4 ">
                   <h1 class="font-semibold">Meta Data: </h1>
                   <div class="w-full h-full border rounded-lg p-6 gap-4 flex flex-col">
-                    <div v-for="([key, value]) in Object.entries(eventMeta)" :key="key"
+                    <div v-if="eventFootageData.length > 0" v-for="([key, value]) in Object.entries(eventMeta)" :key="key"
                       class="flex gap-2">
                       <p>{{ key }}: </p>
                       <p class="font-medium">{{ value }}</p>

@@ -38,8 +38,7 @@ export const useEventDevicesStore = defineStore('eventDevices', {
               registrationNumber: res.data.eventData.registrationNumber,
             }
           this.eventData = tmpEventData
-        }
-        console.log('event data', this.eventData, this.eventFootage)
+        } 
         this.eventStatus.isError = false
         this.getEventDataIsLoading = false
       } catch (err) {
@@ -60,21 +59,18 @@ export const useEventDevicesStore = defineStore('eventDevices', {
       try {
         const res = await eventAPI.getEventMeta(imei,path)
         const properties = {}
-        const lines = res.data.split('\n')
-        lines.forEach((line) => {
-          const match = line.match(/([^:]+):(.+)/)
-          if (match) {
-            const key = match[1].trim()
-            const value = match[2].trim()
-            properties[key] = value
-          }
-        })
+        if (res.data) {
+          const lines = res.data.split('\n')
+          lines.forEach((line) => {
+            const match = line.match(/([^:]+):(.+)/)
+            if (match) {
+              const key = match[1].trim()
+              const value = match[2].trim()
+              properties[key] = value
+            }
+          })
+        }
         this.eventMeta = properties
-        Object.entries(this.eventMeta).map(([keys,value]) => {
-          console.log(keys)
-          console.log(value)
-        })
-        // console.log('event meta', this.eventMeta)
         this.eventMetaStatus.isError = false
         this.getEventMetaIsLoading = false
       } catch (err) {
