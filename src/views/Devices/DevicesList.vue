@@ -181,7 +181,6 @@ import { storeToRefs } from 'pinia'
   border-collapse: collapse;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-  overflow: hidden;
 }
 
   </style>
