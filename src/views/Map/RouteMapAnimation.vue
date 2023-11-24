@@ -97,7 +97,7 @@
     </div>
   </div>
   <div class="absolute left-14 bottom-2 bg-[#fefefe] rounded-lg p-4 flex gap-2">
-    <div class="grid grid-cols-1 px-3 py-2 cursor-default gap-4">
+    <div class="grid grid-cols-1 px-3 py-2 cursor-default gap-4 w-[360px]">
       <div class="flex gap-2 w-full text-left items-center" v-for="(item, index) in vehicle.devices">
         <input class="cursor-pointer w-4" type="checkbox" v-model="selectedVariant" :name="item.imeiNumber"
           :disabled="geoDataStore.status.isError" @change="hideRoute" :value="item.imeiNumber">
