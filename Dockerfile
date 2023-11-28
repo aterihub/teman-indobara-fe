@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm --force install
 COPY ./ .
-RUN npm run build
+RUN NODE_ENV=development npm i
 
 FROM nginx as production-stage
 RUN mkdir /app
