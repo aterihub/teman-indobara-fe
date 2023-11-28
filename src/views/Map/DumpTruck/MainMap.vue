@@ -123,7 +123,7 @@
   import Chip from '@/components/tab/Chip.vue';
   import sideNav from '@/components/navigation/sideNav.vue'
   import Heatmap from '@/views/Map/DumpTruck/Heatmap.vue'
-  import Route from '@/views/Map/RouteMapAnimation.vue'
+  import Route from '@/views/Map/DumpTruck/Route.vue'
   import Realtime from '@/views/Map/DumpTruck/Realtime.vue'
   import { onMounted, ref, onBeforeMount} from 'vue'
 
