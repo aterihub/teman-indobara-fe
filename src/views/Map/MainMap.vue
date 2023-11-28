@@ -11,7 +11,7 @@
     import Tab from '@/components/tab/Tab.vue';
     import sideNav from '@/components/navigation/sideNav.vue'
     import RealtimeMap from '@/views/Map/RealtimeMap.vue'
-    import RouteMap from '@/views/Map/RouteMap.vue'
+    import RouteMap from '@/views/Map/RouteMapAnimation.vue'
     import SignalAnalytic from './SignalAnalytic.vue';
     import { onMounted, ref} from 'vue'
 
