@@ -3,9 +3,9 @@ ARG NODE_IMAGE=node:16.15.1-alpine
 FROM $NODE_IMAGE as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm --force install
+RUN NODE_ENV=development npm --force i
 COPY ./ .
-RUN NODE_ENV=development npm i
+RUN npm run build
 
 FROM nginx as production-stage
 RUN mkdir /app
