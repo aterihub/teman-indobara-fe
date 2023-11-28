@@ -1,9 +1,9 @@
-ARG NODE_IMAGE=node:16.15.1-alpine
+ARG NODE_IMAGE=node:19.5.0-alpine
 
 FROM $NODE_IMAGE as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN NODE_ENV=development npm --force i
+RUN npm --force i
 COPY ./ .
 RUN npm run build
 
