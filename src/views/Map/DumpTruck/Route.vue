@@ -16,85 +16,101 @@
     </div>
   </div>
   <div class="form-wrapper">
-    <div 
-      class="vehicle-info">
-      <div class="flex items-center justify-between" @click="toggleAccordion()">
-        <div class="flex items-center justify-between">
-          <h1 class="text-left font-bold text-lg mb-2">Filter Route</h1>
+    <div class="flex gap-2">
+      <div class="violation-modal">
+        <div class="flex flex-col gap-7">
+          <h1 class="text-left font-bold text-lg mb-2">Violation Filter</h1>
+          <select name="contractorFilter" id="contractorFilter"
+            :class="{'disable-svg': layers.length === 0}"
+            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+            v-model="violationFilter">
+            <option class="p-2 cursor-pointer" value="0" >All Violation</option>
+            <option class="p-2 cursor-pointer" v-for="violation in violationFilterList" :value="violation.code" >{{violation.name}}</option>
+          </select>
         </div>
-        <div>
-          <button
-          class="flex items-center space-x-3"
-          :aria-expanded="isOpen"
-          :aria-controls="`collapse`"
-          >
-            <svg
-            class="w-3 transition-all duration-200 transform"
-            :class="{
-              'rotate-180': isOpen,
-              'rotate-0': !isOpen,
+      </div>
+      <div class="flex flex-col gap-2">
+        <div 
+          class="vehicle-info">
+          <div class="flex items-center justify-between" @click="toggleAccordion()">
+            <div class="flex items-center justify-between">
+              <h1 class="text-left font-bold text-lg mb-2">Route Filter</h1>
+            </div>
+            <div>
+              <button
+              class="flex items-center space-x-3"
+              :aria-expanded="isOpen"
+              :aria-controls="`collapse`"
+              >
+              <svg
+              class="w-3 transition-all duration-200 transform"
+              :class="{
+                'rotate-180': isOpen,
+                'rotate-0': !isOpen,
               }"
-              fill="none"
-              stroke="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 10"
-              aria-hidden="true"
-            >
-              <path
-              d="M15 1.2l-7 7-7-7"
-              stroke-width="2"
-              stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
+                  fill="none"
+                  stroke="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 10"
+                  aria-hidden="true"
+                  >
+                  <path
+                  d="M15 1.2l-7 7-7-7"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="content" 
+            :class="{'active': isOpen}">
+            <form @submit.prevent="filterVehicle">
+              <div class="grid grid-cols-2 gap-4 items-end justify-between mb-4 ">
+                <select v-model="selectedVehicle" class="select-option" @change="changeVehicle(selectedVehicle.id)">
+                  <option v-for="item in vehicles" :key="item.id" :value="item">
+                    <p class="font-semibold">{{ item.name }}</p>
+                  </option>
+                </select>
+                <p class="font-bold px-3 py-2 border-b border-[#3a3a3e] w-full cursor-default">
+                  {{ selectedVehicle.registrationNumber }}</p>
+                </div>
+                <!-- <div class="grid grid-cols-1 px-3 p  y-2 border-b border-[#3a3a3e] cursor-default mb-6 gap-4">
+                  <div class="flex gap-2 w-full text-left items-center" v-for="(item, index) in vehicle.devices">
+                    <input class="cursor-pointer w-4" type="checkbox" v-model="selectedVariant" :name="item.imeiNumber"
+                    :disabled="geoDataStore.status.isError" @change="hideRoute" :value="item.imeiNumber">
+                    <label :for="item.type" class="w-full items-center flex gap-4 font-semibold cursor-default">
+                      {{ item.type }}
+                    </label>
+                    <div :class="{ 'blue-circle': index == 0, 'green-circle': index == 1 , 'purple-circle': index == 2 , 'red-circle': index == 3 }"></div>
+                  </div>
+                </div> -->
+                <div class="text-left flex flex-col gap-2 ">
+                <h2 class="font-semibold">From</h2>
+                <div class="flex gap-6 ">
+                  <input class="cursor-pointer bg-transparent" type="date" name="startDate" id="startDate" v-model="startDate">
+                  <input class="cursor-pointer bg-transparent" type="time" name="startTime" id="startTime" v-model="startTime">
+                </div>
+              </div>
+              <div class="text-left flex flex-col gap-2">
+                <h2 class="font-semibold">To</h2>
+                <div class="flex gap-6">
+                  <input class="cursor-pointer bg-transparent" type="date" name="endDate" id="endDate" v-model="endDate">
+                  <input class="cursor-pointer bg-transparent" type="time" name="endTime" id="endTime" v-model="endTime">
+                </div>
+              </div>
+              <BaseButton type="submit" class="filled__green mt-4" label="Filter" />
+            </form>
+          </div>
         </div>
-      </div>
-      <div class="content" 
-        :class="{'active': isOpen}">
-        <form @submit.prevent="filterVehicle">
-          <div class="grid grid-cols-2 gap-4 items-end justify-between mb-4 ">
-            <select v-model="selectedVehicle" class="select-option" @change="changeVehicle(selectedVehicle.id)">
-              <option v-for="item in vehicles" :key="item.id" :value="item">
-                <p class="font-semibold">{{ item.name }}</p>
-              </option>
-            </select>
-            <p class="font-bold px-3 py-2 border-b border-[#3a3a3e] w-full cursor-default">
-              {{ selectedVehicle.registrationNumber }}</p>
-          </div>
-          <!-- <div class="grid grid-cols-1 px-3 p  y-2 border-b border-[#3a3a3e] cursor-default mb-6 gap-4">
-            <div class="flex gap-2 w-full text-left items-center" v-for="(item, index) in vehicle.devices">
-              <input class="cursor-pointer w-4" type="checkbox" v-model="selectedVariant" :name="item.imeiNumber"
-                :disabled="geoDataStore.status.isError" @change="hideRoute" :value="item.imeiNumber">
-              <label :for="item.type" class="w-full items-center flex gap-4 font-semibold cursor-default">
-                {{ item.type }}
-              </label>
-              <div :class="{ 'blue-circle': index == 0, 'green-circle': index == 1 , 'purple-circle': index == 2 , 'red-circle': index == 3 }"></div>
-            </div>
-          </div> -->
-          <div class="text-left flex flex-col gap-2 ">
-            <h2 class="font-semibold">From</h2>
-            <div class="flex gap-6 ">
-              <input class="cursor-pointer bg-transparent" type="date" name="startDate" id="startDate" v-model="startDate">
-              <input class="cursor-pointer bg-transparent" type="time" name="startTime" id="startTime" v-model="startTime">
-            </div>
-          </div>
-          <div class="text-left flex flex-col gap-2">
-            <h2 class="font-semibold">To</h2>
-            <div class="flex gap-6">
-              <input class="cursor-pointer bg-transparent" type="date" name="endDate" id="endDate" v-model="endDate">
-              <input class="cursor-pointer bg-transparent" type="time" name="endTime" id="endTime" v-model="endTime">
-            </div>
-          </div>
-          <BaseButton type="submit" class="filled__green mt-4" label="Filter" />
-        </form>
+        <div class="legend">
+          <div class="outlined-circle"></div>
+          <h2 class="select-none">Event</h2>
+        </div>        
       </div>
     </div>
-    <div class="legend">
-      <div class="outlined-circle"></div>
-      <h2 class="select-none">Event</h2>
-      
-    </div>
+
   </div>
   <div class="absolute left-14 bottom-2 bg-[#fefefe] rounded-lg p-4 flex gap-2">
     <div class="grid grid-cols-1 px-3 py-2 cursor-default gap-4 w-[360px]">
@@ -198,7 +214,7 @@ const modalActive = ref(false)
 const closeNotification = () => {
   modalActive.value = false
 }
-function toggleAccordion() {
+function toggleAccordion(index) {
   isOpen.value = !isOpen.value
 }
 const queryParams = ref({ 
@@ -453,6 +469,7 @@ async function filterVehicle() {
   modalActive.value = true
   loadingStore.stopLoading()
   setTimeout(closeNotification, 3000)
+  console.log(layers)
 }
 
 function addDotsMarker(color, data) {
@@ -506,6 +523,26 @@ function addDotsMarker(color, data) {
   }
 }
 
+const violationFilter = ref('0')
+
+const violationFilterList = [
+  { code: "11700", name: "Drowsiness" },
+  { code: "11701", name: "Distraction" },
+  { code: "11702", name: "Yawning" },
+  { code: "11703", name: "Phone" },
+  { code: "11704", name: "Smoking" },
+  { code: "11705", name: "Driver Absence" },
+  { code: "11706", name: "Mask" },
+  { code: "11713", name: "Seatbelt" },
+  { code: "605", name: "LDW Left" },
+  { code: "606", name: "LDW Right" },
+  { code: "610", name: "SDA" }, 
+  { code: "611", name: "FVSRA" },
+  { code: "612", name: "FPW" },
+  { code: "613", name: "FCW" },
+  { code: "614", name: "PCW" },
+];
+
 async function ressurectPoints(color, geolocation, layersIndex) {
   let filteredData = geolocation.history.filter(geo => geo.latitude != 0)
   let route = distanceFilter.filter(minimumDistance, filteredData).route
@@ -536,22 +573,34 @@ async function ressurectPoints(color, geolocation, layersIndex) {
           }),
         })
       } else {
-        if (eventIo == '0') {
-          markerStyle = new Style({
-            image: new Circle({
-              radius: 6,
-              fill: new Fill({ color: `${color}` }),
-              // stroke: new Stroke({ color: 'rgba(255, 0, 0, 0.4)', width: 8 }),
-            }),
-          })
+        if (violationFilter.value === '0') {
+          if (eventIo == '0') {
+            markerStyle = new Style({
+              image: new Circle({
+                radius: 6,
+                fill: new Fill({ color: `${color}` }),
+                // stroke: new Stroke({ color: 'rgba(255, 0, 0, 0.4)', width: 8 }),
+              }),
+            })
+          } else {
+            markerStyle = new Style({
+              image: new Circle({
+                radius: 6,
+                fill: new Fill({ color: `${color}` }),
+                stroke: new Stroke({ color: 'red', width: 1 }),
+              }),
+            })
+          }
         } else {
-          markerStyle = new Style({
-            image: new Circle({
-              radius: 6,
-              fill: new Fill({ color: `${color}` }),
-              stroke: new Stroke({ color: 'red', width: 1 }),
-            }),
-          })
+          if (violationFilter.value === eventIo) {
+            markerStyle = new Style({
+              image: new Circle({
+                radius: 6,
+                fill: new Fill({ color: `${color}` }),
+                stroke: new Stroke({ color: 'red', width: 1 }),
+              }),
+            })
+          }
         }
       }
       marker.setStyle(markerStyle)
@@ -796,6 +845,19 @@ onUnmounted(() => {
   background-color: transparent;
   border: 2px solid red;
 }
+
+.violation-modal {
+  @apply     
+    shadow-sm
+    shadow-blue-300/50
+    backdrop-blur-md
+    bg-gradient-to-b from-slate-50/80
+    rounded-lg w-fit px-4 py-6 gap-2 flex flex-col
+    h-full
+    min-w-[240px]
+    cursor-pointer
+    select-none
+}
 .vehicle-info {
   @apply     
     shadow-sm
@@ -818,7 +880,7 @@ onUnmounted(() => {
 }
 
 .disable-svg {
-  @apply cursor-none pointer-events-none opacity-40
+  @apply cursor-none pointer-events-none opacity-40 !important 
 }
 
 

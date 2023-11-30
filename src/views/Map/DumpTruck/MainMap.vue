@@ -126,6 +126,7 @@
   import Route from '@/views/Map/DumpTruck/Route.vue'
   import Realtime from '@/views/Map/DumpTruck/Realtime.vue'
   import { onMounted, ref, onBeforeMount} from 'vue'
+  import { useLocalStorage } from '@vueuse/core'
 
   export default {
     components:{
@@ -136,7 +137,7 @@
       sideNav 
   },
   setup() {
-    const selectedComponent = ref('Route')
+    const selectedComponent = useLocalStorage('SelectedMapSetting','Route')
     const selectedVehicle = ref({id: '0', registrationNumber: 'XXXX'})
     const selectedContractor = ref('0')
     const vehicleList = ref([])
@@ -172,7 +173,7 @@
       selectedComponent.value = navigation
     }
     onMounted(async() => {
-      var element = document.getElementById("Route");
+      var element = document.getElementById(selectedComponent.value);
       element.classList.add("active");
     })
 
