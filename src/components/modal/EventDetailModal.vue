@@ -1,5 +1,5 @@
 <template>
-  <!-- <transition name="fade"> -->
+  <transition name="fade">
     <div class="modal" v-show="isOpen">
       <transition name="drop-in">
         <div class="modal-inner" v-show="isOpen">
@@ -70,7 +70,7 @@
         </div>
       </transition>
     </div>
-  <!-- </transition> -->
+  </transition>
 </template>
 
   
@@ -161,7 +161,7 @@ import{ useEventDevicesStore } from '@/stores/event/eventDevicesStore'
 }
 
 
-.drop-in-enter-active,
+/* .drop-in-enter-active,
 .drop-in-leave-active {
   transition: transform 0.5s ease-in-out;
 }
@@ -172,6 +172,27 @@ import{ useEventDevicesStore } from '@/stores/event/eventDevicesStore'
 
 .drop-in-leave-to {
   transform: translateY(100%);
+} */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.drop-in-enter-active,
+.drop-in-leave-active {
+  transition: all 0.5s ease-out;
+}
+
+.drop-in-enter-from,
+.drop-in-leave-to {
+  opacity: 0;
+  transform: translateZ(-50px);
 }
 
 .checkbox-wrapper {
