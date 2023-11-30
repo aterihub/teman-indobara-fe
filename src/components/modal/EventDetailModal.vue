@@ -57,6 +57,14 @@
                 <div class="text-left flex flex-col gap-4 ">
                   <h1 class="font-semibold">Meta Data: </h1>
                   <div class="w-full h-full border rounded-lg p-6 gap-4 flex flex-col">
+                    <div v-if="eventFootageData.length > 0" class="flex gap-2">
+                      <p>Stored Time:</p>
+                      <p class="font-medium">{{ eventFootageData[0].storedTime }}</p>
+                    </div>
+                    <div v-if="eventFootageData.length > 0" class="flex gap-2">
+                      <p>Different Time:</p>
+                      <p class="font-medium">{{ eventFootageData[0].differsTime }}</p>
+                    </div>
                     <div v-if="eventFootageData.length > 0" v-for="([key, value]) in Object.entries(eventMeta)" :key="key"
                       class="flex gap-2">
                       <p>{{ key }}: </p>
