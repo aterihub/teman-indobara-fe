@@ -26,7 +26,7 @@ export const useViolationsStore = defineStore('violationData', {
               eventIo: item.eventIo,
               eventTime: item._time,
               deviceTime: new Date(item._time).toLocaleString(),
-              violation: item.eventIoName.toUpperCase(),
+              violation: item.eventIo.toUpperCase(),
               hullNumber: item.hullNumber,
               registrationNumber: item.registrationNumber,
               site: item.site,
