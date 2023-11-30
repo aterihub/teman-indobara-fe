@@ -13,78 +13,75 @@
     @close="closeNotification" 
   />
   <sideNav :is-violation-active="true" />
-  <div class="content">
-    <div class="table-wrap">
-      <div class="table-header">
-        <h1 class="title">Violation Table</h1>
-        <div class="flex">
-          <div class="grid grid-cols-2 gap-4">
-            <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
-              <h2 class="font-semibold text-xs">From</h2>
-              <div class="flex gap-6 ">
-                <input class="cursor-pointer bg-transparent text-xs" type="date" name="startDate" id="startDate" v-model="startDate">
-                <input class="cursor-pointer bg-transparent text-xs" type="time" name="startTime" id="startTime" v-model="startTime">
-              </div>
-            </div>
-            <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
-              <h2 class="font-semibold text-xs">To</h2>
-              <div class="flex gap-6">
-                <input class="cursor-pointer bg-transparent text-xs" type="date" name="endDate" id="endDate" v-model="endDate">
-                <input class="cursor-pointer bg-transparent text-xs" type="time" name="endTime" id="endTime" v-model="endTime">
-              </div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <h1 class="title">Violation Table</h1>
+      <div class="flex">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
+            <h2 class="font-semibold text-xs">From</h2>
+            <div class="flex gap-6 ">
+              <input class="cursor-pointer bg-transparent text-xs" type="date" name="startDate" id="startDate" v-model="startDate">
+              <input class="cursor-pointer bg-transparent text-xs" type="time" name="startTime" id="startTime" v-model="startTime">
             </div>
           </div>
-          <div class="grid grid-cols-4 gap-4">
-            <select name="contractorFilter" id="contractorFilter" 
-              class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-              v-model="selectedSite"  
-              @change="getContractorsList(selectedSite)">
-              <option class="p-2 cursor-pointer" value="0" >All Site</option>
-              <option class="p-2 cursor-pointer" v-for="site in sites" :value="site.id" >{{site.name}}</option>
-            </select>
-            <select name="contractorFilter" id="contractorFilter" 
-              class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-              v-model="selectedContractor" >
-              <option class="p-2 cursor-pointer" value="0" >All Contractor</option>
-              <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.id" >{{contractor.name}}</option>
-            </select>
-            <select name="contractorFilter" id="contractorFilter" 
-              v-model="selectedHull" 
-              class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
-              <option class="p-2 cursor-pointer" value="0" >All Hull</option>
-              <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number" >{{vehicle.number}}</option>
-            </select>
-            <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getViolationReportIsLoading" @click="loadViolationReport" />
+          <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
+            <h2 class="font-semibold text-xs">To</h2>
+            <div class="flex gap-6">
+              <input class="cursor-pointer bg-transparent text-xs" type="date" name="endDate" id="endDate" v-model="endDate">
+              <input class="cursor-pointer bg-transparent text-xs" type="time" name="endTime" id="endTime" v-model="endTime">
+            </div>
           </div>
         </div>
-
+        <div class="grid grid-cols-4 gap-4">
+          <select name="contractorFilter" id="contractorFilter" 
+            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+            v-model="selectedSite"  
+            @change="getContractorsList(selectedSite)">
+            <option class="p-2 cursor-pointer" value="0" >All Site</option>
+            <option class="p-2 cursor-pointer" v-for="site in sites" :value="site.id" >{{site.name}}</option>
+          </select>
+          <select name="contractorFilter" id="contractorFilter" 
+            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+            v-model="selectedContractor" >
+            <option class="p-2 cursor-pointer" value="0" >All Contractor</option>
+            <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.id" >{{contractor.name}}</option>
+          </select>
+          <select name="contractorFilter" id="contractorFilter" 
+            v-model="selectedHull" 
+            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
+            <option class="p-2 cursor-pointer" value="0" >All Hull</option>
+            <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number" >{{vehicle.number}}</option>
+          </select>
+          <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getViolationReportIsLoading" @click="loadViolationReport" />
+        </div>
       </div>
-      <SearchField class="outlined" v-model="searchValue" placeholder="Search by IMEI, variant, device name..."/>
-      <EasyDataTable
-        :rows-per-page="10"
-        table-class-name="customize-table"
-        :headers="header"
-        :items="violationsReport"
-        theme-color="#1363df"        
-        :search-value="searchValue"
-        :loading="getViolationReportIsLoading">
-        <template #item-coordinate="item">
-          <a :href="item.coordinate.maps" target="_blank">{{item.coordinate.latLong}}</a>
+
+    </div>
+    <SearchField class="outlined" v-model="searchValue" placeholder="Search by IMEI, variant, device name..."/>
+    <EasyDataTable
+      :rows-per-page="10"
+      table-class-name="customize-table"
+      :headers="header"
+      :items="violationsReport"
+      theme-color="#1363df"        
+      :search-value="searchValue"
+      :loading="getViolationReportIsLoading">
+      <template #item-coordinate="item">
+        <a :href="item.coordinate.maps" target="_blank">{{item.coordinate.latLong}}</a>
+      </template>
+      <template #item-operation="item">
+          <div class="operation">
+            <svg class="cursor-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" @click="viewViolationFootage(item)">
+              <path d="M13 7H22V9H13V7ZM13 15H22V17H13V15ZM16 11H22V13H16V11ZM13 12L8 7V11H2V13H8V17L13 12Z" fill="#353535" fill-opacity="0.6"/>
+            </svg>
+          </div>
         </template>
-        <template #item-operation="item">
-            <div class="operation">
-              <svg class="cursor-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" @click="viewViolationFootage(item)">
-                <path d="M13 7H22V9H13V7ZM13 15H22V17H13V15ZM16 11H22V13H16V11ZM13 12L8 7V11H2V13H8V17L13 12Z" fill="#353535" fill-opacity="0.6"/>
-              </svg>
-            </div>
-          </template>
-      </EasyDataTable>
-    </div> 
-  </div>
+    </EasyDataTable>
+  </div> 
 </template>
   
 <script setup>
-import Chip from '@/components/tab/Chip.vue';
 import sideNav from '@/components/navigation/sideNav.vue'
 import SearchField from '@/components/SearchField.vue'
 import { onMounted, ref } from 'vue'
@@ -214,6 +211,10 @@ const header = [
 .content {
   @apply w-full h-full relative ml-[70px] pt-[82px] mr-[26px]
 }
+  .navigation {
+  @apply flex w-fit
+}
+
 .title {
   @apply
     text-[24px] font-medium flex justify-start items-center text-[#353535]

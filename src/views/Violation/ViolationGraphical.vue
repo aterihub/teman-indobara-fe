@@ -4,96 +4,93 @@
     :isOpen="isModalPops"
     @close="isModalPops = !isModalPops"
     :deviceInfo="summaryData"/>
-
-  <div class="px-[30px] py-[57px] flex flex-col gap-5">
-    <div class="flex flex-col gap-5 text-left pb-5 border-b border-[#353535]/40">
-      <h1 class="text-sm font-bold">Summary</h1>
-      <div class="grid grid-cols-6 gap-10">
-        <div class="summaryChip border-[#BA000D]" @click="isModalPops=true">
-          <div class="w-1/2 flex justify-center items-center text-[#BA000D] font-semibold">
-            5
-          </div>
-          <div class="w-1/2 bg-[#BA000D] flex justify-center items-center text-white font-semibold">
-            OV
-          </div>
+  <div class="flex flex-col gap-5 text-left pb-5 border-b border-[#353535]/40">
+    <h1 class="text-sm font-bold">Summary</h1>
+    <div class="grid grid-cols-6 gap-10">
+      <div class="summaryChip border-[#BA000D]" @click="isModalPops=true">
+        <div class="w-1/2 flex justify-center items-center text-[#BA000D] font-semibold">
+          5
         </div>
-        <div class="border-[#5E9A76] summaryChip" @click="isModalPops=true">
-          <div class="w-1/2 flex justify-center items-center text-[#5E9A76] font-semibold">
-            5
-          </div>
-          <div class="w-1/2 bg-[#5E9A76] flex justify-center items-center text-white font-semibold">
-            CC
-          </div>
+        <div class="w-1/2 bg-[#BA000D] flex justify-center items-center text-white font-semibold">
+          OV
         </div>
-        <div class="border-[#C76ABD] summaryChip" @click="isModalPops=true">
-          <div class="w-1/2 flex justify-center items-center text-[#C76ABD] font-semibold">
-            5
-          </div>
-          <div class="w-1/2 bg-[#C76ABD] flex justify-center items-center text-white font-semibold">
-            CD
-          </div>
+      </div>
+      <div class="border-[#5E9A76] summaryChip" @click="isModalPops=true">
+        <div class="w-1/2 flex justify-center items-center text-[#5E9A76] font-semibold">
+          5
         </div>
-        <div class="border-[#DF8400] summaryChip" @click="isModalPops=true">
-          <div class="w-1/2 flex justify-center items-center text-[#DF8400] font-semibold">
-            5
-          </div>
-          <div class="w-1/2 bg-[#DF8400] flex justify-center items-center text-white font-semibold">
-            FT
-          </div>
+        <div class="w-1/2 bg-[#5E9A76] flex justify-center items-center text-white font-semibold">
+          CC
         </div>
-        <div class="border-[#E30088] summaryChip" @click="isModalPops=true">
-          <div class="w-1/2 flex justify-center items-center text-[#E30088] font-semibold">
-            5
-          </div>
-          <div class="w-1/2 bg-[#E30088] flex justify-center items-center text-white font-semibold">
-            SM
-          </div>
+      </div>
+      <div class="border-[#C76ABD] summaryChip" @click="isModalPops=true">
+        <div class="w-1/2 flex justify-center items-center text-[#C76ABD] font-semibold">
+          5
         </div>
-        <div class="border-[#68006F] summaryChip" @click="isModalPops=true">
-          <div class="w-1/2 flex justify-center items-center text-[#68006F] font-semibold">
-            5
-          </div>
-          <div class="w-1/2 bg-[#68006F] flex justify-center items-center text-white font-semibold">
-            DU
-          </div>
+        <div class="w-1/2 bg-[#C76ABD] flex justify-center items-center text-white font-semibold">
+          CD
+        </div>
+      </div>
+      <div class="border-[#DF8400] summaryChip" @click="isModalPops=true">
+        <div class="w-1/2 flex justify-center items-center text-[#DF8400] font-semibold">
+          5
+        </div>
+        <div class="w-1/2 bg-[#DF8400] flex justify-center items-center text-white font-semibold">
+          FT
+        </div>
+      </div>
+      <div class="border-[#E30088] summaryChip" @click="isModalPops=true">
+        <div class="w-1/2 flex justify-center items-center text-[#E30088] font-semibold">
+          5
+        </div>
+        <div class="w-1/2 bg-[#E30088] flex justify-center items-center text-white font-semibold">
+          SM
+        </div>
+      </div>
+      <div class="border-[#68006F] summaryChip" @click="isModalPops=true">
+        <div class="w-1/2 flex justify-center items-center text-[#68006F] font-semibold">
+          5
+        </div>
+        <div class="w-1/2 bg-[#68006F] flex justify-center items-center text-white font-semibold">
+          DU
         </div>
       </div>
     </div>
-    <div class="grid grid-cols-6 gap-x-10">
-      <div class="flex flex-col gap-[5px]" v-for="haul in haulList">
-        <div class="h-12 w-full flex rounded-lg bg-[#5863BB] justify-center items-center text-white font-semibold">
-          {{haul.haulNumber}}
+  </div>
+  <div class="grid grid-cols-6 gap-x-10">
+    <div class="flex flex-col gap-[5px]" v-for="haul in haulList">
+      <div class="h-12 w-full flex rounded-lg bg-[#5863BB] justify-center items-center text-white font-semibold">
+        {{haul.haulNumber}}
+      </div>
+      <div class="flex gap-[5px] w-full">
+        <div class="h-10 w-1/2 flex justify-center items-center  font-semibold border-2  rounded-lg" :class="haul.isRed? 'text-[#93C76A] border-[#93C76A]' : 'text-[#BA000D] border-[#BA000D]'">
+          {{ haul.kosongan }}
         </div>
-        <div class="flex gap-[5px] w-full">
-          <div class="h-10 w-1/2 flex justify-center items-center  font-semibold border-2  rounded-lg" :class="haul.isRed? 'text-[#93C76A] border-[#93C76A]' : 'text-[#BA000D] border-[#BA000D]'">
-            {{ haul.kosongan }}
-          </div>
-          <div class="h-10 w-1/2 flex justify-center items-center text-white font-semibold rounded-lg" :class="haul.isRed? 'bg-[#93C76A]' : 'bg-[#BA000D]'">
-            {{haul.muatan}}
-          </div>
+        <div class="h-10 w-1/2 flex justify-center items-center text-white font-semibold rounded-lg" :class="haul.isRed? 'bg-[#93C76A]' : 'bg-[#BA000D]'">
+          {{haul.muatan}}
         </div>
-        <div class="flex flex-col" v-if="!haul.isBottom">
-          <div class="border w-full border-[#353535]/50"></div>
-          <span class="arrow">&#x2193;</span>
-        </div>
+      </div>
+      <div class="flex flex-col" v-if="!haul.isBottom">
+        <div class="border w-full border-[#353535]/50"></div>
+        <span class="arrow">&#x2193;</span>
       </div>
     </div>
-    <div class="px-6 py-4 rounded bg-white shadow-md border w-fit flex flex-col gap-5 text-left">
-      <h1 class="text-sm font-bold">Information</h1>
-      <div class="flex gap-5 items-center">
-        <div class="flex gap-[5px] w-[200px]">
-          <div class="h-10 w-1/2 flex justify-center items-center  font-medium text-sm border-2 rounded-lg text-[#93C76A] border-[#93C76A]">
-            Kosongan
-          </div>
-          <div class="h-10 w-1/2 flex justify-center items-center text-white font-medium text-sm rounded-lg bg-[#93C76A]">
-            Muatan
-          </div>
+  </div>
+  <div class="px-6 py-4 rounded bg-white shadow-md border w-fit flex flex-col gap-5 text-left">
+    <h1 class="text-sm font-bold">Information</h1>
+    <div class="flex gap-5 items-center">
+      <div class="flex gap-[5px] w-[200px]">
+        <div class="h-10 w-1/2 flex justify-center items-center  font-medium text-sm border-2 rounded-lg text-[#93C76A] border-[#93C76A]">
+          Kosongan
         </div>
-        <div class="border h-[40px]"></div>
-          <p>Kosongan <span class="font-semibold">88</span></p>
-        <div class="border h-[40px]"></div>
-          <p>Muatan <span class="font-semibold">250</span></p>
+        <div class="h-10 w-1/2 flex justify-center items-center text-white font-medium text-sm rounded-lg bg-[#93C76A]">
+          Muatan
+        </div>
       </div>
+      <div class="border h-[40px]"></div>
+        <p>Kosongan <span class="font-semibold">88</span></p>
+      <div class="border h-[40px]"></div>
+        <p>Muatan <span class="font-semibold">250</span></p>
     </div>
   </div>
 </template>
