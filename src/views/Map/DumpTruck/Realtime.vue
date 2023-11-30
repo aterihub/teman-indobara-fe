@@ -267,13 +267,13 @@ function initializeMap() {
       let hullNumber = selectedFeature.get('value').hullNumber
       let registrationNumber = selectedFeature.get('value').registrationNumber
       let imei = selectedFeature.get('value').imei
-      let fix_flag = selectedFeature.get('value').fixFlag
+      let fix_flag = selectedFeature.get('value').gnssStatus
       let latitude = selectedFeature.get('value').latitude
       let longitude = selectedFeature.get('value').longitude
       let altitude = selectedFeature.get('value').altitude
       let angle = selectedFeature.get('value').course
       let satellites = selectedFeature.get('value').satellites
-      let hdop = selectedFeature.get('value').hdop
+      let hdop = selectedFeature.get('value').gnssHdop
       let speed = selectedFeature.get('value').speed
       let gsm_signal = selectedFeature.get('value').gsmSignal
       let internal_battery = selectedFeature.get('value').batteryVoltage
