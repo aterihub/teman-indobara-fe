@@ -73,7 +73,7 @@ import { onClickOutside } from '@vueuse/core'
     { text: "No", value: "no" },
     { text: "Vehicle", value: "vehicle" },
     { text: "Position", value: "position" },
-    { text: "Speed (KpH)", value: "speed", sortable: true },
+    { text: "Speed (Km/h)", value: "speed", sortable: true },
     { text: "Violation", value: "violation", sortable: true },
     { text: "Time", value: "time" ,sortable: true},
   ]

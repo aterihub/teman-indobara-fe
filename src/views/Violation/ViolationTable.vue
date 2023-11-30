@@ -199,7 +199,7 @@ const header = [
   { text: "Registration Number", value: "registrationNumber",sortable: true },
   { text: "Site", value: "site",sortable: true },
   { text: "Contractor", value: "contractor",sortable: true },
-  { text: "Speed (KpH)", value: "speed", sortable: true },
+  { text: "Speed (Km/h)", value: "speed", sortable: true },
   { text: "Violation", value: "violation", sortable: true },
   { text: "Coordinate", value: "coordinate"},
   { text: "", value: "operation"},
