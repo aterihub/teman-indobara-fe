@@ -294,6 +294,11 @@ const style = [
   }
 ]
 
+function camelToNormalCase(camelCaseString) {
+    return camelCaseString
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/^./, str => str.toUpperCase());
+}
 
 onMounted(async () => {
   await vehiclesStore.getVehicles()
@@ -438,7 +443,7 @@ async function filterVehicle() {
         let stored_time = selectedFeature.get('value').storedTime
         let time = selectedFeature.get('value').deviceTime
         let diff_time = selectedFeature.get('value').diff_time
-        let event_io = selectedFeature.get('value').eventIo
+        let event_io = camelToNormalCase(selectedFeature.get('value').eventIo)
         let popupContent =
           'GPS status: ' + fix_flag + '<br>'
           + 'Latitude: ' + latitude + '<br>'

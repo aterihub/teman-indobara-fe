@@ -211,7 +211,11 @@ const selectedVehicle = ref({imei:null, registrationNumber:null})
 let dataInterval
 const mergedList = ref({})
 
-
+function camelToNormalCase(camelCaseString) {
+    return camelCaseString
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/^./, str => str.toUpperCase());
+}
 
 onMounted( async () => {
   await sitesStore.getSites()
@@ -280,7 +284,7 @@ function initializeMap() {
       let external_power = selectedFeature.get('value').externalVoltage
       let stored_time = selectedFeature.get('value').storedTime
       let time = selectedFeature.get('value')._time
-      let event_io = selectedFeature.get('value').eventIo
+      let event_io = camelToNormalCase(selectedFeature.get('value').eventIo)
       let popupContent = 
         'Contractor: ' + contractor + '<br>' 
         + 'Hull Number: ' + hullNumber + '<br>' 
