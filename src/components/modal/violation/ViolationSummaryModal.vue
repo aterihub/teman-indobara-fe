@@ -169,7 +169,7 @@ import { onClickOutside } from '@vueuse/core'
   
   .modal {
   @apply
-    fixed top-0 left-[455px] w-full h-full
+    fixed top-0 left-0 w-full h-full px-[46px]
     /* overflow-x-hidden overflow-y-auto */
     bg-[#ABADAF]/20 z-10
 }
@@ -182,7 +182,7 @@ import { onClickOutside } from '@vueuse/core'
 
 .modal-content {
   @apply 
-     w-[1410px] p-[40px] bg-white rounded-t-xl gap-[40px] flex flex-col text-left
+   w-screen p-[40px] bg-white rounded-t-xl gap-[40px] flex flex-col text-left
 }
 
 .fade-enter-active,
