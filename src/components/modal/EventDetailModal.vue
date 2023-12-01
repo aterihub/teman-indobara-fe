@@ -62,7 +62,7 @@
                       <p class="font-medium">{{ eventFootageData[0].storedTime }}</p>
                     </div>
                     <div v-if="eventFootageData.length > 0" class="flex gap-2">
-                      <p>Different Time:</p>
+                      <p>Time Difference:</p>
                       <p class="font-medium">{{ eventFootageData[0].differsTime }}</p>
                     </div>
                     <div v-if="eventFootageData.length > 0" v-for="([key, value]) in Object.entries(eventMeta)" :key="key"

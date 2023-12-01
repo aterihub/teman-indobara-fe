@@ -437,7 +437,7 @@ async function filterVehicle() {
           + 'External voltage: ' + external_power + '<br>'
           + 'Stored time : ' + stored_time + '<br>'
           + 'Device time : ' + time + '<br>'
-          + 'Different time : ' + diff_time + ' second <br>'
+          + 'Time difference : ' + diff_time + ' second <br>'
           + 'Event : ' + event_io + ' <br>'
         document.getElementById('popup').innerHTML = popupContent
         popupOverlay.setPosition(selectedFeature.getGeometry().getCoordinates())

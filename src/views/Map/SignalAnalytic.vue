@@ -400,7 +400,7 @@ async function filterVehicle() {
           + 'External voltage: ' + external_power + '<br>'
           + 'Stored time : ' + stored_time + '<br>'
           + 'Device time : ' + time + '<br>'
-          + 'Different time : ' + diff_time + ' second <br>'
+          + 'Time difference : ' + diff_time + ' second <br>'
         document.getElementById('popup').innerHTML = popupContent
         popupOverlay.setPosition(selectedFeature.getGeometry().getCoordinates())
         popupOverlay.getElement().style.display = 'block'
@@ -434,7 +434,7 @@ function addDotsMarker(color, data, variant) {
       "\n","External voltage: " , item.external_power , 
       "\n","Stored time : " , item.stored_time , 
       "\n","Device time : " , item._time , 
-      "\n","Different time : " , item.diff_time)
+      "\n","Time difference : " , item.diff_time)
     const { latitude, longitude, diff_time, gsm_signal } = item
     const marker = new Feature({
       geometry: new Point(fromLonLat([longitude, latitude])),
