@@ -21,7 +21,6 @@
         <div class="flex flex-col gap-7">
           <h1 class="text-left font-bold text-lg mb-2">Violation Filter</h1>
           <select name="contractorFilter" id="contractorFilter"
-            :class="{'disable-svg': layers.length === 0}"
             class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
             v-model="violationFilter">
             <option class="p-2 cursor-pointer" value="0" >All Violation</option>
@@ -307,6 +306,9 @@ onMounted(async () => {
 
 async function changeVehicle(id) {
   await vehiclesStore.getVehicle(id)
+  selectedVariant.value = vehicle.value.devices.map((device) => {
+    return device.imeiNumber
+  })
 }
 
 function initializeMap() {
@@ -339,8 +341,8 @@ let minimumDistance = 0
 let geolocations
 
 async function filterVehicle() {
-  violationFilter.value = '0'
-  selectedVariant.value = []
+  // violationFilter.value = '0'
+  // selectedVariant.value = []
   isPlay.value = [false,false]
   viewPoints.value = [true, true]
   isStartPlayBack.value = [false, false]
@@ -360,7 +362,7 @@ async function filterVehicle() {
 
       let route = distanceFilter.filter(minimumDistance, filteredData).route
       if (route.length != 0) {
-        selectedVariant.value.push(geolocation.imeiNumber)
+        // selectedVariant.value.push(geolocation.imeiNumber)
         let coordinates = route.map(item => fromLonLat([(item.longitude), (item.latitude)]))
         let lineString = new LineString(coordinates)
         let lineFeature = new Feature({
@@ -389,6 +391,7 @@ async function filterVehicle() {
       }
     })
   }
+  hideRoute()
 
   //route interaction
   const selectInteraction = new Select({
@@ -515,23 +518,52 @@ function addDotsMarker(color, data) {
         }),
       })
     } else {
-      if (eventIo == '0') {
-        markerStyle = new Style({
-          image: new Circle({
-            radius: 6,
-            fill: new Fill({ color: `${color}` }),
-            // stroke: new Stroke({ color: 'rgba(255, 0, 0, 0.4)', width: 8 }),
-          }),
-        })
-      } else {
-        markerStyle = new Style({
-          image: new Circle({
-            radius: 6,
-            fill: new Fill({ color: `${color}` }),
-            stroke: new Stroke({ color: 'red', width: 1 }),
-          }),
-        })
-      }
+      // if (eventIo == '0') {
+      //   markerStyle = new Style({
+      //     image: new Circle({
+      //       radius: 6,
+      //       fill: new Fill({ color: `${color}` }),
+      //       // stroke: new Stroke({ color: 'rgba(255, 0, 0, 0.4)', width: 8 }),
+      //     }),
+      //   })
+      // } else {
+      //   markerStyle = new Style({
+      //     image: new Circle({
+      //       radius: 6,
+      //       fill: new Fill({ color: `${color}` }),
+      //       stroke: new Stroke({ color: 'red', width: 1 }),
+      //     }),
+      //   })
+      // }
+      if (violationFilter.value === '0') {
+          if (eventIo == '0') {
+            markerStyle = new Style({
+              image: new Circle({
+                radius: 6,
+                fill: new Fill({ color: `${color}` }),
+                // stroke: new Stroke({ color: 'rgba(255, 0, 0, 0.4)', width: 8 }),
+              }),
+            })
+          } else {
+            markerStyle = new Style({
+              image: new Circle({
+                radius: 6,
+                fill: new Fill({ color: `${color}` }),
+                stroke: new Stroke({ color: 'red', width: 1 }),
+              }),
+            })
+          }
+        } else {
+          if (violationFilter.value === camelToNormalCase(eventIo)) {
+            markerStyle = new Style({
+              image: new Circle({
+                radius: 6,
+                fill: new Fill({ color: `${color}` }),
+                stroke: new Stroke({ color: 'red', width: 1 }),
+              }),
+            })
+          }
+        }
     }
     marker.setStyle(markerStyle)
     layers[index]
