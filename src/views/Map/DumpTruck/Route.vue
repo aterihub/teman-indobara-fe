@@ -25,7 +25,7 @@
             class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
             v-model="violationFilter">
             <option class="p-2 cursor-pointer" value="0" >All Violation</option>
-            <option class="p-2 cursor-pointer" v-for="violation in violationFilterList" :value="violation.code" >{{violation.name}}</option>
+            <option class="p-2 cursor-pointer" v-for="violation in violationFilterList" :value="violation.name" >{{violation.name}}</option>
           </select>
         </div>
       </div>
@@ -340,6 +340,7 @@ let geolocations
 
 async function filterVehicle() {
   violationFilter.value = '0'
+  selectedVariant.value = []
   isPlay.value = [false,false]
   viewPoints.value = [true, true]
   isStartPlayBack.value = [false, false]
@@ -347,7 +348,6 @@ async function filterVehicle() {
   queryParams.value.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
   queryParams.value.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
   await geoDataStore.getVehicleHistoryDeviceGeo(selectedVehicle.value.id, queryParams.value)
-  selectedVariant.value = []
   layers.map(layer => {
     map.removeLayer(layer)
   })
@@ -608,7 +608,7 @@ async function ressurectPoints(color, geolocation, layersIndex) {
             })
           }
         } else {
-          if (violationFilter.value === eventIo) {
+          if (violationFilter.value === camelToNormalCase(eventIo)) {
             markerStyle = new Style({
               image: new Circle({
                 radius: 6,
