@@ -4,7 +4,7 @@
     :modalActive="modalActive"
     :isError="status.isError"
      @close="closeNotification" />
-  <div class="absolute w-full h-full bg-cover bg-[url('@/assets/img/login-bg.png')] bg-center flex justify-center items-center"></div>
+  <div class="absolute w-full h-full bg-cover sm:bg-[url('@/assets/img/login-bg.png')] bg-center flex justify-center items-center"></div>
   <div class="content">
     <img src="@/assets/img/teman-indobara-logo.png" id="logo" class="logo">
     <div class="login-wrapper">
@@ -64,7 +64,7 @@
 }
 
 .form-wrapper{
-  @apply flex flex-col mb-4 w-full gap-4
+  @apply flex flex-col mb-4 w-full gap-4 sm:px-0 px-10
 }
 
 .create-account {
@@ -75,7 +75,7 @@
   @apply mb-8 font-bold text-[21px] text-[#2F393F] 
 }
 .logo {
-  @apply m-auto max-w-[609px]
+  @apply m-auto w-[400px] sm:w-[609px]
 }
 
 

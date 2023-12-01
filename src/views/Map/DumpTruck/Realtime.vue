@@ -9,24 +9,24 @@
     </div>
   </div>
   <div class="filter-form">
-    <h1 class="text-left font-bold text-sm">Filter</h1>
-    <div class="flex gap-4 items-center">
+    <h1 class="text-left font-bold text-[10px] sm:text-sm">Filter</h1>
+    <div class="flex gap-1 sm:gap-4 items-center">
       <select name="contractorFilter" id="contractorFilter" 
-        class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+        class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
         v-model="selectedSite"  
         @change="getContractorsList(selectedSite)">
         <option class="p-2 cursor-pointer" value="0" >All Site</option>
         <option class="p-2 cursor-pointer" v-for="site in sites" :value="site.name" >{{site.name}}</option>
       </select>
       <select name="contractorFilter" id="contractorFilter" 
-        class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+        class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
         v-model="selectedContractor" >
         <option class="p-2 cursor-pointer" value="0" >All Contractor</option>
         <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.name" >{{contractor.name}}</option>
       </select>
       <select name="contractorFilter" id="contractorFilter" 
         v-model="selectedHull" 
-        class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
+        class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
         <option class="p-2 cursor-pointer" value="0" >All Hull</option>
         <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number" >{{vehicle.number}}</option>
       </select>
@@ -495,9 +495,11 @@ function clearLayer(){
 .filter-form {
   @apply 
     text-[#3a3a3e] text-base px-4 py-4
-    absolute right-2 top-14
+    absolute 
+    right-2 top-14
     flex flex-col gap-2
-    rounded-lg w-fit h-fit
+    rounded-lg 
+    w-fit h-fit
     shadow-blue-300/50
     shadow-sm
     bg-white
