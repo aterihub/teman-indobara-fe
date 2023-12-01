@@ -444,6 +444,10 @@ async function filterVehicle() {
         let time = selectedFeature.get('value').deviceTime
         let diff_time = selectedFeature.get('value').diff_time
         let event_io = camelToNormalCase(selectedFeature.get('value').eventIo)
+        let rpm = selectedFeature.get('value').rpm
+        let brakeSignal = selectedFeature.get('value').brakeSignal
+        let leftTurnSignal = selectedFeature.get('value').leftTurnSignal
+        let rightTurnSignal = selectedFeature.get('value').rightTurnSignal
         let popupContent =
           'GPS status: ' + fix_flag + '<br>'
           + 'Latitude: ' + latitude + '<br>'
@@ -460,6 +464,12 @@ async function filterVehicle() {
           + 'Device time : ' + time + '<br>'
           + 'Different time : ' + diff_time + ' second <br>'
           + 'Event : ' + event_io + ' <br>'
+          + 'OBD Data' + ' <br>'
+          + 'RPM : ' + rpm + ' <br>'
+          + 'Brake : ' + brakeSignal + ' <br>'
+          + 'Left Turn : ' + leftTurnSignal + ' <br>'
+          + 'Right Turn : ' + rightTurnSignal + ' <br>'
+
         document.getElementById('popup').innerHTML = popupContent
         popupOverlay.setPosition(selectedFeature.getGeometry().getCoordinates())
         popupOverlay.getElement().style.display = 'block'
