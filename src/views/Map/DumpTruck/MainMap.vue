@@ -137,7 +137,7 @@
       sideNav 
   },
   setup() {
-    const selectedComponent = useLocalStorage('SelectedMapSetting','Route')
+    const selectedComponent = useLocalStorage('SelectedMapSetting','Realtime')
     const selectedVehicle = ref({id: '0', registrationNumber: 'XXXX'})
     const selectedContractor = ref('0')
     const vehicleList = ref([])
@@ -145,12 +145,12 @@
     const isVehicleDetailDataReady = ref(false)
     const tabs = [
       {
-        title: 'Route',
-        value: 'Route'
-      },
-      {
         title: 'Realtime',
         value: 'Realtime'
+      },
+      {
+        title: 'Route',
+        value: 'Route'
       },
       {
         title: 'Heatmap',
