@@ -339,6 +339,7 @@ let minimumDistance = 0
 let geolocations
 
 async function filterVehicle() {
+  violationFilter.value = '0'
   isPlay.value = [false,false]
   viewPoints.value = [true, true]
   isStartPlayBack.value = [false, false]
