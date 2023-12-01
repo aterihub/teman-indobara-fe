@@ -209,10 +209,10 @@
 }
 .tab-wrapper{
   @apply
-   w-full text-left gap-[10px] flex flex-col 
+   w-full text-left gap-[6px] sm:gap-[10px] flex flex-col 
 }
 .tab-wrapper h1 {
-  @apply text-sm font-bold
+  @apply text-[10px] font-bold sm:text-sm
 }
 .menu::-webkit-scrollbar {
   width: 8px;

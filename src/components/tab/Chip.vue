@@ -36,7 +36,7 @@ export default {
 <style scoped>
 
 .tab {
-  @apply w-full grid grid-cols-4 gap-[14px]
+  @apply w-full grid grid-cols-4 gap-[4px] sm:gap-[14px]
 }
 button {
   @apply disabled:opacity-75 flex justify-center items-center relative text-[#353535] cursor-pointer p-2 rounded-md
