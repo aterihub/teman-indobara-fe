@@ -1,4 +1,9 @@
 <template>
+  <NotificationAlert 
+    :message ="notifications"
+    :modalActive="notifAlertActive"
+    :isError="true"
+     @close="closeNotification" />
   <router-view/>
   <!-- <loading :loading="loadingStore.loading"/> -->
 </template>
@@ -7,9 +12,20 @@
 import { useLoadingStore } from '@/stores/LoadingStore'
 import { watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia';
+import { useRealtimeNofiticationStore } from '@/stores/realtime/realtimeNotificationStore'
+
+
+const { notifications, notifAlertActive } = storeToRefs(useRealtimeNofiticationStore())
+
+const closeNotification = () => {
+  notifAlertActive.value = false
+}
 
 const loadingStore = useLoadingStore()
+
 const route = useRoute()
+
 onMounted(() => {
   loadingStore.stopLoading()
 })

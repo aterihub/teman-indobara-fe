@@ -31,6 +31,9 @@ app.mount('#app')
 app.component('alert', defineAsyncComponent(() =>
   import('@/components/alert/BaseAlert.vue')
 ))
+app.component('NotificationAlert', defineAsyncComponent(() =>
+  import('@/components/alert/NotificationAlert.vue')
+))
 
 app
 .component('EasyDataTable', Vue3EasyDataTable)
