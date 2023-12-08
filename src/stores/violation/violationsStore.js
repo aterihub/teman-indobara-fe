@@ -50,7 +50,7 @@ export const useViolationsStore = defineStore('violationData', {
           })
           this.violationStatus.message = 'Violation Fetched'
         } else {
-          this.violationStatus.message = 'No Violation Avaialable'
+          this.violationStatus.message = 'No Violation Available'
         }
         this.violationsReport = violation
         this.violationStatus.isError = false
@@ -91,7 +91,7 @@ export const useViolationsStore = defineStore('violationData', {
             }
           })
         } else {
-          this.notificationStatus.message = 'No Violation Avaialable'
+          this.notificationStatus.message = 'No Violation Available'
         }
         this.violationsNotification = notification
         console.log(this.violationsNotification)
