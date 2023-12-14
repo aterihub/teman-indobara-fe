@@ -58,7 +58,6 @@ export const useViolationsStore = defineStore('violationData', {
       } catch (err) {
         this.violationStatus.isError = true
         this.violationStatus.code = err.code
-        this.violationStatus.message = 'Network Error'
         switch (this.violationStatus.code) {
           case 'ERR_NETWORK':
             this.violationStatus.message = 'Network Error'
@@ -66,6 +65,10 @@ export const useViolationsStore = defineStore('violationData', {
           case 'ERR_BAD_REQUEST':
             this.violationStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
+          default :
+            this.status.message = err.response.data.message
+          break;
+
         }
         this.getViolationReportIsLoading = false
         console.error(err)
@@ -100,7 +103,7 @@ export const useViolationsStore = defineStore('violationData', {
       } catch (err) {
         this.notificationStatus.isError = true
         this.notificationStatus.code = err.code
-        this.notificationStatus.message = 'Network Error'
+        this.status.message = err.response.data.message
         switch (this.notificationStatus.code) {
           case 'ERR_NETWORK':
             this.notificationStatus.message = 'Network Error'
@@ -108,7 +111,10 @@ export const useViolationsStore = defineStore('violationData', {
           case 'ERR_BAD_REQUEST':
             this.notificationStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
-        }
+            default :
+              this.status.message = err.response.data.message
+              break;
+            }
         this.getViolationReportIsLoading = false
         console.error(err)
         return err
