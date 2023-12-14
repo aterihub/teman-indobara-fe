@@ -66,7 +66,7 @@ export const useViolationsStore = defineStore('violationData', {
             this.violationStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
           default :
-            this.status.message = err.response.data.message
+            this.violationStatus.message = err.response.data.message
           break;
 
         }
@@ -112,7 +112,7 @@ export const useViolationsStore = defineStore('violationData', {
             this.notificationStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
             default :
-              this.status.message = err.response.data.message
+              this.notificationStatus.message = err.response.data.message
               break;
             }
         this.getViolationReportIsLoading = false

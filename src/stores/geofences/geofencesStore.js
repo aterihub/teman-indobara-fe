@@ -13,6 +13,11 @@ export const useGeofencesStore = defineStore('geofencesData', {
   state: () => ({
     geofences: ref([]),
     geofence: ref([]),
+    getGeofencesStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
     geofencesStatus: ref({
       isError:null,
       message: null,
@@ -29,25 +34,25 @@ export const useGeofencesStore = defineStore('geofencesData', {
         const res = await geofencesAPI.getGeofences()
         this.geofences = res.data.geofences
         if (this.geofences.length === 0) {
-          this.geofencesStatus.message = 'No Geofences Available'
+          this.getGeofencesStatus.message = 'No Geofences Available'
         } else {
-          this.geofencesStatus.message = 'Geofences Fetched'
+          this.getGeofencesStatus.message = 'Geofences Fetched'
         }
-        this.geofencesStatus.isError = false
+        this.getGeofencesStatus.isError = false
         this.getGeofencesIsLoading = false
       } catch (err) {
-        this.geofencesStatus.isError = true
-        this.geofencesStatus.code = err.code
+        this.getGeofencesStatus.isError = true
+        this.getGeofencesStatus.code = err.code
         this.status.message = err.response.data.message
         switch (this.violationStatus.code) {
           case 'ERR_NETWORK':
-            this.geofencesStatus.message = 'Network Error'
+            this.getGeofencesStatus.message = 'Network Error'
             break;
           case 'ERR_BAD_REQUEST':
-            this.geofencesStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            this.getGeofencesStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
             default :
-              this.status.message = err.response.data.message
+              this.getGeofencesStatus.message = err.response.data.message
               break;
         }
         this.getGeofencesIsLoading = false
@@ -74,7 +79,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
             this.geofencesStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
             default :
-              this.status.message = err.response.data.message
+              this.geofencesStatus.message = err.response.data.message
               break;
         }
         this.createGeofenceIsLoading = false
@@ -100,7 +105,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
             this.geofencesStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
             default :
-              this.status.message = err.response.data.message
+              this.geofencesStatus.message = err.response.data.message
               break;
         }
         this.deleteGeofenceIsLoading = false
