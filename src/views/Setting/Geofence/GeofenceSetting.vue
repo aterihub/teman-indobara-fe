@@ -1,5 +1,5 @@
 <template>
-  <alert message="success" :modalActive="modalActive" :isError="false"/>
+  <alert :message="geofencesStatus.message" :modalActive="modalActive" :isError="geofencesStatus.isError"/>
   <transition name="fade">
        <div class="modal" v-show="isOpen">
         <transition name="drop-in">
@@ -122,7 +122,6 @@ const items = ref([])
 let map
 let popupOverlay
 let drawInteraction
-let selectInteraction
 
 const mapContainer = ref(null)
 const loadingStore = useMapLoadingStore()
@@ -152,9 +151,8 @@ onMounted( async () => {
 const drawVector = ref(null)
 
 function drawPolygon() {
-  console.log('GEOFENCES')
-  console.log(geofences.value)
   // CODE UNDER TEST
+  drawVector.value.getSource().clear()
   const features = []
   if (geofences.value.length !== 0) {
     geofences.value.map( geofence => 
@@ -223,86 +221,14 @@ function drawPolygon() {
     drawVector.value.getSource().addFeatures(features)
     console.log('FEATURES')
     console.log(drawVector.value.getSource().getFeatures())
-  }
+  } 
 }
 function initializeMap() {
-  // this is where the drawn features go
   drawVector.value = new VectorLayer({
     source: new VectorSource(),
     style: polygonStyle,
   })
   drawPolygon()
-  // //CODE UNDER TEST
-  // const features = [];
-  // if (geofences.value.length !== 0) {
-  //   geofences.value.map( geofence => 
-  //   {
-  //     let lonLatCoordinates = geofence.coordinates.map(coordinate => {
-  //       return [coordinate[1], coordinate[0]]
-  //     })
-  //     let projectedCoordinates = lonLatCoordinates.map(coordinate => {
-  //       return fromLonLat(coordinate)
-  //     })
-  //     console.log(projectedCoordinates)
-  //     let obj =
-  //     {
-  //       geometry: new Polygon([projectedCoordinates]),
-  //       name: geofence.name,
-  //       id: geofence.id,
-  //       notes: geofence.notes,
-  //       operand: geofence.operand,
-  //       eventualRecord: geofence.eventualRecord,
-  //       maxAllowedSpeed: geofence.maxAllowedSpeed,
-  //       frameBorder: geofence.frameBorder
-  //     }
-  //     initialFeatures.value.push(obj)
-  //     let itemsObj =
-  //     {
-  //       id: geofence.id,
-  //       name: geofence.name,
-  //       operand: geofence.operand,
-  //       eventualRecord: geofence.eventualRecord,
-  //       frameBorder: geofence.frameBorder,
-  //       coordinates: geofence.coordinates,
-  //       maxAllowedSpeed: geofence.maxAllowedSpeed,
-  //       notes: geofence.notes,
-  //     }
-  //     itemsSelected.value.push(itemsObj)
-
-  //   })
-  //   for (const initialFeature of initialFeatures.value) {
-  //     const polygonStyle = new Style ({
-  //       fill: new Fill({
-  //         color: 'rgba(100, 255, 0, 0.3)',
-  //       }),
-  //       stroke: new Stroke({
-  //         color: 'rgba(251, 139, 36, 0.8)',
-  //         width: 1,
-  //       }),
-  //       text: new Text({
-  //         text: initialFeature.name,
-  //         fill: new Fill({
-  //           color: 'black',
-  //         }),
-  //         offsetY: 0, // Adjust the offset if needed
-  //         textAlign: 'center',
-  //         font: 'bold 14px sans-serif',
-  //       }),
-  //     })
-      
-  //     const feature = new Feature({
-  //       geometry: initialFeature.geometry,
-  //       id: initialFeature.id,
-  //       name: initialFeature.name,
-  //       notes: initialFeature.notes,
-  //     });
-  //     feature.setStyle(polygonStyle)
-  //     features.push(feature);
-  //   }
-  //   drawVector.value.getSource().addFeatures(features)
-  //   console.log('feature',drawVector.value.getSource().getFeatures())
-  // }
-
   map = new Map({
     target: mapContainer.value,
     layers: [
@@ -330,7 +256,6 @@ function initializeMap() {
     type: 'Polygon',
     source: drawVector.value.getSource(),
     trace: true,
-    // traceSource: baseVector.getSource(),
     style: {
       'stroke-color': 'rgba(251, 139, 36, 0.5)',
       'stroke-width': 1.5,
@@ -429,6 +354,7 @@ const onSubmit = async (values, { resetForm }) => {
   payload.value = values
   payload.value.coordinates = latLongCoordinates.slice(0, latLongCoordinates.length - 1)
   payload.value.eventualRecord = eventualRecord.value
+  // payload.value.operand = operand.value
   payload.value.operand = parseInt(operand.value)
   regButtonClick.value = ++regButtonClick.value
     if (regButtonClick.value == 1) {
@@ -436,7 +362,6 @@ const onSubmit = async (values, { resetForm }) => {
     }
 
     if (regButtonClick.value == 2) {
-      currentFeature.set('name', values.name)
       const polygonStyle = new Style ({
         fill: new Fill({
           color: 'rgba(100, 255, 0, 0.3)',
@@ -446,7 +371,7 @@ const onSubmit = async (values, { resetForm }) => {
           width: 1,
         }),
         text: new Text({
-          text: values.name,
+          text: payload.value.name,
           fill: new Fill({
             color: 'black',
           }),
@@ -455,31 +380,38 @@ const onSubmit = async (values, { resetForm }) => {
           font: 'bold 14px sans-serif',
         }),
       })
-      await geofencesStore.createGeofence(payload.value)
+
       currentFeature.setStyle(polygonStyle)
-      currentFeature.set('id',geofence.value.id)
+      currentFeature.set('name', payload.value.name)
+      await geofencesStore.createGeofence(payload.value)
       itemsSelected.value.push(geofence.value)
       modalActive.value = true
+      if (geofencesStatus.value.isError) {
+        drawVector.value.getSource().removeFeature(currentFeature)
+      } else {
+        currentFeature.set('id', geofence.value.id)
+      }
       setTimeout(closeNotification, 3000)
       resetForm()
       registerLabel.value = 'SUBMIT'
       regButtonClick.value = 0
       cancelButtonClick.value = 0
       modalToggle()
-      await delay(1000)
-      geofencesStore.getGeofences()
+      await delay(500)
+      await geofencesStore.getGeofences()
+      // drawPolygon()
     }
 }
 
 async function deleteGeofence(item) {
   await geofencesStore.deleteGeofence(item.id)
   await geofencesStore.getGeofences()
-  drawPolygon()
+  let selectedFeature = drawVector.value.getSource().getFeatures().filter((data) =>  data.id !== item.id)
+  console.log(selectedFeature)
+  drawVector.value.getSource().removeFeature(selectedFeature)
   itemsSelected.value = itemsSelected.value.filter((data) =>  data.id !== item.id)
-  // let features = drawVector.value.getSource().getFeatures()
-  // let selectedFeature = features.filter((feature) => feature.values_.id === item.id)
-  // drawVector.value.getSource().removeFeature(selectedFeature[0])
-  // items.value = items.value.filter((data) =>  data.id !== item.id)
+  modalActive.value = true
+  setTimeout(closeNotification, 3000)
 }
 
 watch(itemsSelected, (newValue, oldValue) => {
@@ -494,6 +426,7 @@ watch(itemsSelected, (newValue, oldValue) => {
 
 async function showPolygon() {
   let features = drawVector.value.getSource().getFeatures()
+  console.log(features)
   const selectedFeatures = features.filter(feature => itemsSelected.value.some(item => feature.values_.id === item.id))
   selectedFeatures.forEach((selectedFeature) => {
     const polygonStyle = new Style ({

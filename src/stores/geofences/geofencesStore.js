@@ -44,7 +44,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
         this.getGeofencesStatus.isError = true
         this.getGeofencesStatus.code = err.code
         this.status.message = err.response.data.message
-        switch (this.violationStatus.code) {
+        switch (this.getGeofencesStatus.code) {
           case 'ERR_NETWORK':
             this.getGeofencesStatus.message = 'Network Error'
             break;
@@ -71,7 +71,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
       } catch (err) {
         this.geofencesStatus.isError = true
         this.geofencesStatus.code = err.code
-        switch (this.violationStatus.code) {
+        switch (this.geofencesStatus.code) {
           case 'ERR_NETWORK':
             this.geofencesStatus.message = 'Network Error'
             break;
@@ -97,7 +97,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
       } catch (err) {
         this.geofencesStatus.isError = true
         this.geofencesStatus.code = err.code
-        switch (this.violationStatus.code) {
+        switch (this.geofencesStatus.code) {
           case 'ERR_NETWORK':
             this.geofencesStatus.message = 'Network Error'
             break;
