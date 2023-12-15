@@ -17,17 +17,6 @@
   </div>
   <div class="form-wrapper">
     <div class="flex gap-2">
-      <div class="violation-modal">
-        <div class="flex flex-col gap-7">
-          <h1 class="text-left font-bold text-lg mb-2">Violation Filter</h1>
-          <select name="contractorFilter" id="contractorFilter"
-            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-            v-model="violationFilter">
-            <option class="p-2 cursor-pointer" value="0" >All Violation</option>
-            <option class="p-2 cursor-pointer" v-for="violation in violationFilterList" :value="violation.name" >{{violation.name}}</option>
-          </select>
-        </div>
-      </div>
       <div class="flex flex-col gap-2">
         <div 
           class="vehicle-info">
@@ -103,6 +92,17 @@
             </form>
           </div>
         </div>
+        <div class="violation-modal">
+        <div class="flex flex-col gap-7">
+          <h1 class="text-left font-bold text-lg mb-2">Violation Filter</h1>
+          <select name="contractorFilter" id="contractorFilter"
+            class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+            v-model="violationFilter">
+            <option class="p-2 cursor-pointer" value="0" >All Violation</option>
+            <option class="p-2 cursor-pointer" v-for="violation in violationFilterList" :value="violation.name" >{{violation.name}}</option>
+          </select>
+        </div>
+      </div>
         <div class="legend">
           <div class="outlined-circle"></div>
           <h2 class="select-none">Event</h2>
@@ -900,9 +900,9 @@ onUnmounted(() => {
     shadow-blue-300/50
     backdrop-blur-md
     bg-gradient-to-b from-slate-50/80
-    rounded-lg w-fit px-4 py-6 gap-2 flex flex-col
+    rounded-lg w-full px-4 py-6 gap-2 flex flex-col
     h-full
-    min-w-[240px]
+    min-w-[360px]
     cursor-pointer
     select-none
 }
