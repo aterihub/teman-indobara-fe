@@ -1,48 +1,58 @@
 <template>
   <alert :message="geofencesStatus.message" :modalActive="modalActive" :isError="geofencesStatus.isError"/>
+
+
+  <MapLoading :loading="loadingStore.loading"/>
+  <div class="grid grid-cols-3 w-full gap-4">
+    <div ref="mapContainer" class="map-container col-span-2 relative">
   <transition name="fade">
-       <div class="modal" v-show="isOpen">
-        <transition name="drop-in">
-          <div class="modal-inner" v-show="isOpen">
-            <div class="modal-content">
+    <div class="modal" v-show="isOpen">
+      <transition name="drop-in">
+        <div class="modal-inner" v-show="isOpen">
+          <div class="modal-content">
             <h1 class="title">Add Geofence Configuration</h1>
             <VeeForm v-slot="{ handleSubmit }" as="div" ref="form" >
-              <form  @submit="handleSubmit($event, onSubmit)" class="form-wrapper" >
-                <BaseInput required name="name" type="text" placeholder="Define area name" class="outlined" label="Area Name"/>
-                <div class="flex flex-col gap-1 text-left">
-                  <label for="operand" class="text-xs font-bold">Operand</label>
-                  <div class="select-option ">
-                    <select name="operand" v-model="operand" class="cursor-pointer bg-[#F2F2F2] w-full" required>
-                      <option value="0">On Exit</option>
-                      <option value="1">On Enter</option>
-                      <option value="2">On Both</option>
-                    </select> 
-                  </div>
+            <form  @submit="handleSubmit($event, onSubmit)" class="form-wrapper" >
+              <BaseInput required name="name" type="text" placeholder="Define area name" class="outlined" label="Area Name"/>
+              <div class="flex flex-col gap-1 text-left">
+                <label for="operand" class="text-xs font-bold">Operand</label>
+                <div class="select-option ">
+                  <select name="operand" v-model="operand" class="cursor-pointer bg-[#F2F2F2] w-full" required>
+                    <option value="0">On Exit</option>
+                    <option value="1">On Enter</option>
+                    <option value="2">On Both</option>
+                  </select> 
                 </div>
-                <div class="checkbox-wrapper"> 
-                  <label class="cursor-pointer" for="eventualRecord" >
-                    Eventual record
-                  </label>
-                  <input id="eventualRecord" type="checkbox" v-model="eventualRecord"> 
-                </div>
-                <BaseInput required name="frameBorder" type="number" max="1000000" placeholder="0 to 1000000" class="outlined" label="Frame Border"/>
-                <BaseInput required name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined" label="Max Speed"/>
-                <BaseInput required name="notes" type="text" placeholder="Type notes here" class="outlined" label="Notes"/>
-                <div class="flex justify-between gap-10">
-                  <BaseButton type="button" class="filled__softblue" :label="cancelLabel" @click="cancelForm"/>
-                  <BaseButton type="submit" class="filled__green" :label="registerLabel"  />
-                </div>
-              </form>
+              </div>
+              <div class="checkbox-wrapper"> 
+                <label class="cursor-pointer" for="eventualRecord" >
+                  Eventual record
+                </label>
+                <input id="eventualRecord" type="checkbox" v-model="eventualRecord"> 
+              </div>
+              <BaseInput required name="frameBorder" type="number" max="1000000" placeholder="0 to 1000000" class="outlined" label="Frame Border"/>
+              <BaseInput required name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined" label="Max Speed"/>
+              <BaseInput required name="notes" type="text" placeholder="Type notes here" class="outlined" label="Notes"/>
+              <div class="flex justify-between gap-10">
+                <BaseButton type="button" class="filled__softblue" :label="cancelLabel" @click="cancelForm"/>
+                <BaseButton type="submit" class="filled__green" :label="registerLabel"  />
+              </div>
+            </form>
             </VeeForm>
           </div>
         </div>
       </transition>
     </div>
   </transition>
-
-  <MapLoading :loading="loadingStore.loading"/>
-  <div class="grid grid-cols-3 w-full gap-4">
-    <div ref="mapContainer" class="map-container col-span-2"></div>
+      <transition name="drop-in">
+        <div v-if="isEditGeofence" class="absolute z-10 bg-[#353535]/50 w-full flex items-center py-4 text-white text-base">
+          <div class="mx-auto">
+            <p>Press <span class="font-semibold">ESC </span>to Undo</p> 
+            <p>Press <span class="font-semibold">Enter </span>to Finish Drawing</p> 
+          </div>
+        </div>
+      </transition>
+    </div>
     <div class="flex flex-col gap-4 w-full">
       <div class="flex gap-4">
         <div v-if="!isEditGeofence" class="w-full">
@@ -101,7 +111,7 @@ import { Style, Circle, Fill, Stroke } from 'ol/style'
 import Icon from 'ol/style/Icon'
 import Select from 'ol/interaction/Select'
 import { pointerMove, singleClick } from 'ol/events/condition'
-import Draw from 'ol/interaction/Draw.js'
+import {Draw, Modify, Snap} from 'ol/interaction.js'
 import Polygon from 'ol/geom/Polygon';
 import Text from 'ol/style/Text';
 
@@ -121,7 +131,7 @@ const items = ref([])
 
 let map
 let popupOverlay
-let drawInteraction
+let drawInteraction, snapInteraction, modifyInteraction
 
 const mapContainer = ref(null)
 const loadingStore = useMapLoadingStore()
@@ -251,7 +261,22 @@ function initializeMap() {
     },
   })
   map.addOverlay(popupOverlay)
+  let isModifying = false;
+  modifyInteraction = new Modify({maxPoints:10,source: drawVector.value.getSource()});
+  modifyInteraction.on('modifystart', function (event){
+    isModifying = true;
+    let coordinatesLength = event.features.array_[0].values_.geometry.getCoordinates()[0].length
+    if (coordinatesLength > 10) {
+      console.log('You cannot add more than 10 points.')
+    }
+    console.log('modify start')
+  })
+  modifyInteraction.on('modifyend', function (){
+    isModifying = false;
+    console.log('modify end')
+  })
 
+  let isDrawing = false;
   drawInteraction = new Draw({
     type: 'Polygon',
     source: drawVector.value.getSource(),
@@ -265,15 +290,34 @@ function initializeMap() {
     },
     maxPoints: 10
   })
-
+  snapInteraction = new Snap({source: drawVector.value.getSource()});
   drawInteraction.on('drawstart', function() {
+    isDrawing = true
     console.log('drawing started')
   })
 
   drawInteraction.on('drawend', (event) => {
+    console.log('drawing end')
+    isDrawing = false
     drawInteraction.finishDrawing()
     addGeofenceTag(event.feature)
   })
+
+
+// Add this event listener when initializing the map
+document.addEventListener('keydown', function (event) {
+  // Check if the "Esc" key is pressed
+  if (event.key === 'Escape') {
+    if (isDrawing) {
+      drawInteraction.removeLastPoint()
+    }
+  }
+  if (event.key === 'Enter') {
+    if (isDrawing) {
+      drawInteraction.dispatchEvent('drawend')
+    }
+  }
+});
 }
 
 const isEditGeofence = ref(false)
@@ -282,8 +326,12 @@ function addNewGeofence() {
   isEditGeofence.value = !isEditGeofence.value
   if (isEditGeofence.value) {
     map.addInteraction(drawInteraction)
+    map.addInteraction(snapInteraction)
+    // map.addInteraction(modifyInteraction)
   } else {
     map.removeInteraction(drawInteraction)
+    map.removeInteraction(snapInteraction)
+    // map.removeInteraction(modifyInteraction)
   }
 }
 
@@ -320,10 +368,12 @@ const closeNotification = () => { modalActive.value = false }
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time))
 
 function addGeofenceTag(feature) {
-  modalToggle()
-  currentFeature = feature
+  console.log(feature)
+  isOpen.value = true
+  if (feature !== undefined) {
+    currentFeature = feature
+  }
 }
-function modalToggle() { isOpen.value = !isOpen.value }
 function cancelForm() {
   cancelButtonClick.value = ++cancelButtonClick.value
   switch (cancelButtonClick.value) {
@@ -332,7 +382,7 @@ function cancelForm() {
       break;
     case 2:
     drawVector.value.getSource().removeFeature(currentFeature)
-    modalToggle()
+    isOpen.value = false
     form.value.resetForm()
     cancelButtonClick.value = 0
     cancelLabel.value = 'CANCEL'
@@ -396,10 +446,9 @@ const onSubmit = async (values, { resetForm }) => {
       registerLabel.value = 'SUBMIT'
       regButtonClick.value = 0
       cancelButtonClick.value = 0
-      modalToggle()
+      isOpen.value = false
       await delay(500)
       await geofencesStore.getGeofences()
-      // drawPolygon()
     }
 }
 
@@ -579,9 +628,9 @@ async function hidePolygon() {
   
 .modal {
   @apply
-    fixed top-0 left-0 w-full h-full
+    absolute top-0 left-0 w-full h-full
     overflow-x-hidden overflow-y-auto
-    bg-[#ABADAF]/20 z-10
+    bg-[#ABADAF]/20 z-20
 }
 
 .modal-inner {
@@ -633,5 +682,15 @@ input[type=checkbox] {
 
 .action-btn {
   @apply cursor-pointer hover:fill-[#EF476F] fill-[#353535]/60
+}
+.drop-in-enter-active,
+.drop-in-leave-active {
+  transition: all 0.5s ease-out;
+}
+
+.drop-in-enter-from,
+.drop-in-leave-to {
+  opacity: 0;
+  transform: translateZ(-50px);
 }
 </style>
