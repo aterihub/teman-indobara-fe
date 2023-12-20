@@ -12,8 +12,14 @@ function camelToNormalCase(camelCaseString) {
 export const useGeofencesStore = defineStore('geofencesData', {
   state: () => ({
     geofences: ref([]),
+    geofenceZone: ref({}),
     geofence: ref([]),
     getGeofencesStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
+    getGeofenceStatus: ref({
       isError:null,
       message: null,
       code: null, 
@@ -24,6 +30,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
       code: null, 
     }),
     getGeofencesIsLoading: ref(false),
+    getGeofenceIsLoading: ref(false),
     createGeofenceIsLoading: ref(false),
     deleteGeofenceIsLoading: ref(false),
   }),
@@ -56,6 +63,45 @@ export const useGeofencesStore = defineStore('geofencesData', {
               break;
         }
         this.getGeofencesIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    async getGeofence(id) {
+      this.getGeofenceIsLoading = true
+      try {
+        const res = await geofencesAPI.getGeofence(id)
+        this.geofenceZone = res.data.geofence
+        if (this.geofenceZone.length === 0) {
+          this.getGeofenceStatus.message = 'No Geofence Available'
+        } else {
+          this.getGeofenceStatus.message = 'Geofence Fetched'
+        }
+        this.getGeofenceStatus.isError = false
+        this.getGeofenceIsLoading = false
+      } catch (err) {
+        this.geofenceZone = {  
+          name: null,
+          operand: 0,
+          eventualRecord: false,
+          frameBorder: 0,
+          maxAllowedSpeed: 0,
+          notes: null
+        }
+        this.getGeofenceStatus.isError = true
+        this.getGeofenceStatus.code = err.code
+        switch (this.getGeofenceStatus.code) {
+          case 'ERR_NETWORK':
+            this.getGeofenceStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.getGeofenceStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            break;
+            default :
+              this.getGeofenceStatus.message = err.response.data.message
+              break;
+        }
+        this.getGeofenceIsLoading = false
         console.error(err)
         return err
       }

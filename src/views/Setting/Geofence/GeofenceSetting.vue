@@ -1,7 +1,5 @@
 <template>
   <alert :message="geofencesStatus.message" :modalActive="modalActive" :isError="geofencesStatus.isError"/>
-
-
   <MapLoading :loading="loadingStore.loading"/>
   <div class="grid grid-cols-3 w-full gap-4">
     <div ref="mapContainer" class="map-container col-span-2 relative">
@@ -13,11 +11,19 @@
             <h1 class="title">Add Geofence Configuration</h1>
             <VeeForm v-slot="{ handleSubmit }" as="div" ref="form" >
             <form  @submit="handleSubmit($event, onSubmit)" class="form-wrapper" >
-              <BaseInput required name="name" type="text" placeholder="Define area name" class="outlined" label="Area Name"/>
+              <div class="flex flex-col gap-1 text-left">
+                <label for="geofenceId" class="text-xs font-bold">Geofence ID</label>
+                <div class="select-option ">
+                  <select name="geofenceId" v-model="selectedGeofenceId" @change="loadGeofenceZone()" class="cursor-pointer bg-[#F2F2F2] w-full" required>
+                    <option v-for="geofenceId in geofencesId" :value="geofenceId.value">{{geofenceId.text}}</option>
+                  </select> 
+                </div>
+              </div>
+              <BaseInput v-model="formData.name" required name="name" type="text" placeholder="Define area name" class="outlined" label="Area Name"/>
               <div class="flex flex-col gap-1 text-left">
                 <label for="operand" class="text-xs font-bold">Operand</label>
                 <div class="select-option ">
-                  <select name="operand" v-model="operand" class="cursor-pointer bg-[#F2F2F2] w-full" required>
+                  <select name="operand" v-model="formData.operand" class="cursor-pointer bg-[#F2F2F2] w-full" required>
                     <option value="0">On Exit</option>
                     <option value="1">On Enter</option>
                     <option value="2">On Both</option>
@@ -28,11 +34,11 @@
                 <label class="cursor-pointer" for="eventualRecord" >
                   Eventual record
                 </label>
-                <input id="eventualRecord" type="checkbox" v-model="eventualRecord"> 
+                <input id="eventualRecord" type="checkbox" v-model="formData.eventualRecord"> 
               </div>
-              <BaseInput required name="frameBorder" type="number" max="1000000" placeholder="0 to 1000000" class="outlined" label="Frame Border"/>
-              <BaseInput required name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined" label="Max Speed"/>
-              <BaseInput required name="notes" type="text" placeholder="Type notes here" class="outlined" label="Notes"/>
+              <BaseInput v-model="formData.frameBorder" required name="frameBorder" type="number" max="1000000" placeholder="0 to 1000000" class="outlined" label="Frame Border"/>
+              <BaseInput v-model="formData.maxAllowedSpeed" required name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined" label="Max Speed"/>
+              <BaseInput v-model="formData.notes" required name="notes" type="text" placeholder="Type notes here" class="outlined" label="Notes"/>
               <div class="flex justify-between gap-10">
                 <BaseButton type="button" class="filled__softblue" :label="cancelLabel" @click="cancelForm"/>
                 <BaseButton type="submit" class="filled__green" :label="registerLabel"  />
@@ -120,14 +126,33 @@ import MapLoading from '@/components/MapLoading.vue'
 import { useGeofencesStore } from '@/stores/geofences/geofencesStore'
 import { storeToRefs } from 'pinia'
 
+const geofencesId = Array.from(Array(100).keys()).map((item) => {
+  if (item < 9) {
+    return {value:`geofenceZone` + '0' + (item+1), text: `Geofence Zone ` + '0' + (item+1)}
+  } else {
+    return {value:`geofenceZone` + (item+1), text: `Geofence Zone ` + (item+1)}
+  }
+})
+
 const geofencesStore = useGeofencesStore()
-const { geofences, geofence, geofencesStatus, getGeofencesIsLoading, createGeofenceIsLoading } = storeToRefs(useGeofencesStore())
+const { geofences, geofence, geofencesStatus, getGeofencesIsLoading, createGeofenceIsLoading, geofenceZone, getGeofenceIsLoading, getGeofenceStatus } = storeToRefs(useGeofencesStore())
 const header = [
       { text: "Name", value: "name" },
       { text: "Notes", value: "notes" },
       { text: "", value: "action", width:30 },
     ]
+    
+const selectedGeofenceId = ref('geofenceZone01')
+
 const items = ref([])
+const formData = ref({
+  name: null,
+  operand: 0,
+  eventualRecord: false,
+  frameBorder: 0,
+  maxAllowedSpeed: 0,
+  notes: null
+})
 
 let map
 let popupOverlay
@@ -162,8 +187,10 @@ const drawVector = ref(null)
 
 function drawPolygon() {
   // CODE UNDER TEST
-  drawVector.value.getSource().clear()
+  let vector = drawVector.value.getSource()
+  vector.clear()
   const features = []
+  initialFeatures.value = []
   if (geofences.value.length !== 0) {
     geofences.value.map( geofence => 
     {
@@ -178,6 +205,7 @@ function drawPolygon() {
         geometry: new Polygon([projectedCoordinates]),
         name: geofence.name,
         id: geofence.id,
+        geofenceId: geofence.geofenceId,
         notes: geofence.notes,
         operand: geofence.operand,
         eventualRecord: geofence.eventualRecord,
@@ -188,6 +216,7 @@ function drawPolygon() {
       let itemsObj =
       {
         id: geofence.id,
+        geofenceId: geofence.geofenceId,
         name: geofence.name,
         operand: geofence.operand,
         eventualRecord: geofence.eventualRecord,
@@ -197,8 +226,8 @@ function drawPolygon() {
         notes: geofence.notes,
       }
       itemsSelected.value.push(itemsObj)
-
     })
+
     for (const initialFeature of initialFeatures.value) {
       const polygonStyle = new Style ({
         fill: new Fill({
@@ -403,9 +432,9 @@ const onSubmit = async (values, { resetForm }) => {
   let payload = ref({})
   payload.value = values
   payload.value.coordinates = latLongCoordinates.slice(0, latLongCoordinates.length - 1)
-  payload.value.eventualRecord = eventualRecord.value
-  // payload.value.operand = operand.value
-  payload.value.operand = parseInt(operand.value)
+  payload.value.eventualRecord = formData.value.eventualRecord
+  payload.value.geofenceId = selectedGeofenceId.value
+  payload.value.operand = parseInt(formData.value.operand)
   regButtonClick.value = ++regButtonClick.value
     if (regButtonClick.value == 1) {
       registerLabel.value = 'the data entered is correct?'
@@ -449,15 +478,16 @@ const onSubmit = async (values, { resetForm }) => {
       isOpen.value = false
       await delay(500)
       await geofencesStore.getGeofences()
+      drawPolygon()
     }
 }
 
 async function deleteGeofence(item) {
   await geofencesStore.deleteGeofence(item.id)
   await geofencesStore.getGeofences()
-  let selectedFeature = drawVector.value.getSource().getFeatures().filter((data) =>  data.id !== item.id)
-  console.log(selectedFeature)
-  drawVector.value.getSource().removeFeature(selectedFeature)
+  drawPolygon()
+  // let selectedFeature = drawVector.value.getSource().getFeatures().filter((data) =>  data.id !== item.id)
+  // drawVector.value.getSource().removeFeature(selectedFeature)
   itemsSelected.value = itemsSelected.value.filter((data) =>  data.id !== item.id)
   modalActive.value = true
   setTimeout(closeNotification, 3000)
@@ -507,6 +537,19 @@ async function hidePolygon() {
     unselectedFeature.setStyle(polygonStyleHidden)
   })
 }
+
+async function loadGeofenceZone() {
+  await geofencesStore.getGeofence(selectedGeofenceId.value)
+  formData.value = geofenceZone.value
+}
+
+//fetch initial geofence 
+watch(isOpen, async (value) => { 
+  if (value) {
+    loadGeofenceZone()
+  }
+ }, { deep: true })
+
 </script>
 
 <style scoped>
