@@ -72,34 +72,36 @@ export const useAuthStore = defineStore('auth', {
         }
         this.status.message = errorMsg
         this.status.isError = true
-        this.status.code = err.response.data.statusCode
-
-        //define message 
-        if (this.status.code == '400') {
-          this.status.message = err.response.data.message
-        } 
-        if (this.status.code == '401') {
-          this.status.message = "Hold on! You need to be logged in to access that page. Please log in or sign up to continue."
-        } 
-        if (this.status.code == '403') {
-          this.status.message = "Sorry! You don't have permission to access that page. Please contact support if you believe this is an error."
-        } 
-        if (this.status.code == '404') {
-          this.status.message = "Uh-oh! We couldn't find the page you were looking for Please check the URL and try again"
-        } 
-        if (this.status.code == '500') {
-          this.status.message = "Yikes! Something went wrong on our end. Please try again later or contact support if the issue persists."
-        } 
-        if (this.status.code == '502') {
-          this.status.message = "Oops! We're having trouble connecting to the server. Please try again later or contact support if the issue persists."
-        } 
-        if (this.status.code == '503') {
-          this.status.message = "Hold tight! We're performing maintenance on our servers. Please try again later."
+        if (err.code === "ERR_NETWORK") {
+          this.status.code = err.code
+        } else {
+          this.status.code = err.response.data.statusCode
         }
-
+        //define message 
+        switch (this.status.code) {
+          case '400':
+            this.status.message = err.response.data.message
+            break;
+          case '401':
+            this.status.message = "Hold on! You need to be logged in to access that page. Please log in or sign up to continue."
+            break;
+          case '403':
+              this.status.message = "Sorry! You don't have permission to access that page. Please contact support if you believe this is an error."
+            break;
+          case '404':
+              this.status.message = "Uh-oh! We couldn't find the page you were looking for Please check the URL and try again"
+            break;
+          case '500':
+              this.status.message = "Yikes! Something went wrong on our end. Please try again later or contact support if the issue persists."
+            break;
+          case '502':
+              this.status.message = "Oops! We're having trouble connecting to the server. Please try again later or contact support if the issue persists."
+            break;
+          case '503':
+            this.status.message = "Hold tight! We're performing maintenance on our servers. Please try again later."
+            break;
+        }
         console.log(this.status)
-
-
         return err
       }
     },
