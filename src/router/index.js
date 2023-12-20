@@ -11,17 +11,19 @@ import LightVehicle from '@/views/Map/LightVehicle/NotFound.vue'
 import DM from '@/views/Map/DM/NotFound.vue'
 import DevicesRealtime from '@/views/Dashboard/DevicesRealtime'
 import Violation from '@/views/Violation/ViolationMain.vue'
-import Report from '@/views/Map/Report/NotFound.vue'
 import DeviceDetails from '@/views/Devices/DeviceDetails.vue'
 import ResetPassword from '@/views/Auth/ResetPassword.vue'
 import MainMap from '@/views/Map/MainMap.vue'
 import NotFound from '@/views/error/NotFound.vue'
 import Setting from '@/views/Setting/Setting.vue'
+import Report from '@/views/Report/Report.vue'
+import StreamingDashboard from '@/views/Dashboard/StreamingDashboard.vue'
 
 const routes = [
   { path: '/', name: 'Login Page', component: LoginForm, meta: { requiresAuth:false, title: 'Intellisense Fleet Management System - Login' } },
   { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, meta: { requiresAuth:false} },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth:true }},
+  { path: '/streaming', name: 'StreamingDashboard', component: StreamingDashboard, meta: { requiresAuth:true }},
   { path: '/dashboard/details/:id', name: 'Dashboard Details', component: DashboardDetails,props: true, meta: { requiresAuth:true }},
   { path: '/dumptruck', name: 'DumpTruck', component: DumpTruck, meta: { requiresAuth:true } },
   { path: '/excavator', name: 'Excavator', component: Excavator, meta: { requiresAuth:true } },

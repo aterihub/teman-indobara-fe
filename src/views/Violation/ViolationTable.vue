@@ -12,7 +12,6 @@
     :isError="violationStatus.isError"
     @close="closeNotification" 
   />
-  <sideNav :is-violation-active="true" />
   <div class="table-wrap">
     <div class="table-header">
       <h1 class="title">Violation Table</h1>
@@ -60,10 +59,11 @@
     </div>
     <SearchField class="outlined" v-model="searchValue" placeholder="Search by IMEI, variant, device name..."/>
     <EasyDataTable
-      :rows-per-page="10"
+      v-model:server-options="serverOptions"
+      :server-items-length="serverItemsLength"
       table-class-name="customize-table"
       :headers="header"
-      :items="violationsReport"
+      :items="items"
       theme-color="#1363df"        
       :search-value="searchValue"
       :loading="getViolationReportIsLoading">
@@ -71,20 +71,27 @@
         <a :href="item.coordinate.maps" target="_blank">{{item.coordinate.latLong}}</a>
       </template>
       <template #item-operation="item">
-          <div class="operation">
-            <svg class="cursor-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" @click="viewViolationFootage(item)">
-              <path d="M13 7H22V9H13V7ZM13 15H22V17H13V15ZM16 11H22V13H16V11ZM13 12L8 7V11H2V13H8V17L13 12Z" fill="#353535" fill-opacity="0.6"/>
-            </svg>
-          </div>
-        </template>
+        <div class="operation">
+          <svg class="cursor-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" @click="viewViolationFootage(item)">
+            <path d="M13 7H22V9H13V7ZM13 15H22V17H13V15ZM16 11H22V13H16V11ZM13 12L8 7V11H2V13H8V17L13 12Z" fill="#353535" fill-opacity="0.6"/>
+          </svg>
+        </div>
+      </template>
     </EasyDataTable>
   </div> 
+  <div class="w-fit absolute top-[82px] right-0">
+    <BaseButton v-if="violationsReport.length !== 0" type="button" class="outlined__green h-fit" label="EXPORT TO EXCEL" :loading="downloadViolationReportIsLoading" @click="downloadViolationReport" >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8.00002 10.667L4.66669 7.33366L5.60002 6.36699L7.33335 8.10033V2.66699H8.66669V8.10033L10.4 6.36699L11.3334 7.33366L8.00002 10.667ZM4.00002 13.3337C3.63335 13.3337 3.31958 13.2032 3.05869 12.9423C2.7978 12.6814 2.66713 12.3674 2.66669 12.0003V10.0003H4.00002V12.0003H12V10.0003H13.3334V12.0003C13.3334 12.367 13.2029 12.681 12.942 12.9423C12.6811 13.2037 12.3671 13.3341 12 13.3337H4.00002Z" fill="white"/>
+      </svg>
+    </BaseButton>
+  </div>
 </template>
   
 <script setup>
 import sideNav from '@/components/navigation/sideNav.vue'
 import SearchField from '@/components/SearchField.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useVehiclesStore } from '@/stores/master-data/vehiclesStore'
 import { useHullsStore } from '@/stores/master-data/hullNumberStore'
 import { useContractorsStore } from '@/stores/master-data/contractorsStore'
@@ -112,7 +119,7 @@ const endDate = ref(new Date().toLocaleDateString('en-CA'))
 const endTime = ref(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }))
 
 const violationsStore = useViolationsStore()
-const { violationsReport, violationStatus, getViolationReportIsLoading } = storeToRefs(useViolationsStore())
+const { violationsReport, violationStatus, getViolationReportIsLoading, violationsReportMeta, downloadViolationReportIsLoading, downloadViolationStatus } = storeToRefs(useViolationsStore())
 const sitesStore = useSitesStore()
 const { sites } = storeToRefs(useSitesStore())
 const contractorsStore = useContractorsStore()
@@ -164,12 +171,35 @@ async function loadViolationReport() {
     queryParams.contractorId = selectedContractor.value
   }
   if (selectedHull.value !== '0') {
-    queryParams.hullNumber = selectedHull.value
+    queryParams.vehicle = selectedHull.value
+  }
+  queryParams.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
+  queryParams.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
+  queryParams.page = serverOptions.value.page
+  queryParams.rowsPerPage = serverOptions.value.rowsPerPage
+  console.log(queryParams)
+  await violationsStore.getViolationReport(queryParams)
+  serverItemsLength.value = violationsReportMeta.value.total
+  items.value = violationsReport.value
+  modalActive.value = true
+  setTimeout(closeNotification, 3000)
+}
+
+async function downloadViolationReport() {
+  const queryParams = {}
+  if (selectedSite.value !== '0') {
+    queryParams.siteId = selectedSite.value
+  }
+  if (selectedContractor.value !== '0') {
+    queryParams.contractorId = selectedContractor.value
+  }
+  if (selectedHull.value !== '0') {
+    queryParams.vehicle = selectedHull.value
   }
   queryParams.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
   queryParams.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
   console.log(queryParams)
-  await violationsStore.getViolationReport(queryParams)
+  await violationsStore.downloadViolationReport(queryParams)
   modalActive.value = true
   setTimeout(closeNotification, 3000)
 }
@@ -195,7 +225,7 @@ function viewViolationFootage(item) {
 
 const header = [
   { text: "Time", value: "deviceTime" ,sortable: true},
-  { text: "Hull Number", value: "hullNumber",sortable: true },
+  { text: "Vehicle", value: "vehicle",sortable: true },
   { text: "Registration Number", value: "registrationNumber",sortable: true },
   { text: "Site", value: "site",sortable: true },
   { text: "Contractor", value: "contractor",sortable: true },
@@ -204,6 +234,14 @@ const header = [
   { text: "Coordinate", value: "coordinate"},
   { text: "", value: "operation"},
 ]
+const items = ref([])
+const serverItemsLength = ref(0)
+const serverOptions = ref({
+  page: 1,
+  rowsPerPage: 15,
+})
+
+watch(serverOptions, (value) => { loadViolationReport(); }, { deep: true })
 
 </script>
     
@@ -221,7 +259,7 @@ const header = [
 }
 .table-wrap {
   @apply
-    overflow-auto sm:overflow-visible
+    overflow-auto sm:overflow-visible w-full
 }
 .table-header {
   @apply

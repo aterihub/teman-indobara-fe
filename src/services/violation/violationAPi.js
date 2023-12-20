@@ -8,4 +8,7 @@ export default {
   getViolationNotification() {
     return apiClient.get('/violation/notification')
   },
+  downloadViolationReport(params) {
+    return apiClient.get('/violation/export', {params})
+  },
 }

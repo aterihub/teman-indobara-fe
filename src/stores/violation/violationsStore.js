@@ -13,7 +13,13 @@ export const useViolationsStore = defineStore('violationData', {
   state: () => ({
     violationsNotification: ref(''),
     violationsReport: ref(''),
+    violationsReportMeta: ref(''),
     violationStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
+    downloadViolationStatus: ref({
       isError:null,
       message: null,
       code: null, 
@@ -24,6 +30,7 @@ export const useViolationsStore = defineStore('violationData', {
       code: null, 
     }),
     getViolationReportIsLoading: ref(false),
+    downloadViolationReportIsLoading: ref(false),
     getViolationNotificationIsLoading: ref(false),
   }),
   actions: {
@@ -31,28 +38,31 @@ export const useViolationsStore = defineStore('violationData', {
       this.getViolationReportIsLoading = true
       try {
         const res = await violationAPI.getViolationReport(params)
+        console.log(res)
         let violation = []
-        if (res.data.violation.length > 0) {
-          violation = res.data.violation.map((item) => {
+        let meta = []
+         if (res.data.violation.data.length > 0) {
+          violation = res.data.violation.data.map((item) => {
             return {
               imei: item.imei,
-              eventIo: item.eventIo,
-              eventTime: item._time,
-              deviceTime: new Date(item._time).toLocaleString(),
-              violation: item.eventIo.toUpperCase(),
-              hullNumber: item.hullNumber,
+              eventTime: item.time,
+              deviceTime: new Date(item.time).toLocaleString(),
+              violation: item.violation.toUpperCase(),
+              vehicle: item.vehicle,
               registrationNumber: item.registrationNumber,
-              site: item.site,
+              site: item.location,
               contractor: item.contractor,
               speed: item.speed,
               coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude},${item.longitude}`}
             }
           })
+          meta = res.data.violation.meta
           this.violationStatus.message = 'Violation Fetched'
         } else {
           this.violationStatus.message = 'No Violation Available'
         }
         this.violationsReport = violation
+        this.violationsReportMeta = meta
         this.violationStatus.isError = false
         this.getViolationReportIsLoading = false
       } catch (err) {
@@ -71,6 +81,19 @@ export const useViolationsStore = defineStore('violationData', {
 
         }
         this.getViolationReportIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    async downloadViolationReport(params) {
+      this.downloadViolationReportIsLoading = true
+      try {
+        const res = await violationAPI.downloadViolationReport(params)
+        window.open(res.request.responseURL)
+        this.violationStatus.message = 'Violation Downloaded'
+        this.downloadViolationReportIsLoading = false
+      } catch (err) {
+        this.downloadViolationReportIsLoading = false
         console.error(err)
         return err
       }
