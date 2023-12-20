@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia'
 import dataAPI from '@/services/dataAPI'
 import { ref } from 'vue'
+function camelToNormalCase(camelCaseString) {
+  return camelCaseString
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/^./, str => str.toUpperCase());
+}
 
 export const useGeoDataStore = defineStore('geo', {
   state: () => ({
@@ -153,6 +158,8 @@ export const useGeoDataStore = defineStore('geo', {
             data.storedTime = new Date(data.storedTime).toLocaleString()
             data.batteryVoltage = data.batteryVoltage/1000
             data.externalVoltage = data.externalVoltage/1000
+            data.eventIo = camelToNormalCase(data.eventIo)
+            data.coordinate = {maps: `https://www.google.com/maps?q=${data.latitude},${data.longitude}`, latLong: `${data.latitude},${data.longitude}`}
           })
         })
 
