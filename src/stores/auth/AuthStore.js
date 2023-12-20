@@ -73,6 +73,7 @@ export const useAuthStore = defineStore('auth', {
         this.status.message = errorMsg
         this.status.isError = true
         if (err.code === "ERR_NETWORK") {
+          this.status.message = 'Network Error'
           this.status.code = err.code
         } else {
           this.status.code = err.response.data.statusCode
