@@ -817,9 +817,6 @@ onUnmounted(() => {
   text-left gap-4 mb-2 
 }
 
-.disable-svg {
-  @apply cursor-none pointer-events-none opacity-40
-}
 
 
 /* drop-shadow-[0_0_6px_5px_rgba(0,0,0,0.05)] */
