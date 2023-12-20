@@ -205,7 +205,6 @@ const props = defineProps({
     if (props.isSettingActive) {
       title.value = 'Data Master'
     }
-    console.log(title.value)
   })
   
 </script>

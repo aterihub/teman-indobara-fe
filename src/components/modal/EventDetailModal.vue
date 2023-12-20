@@ -129,7 +129,6 @@ import{ useEventDevicesStore } from '@/stores/event/eventDevicesStore'
 
   function handleImageError(event) {
     event.target.src = require('../../assets/img/image-not-found.png')
-    console.log("Image not found or failed to load")
   }
 
 </script>
