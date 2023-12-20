@@ -43,7 +43,6 @@ apiClient.interceptors.response.use(
             },
           }
         );
-        console.log(response)
 
         // If the refresh was successful, update the auth token and retry the original request
         localStorage.setItem('auth.accessToken', response.data.data.accessToken)
