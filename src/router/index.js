@@ -16,14 +16,14 @@ import ResetPassword from '@/views/Auth/ResetPassword.vue'
 import MainMap from '@/views/Map/MainMap.vue'
 import NotFound from '@/views/error/NotFound.vue'
 import Setting from '@/views/Setting/Setting.vue'
-// import Report from '@/views/Report/Report.vue'
-// import StreamingDashboard from '@/views/Dashboard/StreamingDashboard.vue'
+import Report from '@/views/Report/Report.vue'
+import StreamingDashboard from '@/views/Dashboard/StreamingDashboard.vue'
 
 const routes = [
   { path: '/', name: 'Login Page', component: LoginForm, meta: { requiresAuth:false, title: 'Intellisense Fleet Management System - Login' } },
   { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, meta: { requiresAuth:false} },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth:true }},
-  // { path: '/streaming', name: 'StreamingDashboard', component: StreamingDashboard, meta: { requiresAuth:true }},
+  { path: '/streaming', name: 'StreamingDashboard', component: StreamingDashboard, meta: { requiresAuth:true }},
   { path: '/dashboard/details/:id', name: 'Dashboard Details', component: DashboardDetails,props: true, meta: { requiresAuth:true }},
   { path: '/dumptruck', name: 'DumpTruck', component: DumpTruck, meta: { requiresAuth:true } },
   { path: '/excavator', name: 'Excavator', component: Excavator, meta: { requiresAuth:true } },
@@ -31,7 +31,7 @@ const routes = [
   { path: '/dm', name: 'DM', component: DM, meta: { requiresAuth:true } },
   { path: '/devices-realtime', name: 'DevicesRealtime', component: DevicesRealtime, meta: { requiresAuth:true } },
   { path: '/violation', name: 'Violation', component: Violation, meta: { requiresAuth:true } },
-  // { path: '/report', name: 'Report', component: Report, meta: { requiresAuth:true } },
+  { path: '/report', name: 'Report', component: Report, meta: { requiresAuth:true } },
   
   { path: '/devices', name: 'Devices List', component: DevicesList, meta: { requiresAuth:true }},
   { path: '/devices/details/:id', name: 'Device Details', component: DeviceDetails, props: true, meta: { requiresAuth:true }},

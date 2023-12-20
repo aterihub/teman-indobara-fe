@@ -73,15 +73,17 @@ export const useAuthStore = defineStore('auth', {
         this.status.message = errorMsg
         this.status.isError = true
         if (err.code === "ERR_NETWORK") {
-          this.status.message = 'Network Error'
-          this.status.code = err.code
+          this.status.code = err.response.status
         } else {
-          this.status.code = err.response.data.statusCode
+          this.status.code = err.response.status
         }
         //define message 
         switch (this.status.code) {
+          case 0:
+            this.status.message = "Network Error"
+            break;
           case '400':
-            this.status.message = err.response.data.message
+            this.status.message = err.response.data.data.message
             break;
           case '401':
             this.status.message = "Hold on! You need to be logged in to access that page. Please log in or sign up to continue."
