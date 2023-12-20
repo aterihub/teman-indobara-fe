@@ -4,7 +4,7 @@
         @click="$emit('clicked', tab.value)"
         class="nav"
         :value="index"
-        :id="tab.title"
+        :id="tab.value"
         >{{tab.title}}
       </button>
   </div>
@@ -44,22 +44,22 @@ export default {
 
 button {
   @apply disabled:opacity-75 flex items-center relative text-[#353535] cursor-pointer p-2 rounded-md
-  w-full text-[10px] sm:text-[16px] 
+  w-full text-[10px] sm:text-[14px] border-transparent border
 } 
 
 button:hover {
-  @apply bg-[#E0F6E8] text-[#353535]  
-  transition-colors duration-300 
+  @apply bg-gray-100 text-[#353535] outline-none 
+  transition-all duration-300 scale-105
 }
 
 .active {
-  @apply bg-[#1363df] text-white
-  transition-colors duration-300 
+  @apply border border-[#C21629]  text-[#C21629]
+  transition-colors duration-300 box-border outline-none
 }
 
 .active:hover {
-  @apply bg-[#1363df] text-white  
-  transition-colors duration-300 
+  @apply text-[#C21629] bg-transparent cursor-default
+  transition-colors duration-300 box-border outline-none scale-100
 }
 
 
