@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import violationAPI from '@/services/violation/violationAPi'
+import reportAPI from '@/services/report/reportAPi'
 import { ref } from 'vue'
 import moment from 'moment'
 
@@ -37,7 +37,7 @@ export const useViolationsStore = defineStore('violationData', {
     async getViolationReport(params) {
       this.getViolationReportIsLoading = true
       try {
-        const res = await violationAPI.getViolationReport(params)
+        const res = await reportAPI.getViolationReport(params)
         console.log(res)
         let violation = []
         let meta = []
@@ -88,7 +88,7 @@ export const useViolationsStore = defineStore('violationData', {
     async downloadViolationReport(params) {
       this.downloadViolationReportIsLoading = true
       try {
-        const res = await violationAPI.downloadViolationReport(params)
+        const res = await reportAPI.downloadViolationReport(params)
         window.open(res.request.responseURL)
         this.violationStatus.message = 'Violation Downloaded'
         this.downloadViolationReportIsLoading = false
@@ -101,7 +101,7 @@ export const useViolationsStore = defineStore('violationData', {
     async getViolationNotification() {
       this.getViolationNotificationIsLoading = true
       try {
-        const res = await violationAPI.getViolationNotification()
+        const res = await reportAPI.getViolationNotification()
         let notification = []
         if (res.data.event.length > 0) {
           notification = res.data.event.map((item) => {

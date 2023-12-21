@@ -11,4 +11,10 @@ export default {
   downloadViolationReport(params) {
     return apiClient.get('/violation/export', {params})
   },
+  getLocationHourlyReport(params) {
+    return apiClient.get('/location-report/hourly', {params})
+  },
+  downloadLocationHourlyReport(params) {
+    return apiClient.get('/location-report/hourly/export', {params})
+  },
 }
