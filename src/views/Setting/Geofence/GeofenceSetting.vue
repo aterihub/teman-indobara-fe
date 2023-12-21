@@ -19,8 +19,8 @@
                   </select> 
                 </div>
               </div>
-              <BaseInput v-model="formData.name" required name="name" type="text" placeholder="Define area name" class="outlined" label="Area Name"/>
-              <div class="flex flex-col gap-1 text-left">
+              <BaseInput :class="{'disable-svg' : getGeofenceIsLoading}" v-model="formData.name" required name="name" type="text" placeholder="Define area name" class="outlined" label="Area Name"/>
+              <div class="flex flex-col gap-1 text-left" :class="{'disable-svg' : getGeofenceIsLoading}">
                 <label for="operand" class="text-xs font-bold">Operand</label>
                 <div class="select-option ">
                   <select name="operand" v-model="formData.operand" class="cursor-pointer bg-[#F2F2F2] w-full" required>
@@ -30,15 +30,15 @@
                   </select> 
                 </div>
               </div>
-              <div class="checkbox-wrapper"> 
+              <div class="checkbox-wrapper" :class="{'disable-svg' : getGeofenceIsLoading}"> 
                 <label class="cursor-pointer" for="eventualRecord" >
                   Eventual record
                 </label>
                 <input id="eventualRecord" type="checkbox" v-model="formData.eventualRecord"> 
               </div>
-              <BaseInput v-model="formData.frameBorder" required name="frameBorder" type="number" max="1000000" placeholder="0 to 1000000" class="outlined" label="Frame Border"/>
-              <BaseInput v-model="formData.maxAllowedSpeed" required name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined" label="Max Speed"/>
-              <BaseInput v-model="formData.notes" required name="notes" type="text" placeholder="Type notes here" class="outlined" label="Notes"/>
+              <BaseInput :class="{'disable-svg' : getGeofenceIsLoading}" v-model="formData.frameBorder" required name="frameBorder" type="number" max="1000000" placeholder="0 to 1000000" class="outlined" label="Frame Border"/>
+              <BaseInput :class="{'disable-svg' : getGeofenceIsLoading}" v-model="formData.maxAllowedSpeed" required name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined" label="Max Speed"/>
+              <BaseInput :class="{'disable-svg' : getGeofenceIsLoading}" v-model="formData.notes" required name="notes" type="text" placeholder="Type notes here" class="outlined" label="Notes"/>
               <div class="flex justify-between gap-10">
                 <BaseButton type="button" class="filled__softblue" :label="cancelLabel" @click="cancelForm"/>
                 <BaseButton type="submit" class="filled__green" :label="registerLabel"  />
@@ -137,6 +137,7 @@ const geofencesId = Array.from(Array(100).keys()).map((item) => {
 const geofencesStore = useGeofencesStore()
 const { geofences, geofence, geofencesStatus, getGeofencesIsLoading, createGeofenceIsLoading, geofenceZone, getGeofenceIsLoading, getGeofenceStatus } = storeToRefs(useGeofencesStore())
 const header = [
+      { text: "Geofence ID", value: "geofenceId" },
       { text: "Name", value: "name" },
       { text: "Notes", value: "notes" },
       { text: "", value: "action", width:30 },
