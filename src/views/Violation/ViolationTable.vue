@@ -79,7 +79,7 @@
       </template>
     </EasyDataTable>
   </div> 
-  <div class="w-fit absolute top-[82px] right-0">
+  <div class="w-fit self-end pb-2">
     <BaseButton v-if="violationsReport.length !== 0" type="button" class="outlined__green h-fit fill-[#99CC77] hover:fill-white" label="EXPORT TO EXCEL" :loading="downloadViolationReportIsLoading" @click="downloadViolationReport" >
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
         <path d="M8.00002 10.667L4.66669 7.33366L5.60002 6.36699L7.33335 8.10033V2.66699H8.66669V8.10033L10.4 6.36699L11.3334 7.33366L8.00002 10.667ZM4.00002 13.3337C3.63335 13.3337 3.31958 13.2032 3.05869 12.9423C2.7978 12.6814 2.66713 12.3674 2.66669 12.0003V10.0003H4.00002V12.0003H12V10.0003H13.3334V12.0003C13.3334 12.367 13.2029 12.681 12.942 12.9423C12.6811 13.2037 12.3671 13.3341 12 13.3337H4.00002Z"/>
@@ -130,6 +130,7 @@ const hullNumberStore = useHullsStore()
 const { hulls } = storeToRefs(useHullsStore())
 
 onMounted(() => {
+  violationsReport.value = []
   sitesStore.getSites()
   contractorsStore.getContractors()
   hullNumberStore.getHulls()
