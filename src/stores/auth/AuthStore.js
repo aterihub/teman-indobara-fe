@@ -51,26 +51,6 @@ export const useAuthStore = defineStore('auth', {
       } catch (err) {
         console.error(err)
         this.isLoading = false
-        let errorMsg
-        let errorStatus = err.response.status
-        console.log(errorStatus)
-
-        switch (errorStatus) {
-          case 401:
-            errorMsg = err.response.data.data.username
-            break;
-          case 404:
-            errorMsg = err.response.data.data.message
-            var colonIndex = errorMsg.indexOf(':')
-            if (colonIndex !== -1) {
-              errorMsg = errorMsg.substring(colonIndex + 1).trim();
-                console.log(errorMsg);
-            } else {
-                console.log("Colon not found in the input text.");
-            }
-            break;
-        }
-        this.status.message = errorMsg
         this.status.isError = true
         if (err.code === "ERR_NETWORK") {
           this.status.code = err.response.status
@@ -82,25 +62,25 @@ export const useAuthStore = defineStore('auth', {
           case 0:
             this.status.message = "Network Error"
             break;
-          case '400':
-            this.status.message = err.response.data.data.message
+          case 400:
+            this.status.message = err.response.statusText
             break;
-          case '401':
-            this.status.message = "Hold on! You need to be logged in to access that page. Please log in or sign up to continue."
+          case 401:
+            this.status.message = err.response.statusText
             break;
-          case '403':
+          case 403:
               this.status.message = "Sorry! You don't have permission to access that page. Please contact support if you believe this is an error."
             break;
-          case '404':
-              this.status.message = "Uh-oh! We couldn't find the page you were looking for Please check the URL and try again"
+          case 404:
+              this.status.message = err.response.statusText
             break;
-          case '500':
+          case 500:
               this.status.message = "Yikes! Something went wrong on our end. Please try again later or contact support if the issue persists."
             break;
-          case '502':
+          case 502:
               this.status.message = "Oops! We're having trouble connecting to the server. Please try again later or contact support if the issue persists."
             break;
-          case '503':
+          case 503:
             this.status.message = "Hold tight! We're performing maintenance on our servers. Please try again later."
             break;
         }
