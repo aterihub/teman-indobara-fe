@@ -239,7 +239,6 @@ const props = defineProps({
   transition-all ease-in-out duration-200
   top-0 left-0
   shadow-md
-  opacity-90
 }
 .topbar-header {
 @apply 
