@@ -80,7 +80,7 @@
           <Button type="button" class="filled__green" :label="uploadGeofenceLabel" @click="uploadGeofence" />
         </div>
       </div>
-      <EasyDataTable @expand-row="highlightPolygon" sort-by="geofenceId" v-model:items-selected="itemsSelected" :rows-per-page="15" hide-rows-per-page
+      <EasyDataTable sort-by="geofenceId" v-model:items-selected="itemsSelected" :rows-per-page="15" hide-rows-per-page
         table-class-name="customize-table" :headers="header" :items="geofences" theme-color="#1363df">
 
         <template #expand="item">
@@ -236,6 +236,7 @@ function drawPolygon() {
         name: geofence.name,
         id: geofence.id,
         geofenceId: geofence.geofenceId,
+        geofenceIdText: geofence.geofenceIdText,
         notes: geofence.notes,
         operand: geofence.operand,
         operandText: geofence.operandText,
@@ -248,6 +249,7 @@ function drawPolygon() {
       {
         id: geofence.id,
         geofenceId: geofence.geofenceId,
+        geofenceIdText: geofence.geofenceIdText,
         name: geofence.name,
         operand: geofence.operand,
         operandText: geofence.operandText,
@@ -583,10 +585,14 @@ watch(isOpen, async (value) => {
 }, { deep: true })
 
 function highlightPolygon(index){
-  let highlightedPolygon = geofences.value[index]
-  const centerX = highlightedPolygon.coordinates.reduce((sum, point) => sum + point[0], 0) / highlightedPolygon.coordinates.length;
-  const centerY = highlightedPolygon.coordinates.reduce((sum, point) => sum + point[1], 0) / highlightedPolygon.coordinates.length;
-  map.getView().setCenter(fromLonLat([centerY,centerX]))
+  let highlightedGeofence = geofences.value[index].id
+  let features = drawVector.value.getSource().getFeatures()
+  const highlightedFeature = features.filter(feature => feature.values_.id === highlightedGeofence)
+  let coordinates = highlightedFeature[0].getGeometry().getCoordinates()
+  console.log(coordinates)
+  const centerX = coordinates.reduce((sum, point) => sum + point[0], 0) / coordinates.length;
+  const centerY = coordinates.reduce((sum, point) => sum + point[1], 0) / coordinates.length;
+  map.getView().setCenter(coordinates[0])
 }
 
 </script>
