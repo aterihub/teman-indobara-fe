@@ -15,6 +15,7 @@ import EditDevice from '@/views/Devices/EditDevice.vue'
 import sideNav from '@/components/navigation/sideNav.vue'
 import Button from '@/components/button/BaseButton.vue'
 import LocationTable from './LocationTable.vue'
+import LocationHourlyTable from './LocationHourlyTable.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import ViolationTable from '../Violation/ViolationTable.vue'
 import { onMounted, ref } from 'vue'
@@ -22,7 +23,7 @@ import { useLocalStorage } from '@vueuse/core'
 
   export default {
     components: {
-      LargeChip, DeviceInfo , EditDevice, sideNav, Button, SearchBar, LocationTable, ViolationTable
+      LargeChip, DeviceInfo , EditDevice, sideNav, Button, SearchBar, LocationTable, ViolationTable, LocationHourlyTable
     },
     props: ['id'],
 
