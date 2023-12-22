@@ -72,6 +72,7 @@
         </div>
       </div>
       <EasyDataTable
+        sort-by="geofenceId"
         v-model:items-selected="itemsSelected"
         :rows-per-page="10"
         hide-rows-per-page
@@ -137,7 +138,7 @@ const geofencesId = Array.from(Array(100).keys()).map((item) => {
 const geofencesStore = useGeofencesStore()
 const { geofences, geofence, geofencesStatus, getGeofencesIsLoading, createGeofenceIsLoading, geofenceZone, getGeofenceIsLoading, getGeofenceStatus } = storeToRefs(useGeofencesStore())
 const header = [
-      { text: "Geofence ID", value: "geofenceId" },
+      { text: "Geofence ID", value: "geofenceId", sortable: true },
       { text: "Name", value: "name" },
       { text: "Notes", value: "notes" },
       { text: "", value: "action", width:30 },
