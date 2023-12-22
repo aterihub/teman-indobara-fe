@@ -1,15 +1,8 @@
 <template>
-  <EventDetailModal
-    :isOpen="isEventModalPops"
-    @close="eventModalToggle()"
-    title="Event Details"
-    :queryParams="eventParams"
-    :imei="imei"
-  />
   <alert 
-    :message ="violationStatus.message"
+    :message ="getLocationHourlyStatus.message"
     :modalActive="modalActive"
-    :isError="violationStatus.isError"
+    :isError="getLocationHourlyStatus.isError"
     @close="closeNotification" 
   />
   <div class="table-wrap">
@@ -33,7 +26,7 @@
           </div>
         </div>
         <div class="grid grid-cols-4 gap-4">
-          <select name="contractorFilter" id="contractorFilter" 
+          <select name="siteFilter" id="siteFilter" 
             class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
             v-model="selectedSite"  
             @change="getContractorsList(selectedSite)">
@@ -47,12 +40,13 @@
             <option class="p-2 cursor-pointer" value="0" >All Contractor</option>
             <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.id" >{{contractor.name}}</option>
           </select>
-          <select name="contractorFilter" id="contractorFilter" 
-            v-model="selectedVehicle" 
+          <select name="hullFilter" id="hullFilter" 
+            v-model="selectedHull" 
             class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
-            <option class="p-2 cursor-pointer" v-for="vehicle in vehicles" :value="vehicle.id" >{{vehicle.name}}</option>
+            <option class="p-2 cursor-pointer" value="0" >All Hull</option>
+            <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number" >{{vehicle.number}}</option>
           </select>
-          <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getViolationReportIsLoading" @click="loadViolationReport" />
+          <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getLocationHourlyReportIsLoading" @click="loadViolationReport" />
         </div>
       </div>
 
@@ -62,10 +56,10 @@
       :rows-per-page="10"
       table-class-name="customize-table"
       :headers="header"
-      :items="violationsReport"
+      :items="locationHourlyReport"
       theme-color="#1363df"        
       :search-value="searchValue"
-      :loading="getViolationReportIsLoading">
+      :loading="getLocationHourlyReportIsLoading">
       <template #item-coordinate="item">
         <a :href="item.coordinate.maps" target="_blank">{{item.coordinate.latLong}}</a>
       </template>
@@ -77,27 +71,32 @@
           </div>
         </template>
     </EasyDataTable>
+    <div class="w-fit self-end pb-2">
+      <BaseButton v-if="locationHourlyReport.length !== 0" type="button" class="outlined__green h-fit fill-[#99CC77] hover:fill-white" label="EXPORT TO EXCEL" :loading="downloadLocationHourlyReportIsLoading" @click="downloadLocationHourlyReport" >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+          <path d="M8.00002 10.667L4.66669 7.33366L5.60002 6.36699L7.33335 8.10033V2.66699H8.66669V8.10033L10.4 6.36699L11.3334 7.33366L8.00002 10.667ZM4.00002 13.3337C3.63335 13.3337 3.31958 13.2032 3.05869 12.9423C2.7978 12.6814 2.66713 12.3674 2.66669 12.0003V10.0003H4.00002V12.0003H12V10.0003H13.3334V12.0003C13.3334 12.367 13.2029 12.681 12.942 12.9423C12.6811 13.2037 12.3671 13.3341 12 13.3337H4.00002Z"/>
+        </svg>
+      </BaseButton>
+    </div>
   </div> 
 </template>
   
 <script setup>
-import sideNav from '@/components/navigation/sideNav.vue'
 import SearchField from '@/components/SearchField.vue'
 import { onMounted, ref } from 'vue'
 import { useVehiclesStore } from '@/stores/master-data/vehiclesStore'
 import { useHullsStore } from '@/stores/master-data/hullNumberStore'
 import { useContractorsStore } from '@/stores/master-data/contractorsStore'
 import { useSitesStore } from '@/stores/master-data/sitesStore'
-import { useViolationsStore } from '@/stores/violation/violationsStore'
+import { useReportStore } from '@/stores/report/reportStore'
 import BaseButton from '@/components/button/BaseButton.vue'
 import { storeToRefs } from 'pinia'
-import EventDetailModal from '@/components/modal/EventDetailModal.vue'
 import { useGeoDataStore } from '@/stores/GeoDataStore'
 
 const searchValue = ref('')
 const selectedSite = ref('0')
 const selectedContractor = ref('0')
-const selectedVehicle = ref('0')
+const selectedHull = ref('0')
 const modalActive = ref(false)
 
 const getDateNdaysAgo = (n) => {
@@ -111,8 +110,8 @@ const startTime = ref(new Date().toLocaleTimeString('en-US', { hour12: false, ho
 const endDate = ref(new Date().toLocaleDateString('en-CA'))
 const endTime = ref(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }))
 
-const violationsStore = useViolationsStore()
-const { violationsReport, violationStatus, getViolationReportIsLoading } = storeToRefs(useViolationsStore())
+const reportStore = useReportStore()
+const { getLocationHourlyReportIsLoading, getLocationHourlyStatus, locationHourlyReport, downloadLocationHourlyReportIsLoading } = storeToRefs(useReportStore())
 const sitesStore = useSitesStore()
 const { sites } = storeToRefs(useSitesStore())
 const contractorsStore = useContractorsStore()
@@ -127,9 +126,8 @@ const { vehicleHistoryGeo, status } = storeToRefs(useGeoDataStore())
 onMounted(async() => {
   sitesStore.getSites()
   contractorsStore.getContractors()
-  // hullNumberStore.getHulls()
-  await vehiclesStore.getVehicles()
-  selectedVehicle.value = vehicles.value[0].id
+  hullNumberStore.getHulls()
+  // await vehiclesStore.getVehicles()
 })
 
 function getContractorsList(item) {
@@ -146,17 +144,16 @@ function getContractorsList(item) {
 const closeNotification = () => {
   modalActive.value = false
 }
-function getVehicleList(item) {
-  if (item !== '0') {
-    let params = {
-      contractorId: item
-    }
-    vehiclesStore.getVehicles(params)
-  } else {
-    vehiclesStore.getVehicles()
-  }
-
-}
+// function getVehicleList(item) {
+//   if (item !== '0') {
+//     let params = {
+//       contractorId: item
+//     }
+//     vehiclesStore.getVehicles(params)
+//   } else {
+//     vehiclesStore.getVehicles()
+//   }
+// }
 
 async function loadViolationReport() {
   const queryParams = {}
@@ -166,44 +163,47 @@ async function loadViolationReport() {
   if (selectedContractor.value !== '0') {
     queryParams.contractorId = selectedContractor.value
   }
+  if (selectedHull.value !== '0') {
+    queryParams.vehicle = selectedHull.value
+  }
   queryParams.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
   queryParams.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
   console.log(queryParams)
-  await geoDataStore.getVehicleHistoryDeviceGeo(selectedVehicle.value, queryParams)
+  await reportStore.getLocationHourlyReport(queryParams)
   modalActive.value = true
   setTimeout(closeNotification, 3000)
 }
 
-const isEventModalPops = ref(false)
-function eventModalToggle() {
-  isEventModalPops.value = !isEventModalPops.value
-}
-const eventParams = ref({})
-let imei
-function viewViolationFootage(item) {
-  console.log(item)
-  let eventStartTime = new Date(item.eventTime)
-  eventParams.value = {
-    event: item.eventIo,
-    eventTime: item.eventTime,
-    eventStartTime: new Date(eventStartTime.getTime() - 3000),
-    eventEndTime: new Date(eventStartTime.getTime() + 3000),
+async function downloadLocationHourlyReport() {
+  const queryParams = {}
+  if (selectedSite.value !== '0') {
+    queryParams.siteId = selectedSite.value
   }
-  imei = item.imei
-  isEventModalPops.value = true
+  if (selectedContractor.value !== '0') {
+    queryParams.contractorId = selectedContractor.value
+  }
+  if (selectedHull.value !== '0') {
+    queryParams.vehicle = selectedHull.value
+  }
+  queryParams.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
+  queryParams.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
+  console.log(queryParams)
+  await reportStore.downloadLocationHourlyReport(queryParams)
+  modalActive.value = true
+  setTimeout(closeNotification, 3000)
 }
 
 const header = [
   { text: "Time", value: "deviceTime" ,sortable: true},
-  { text: "Hull Number", value: "hullNumber",sortable: true },
+  { text: "Hull Number", value: "vehicle",sortable: true },
   { text: "Registration Number", value: "registrationNumber",sortable: true },
   { text: "Site", value: "site",sortable: true },
   { text: "Contractor", value: "contractor",sortable: true },
   { text: "Speed (Km/h)", value: "speed", sortable: true },
-  { text: "Violation", value: "violation", sortable: true },
+  { text: "Geofence", value: "geofence", sortable: true },
   { text: "Coordinate", value: "coordinate"},
-  { text: "", value: "operation"},
 ]
+
 
 </script>
     
@@ -221,7 +221,7 @@ const header = [
 }
 .table-wrap {
   @apply
-    overflow-auto sm:overflow-visible w-full
+    overflow-auto sm:overflow-visible w-full flex flex-col gap-2
 }
 .table-header {
   @apply
