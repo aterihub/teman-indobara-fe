@@ -5,8 +5,8 @@ import moment from 'moment'
 
 function camelToNormalCase(camelCaseString) {
   return camelCaseString
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .replace(/^./, str => str.toUpperCase());
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/^./, str => str.toUpperCase());
 }
 
 export const useGeofencesStore = defineStore('geofencesData', {
@@ -15,19 +15,19 @@ export const useGeofencesStore = defineStore('geofencesData', {
     geofenceZone: ref({}),
     geofence: ref([]),
     getGeofencesStatus: ref({
-      isError:null,
+      isError: null,
       message: null,
-      code: null, 
+      code: null,
     }),
     getGeofenceStatus: ref({
-      isError:null,
+      isError: null,
       message: null,
-      code: null, 
+      code: null,
     }),
     geofencesStatus: ref({
-      isError:null,
+      isError: null,
       message: null,
-      code: null, 
+      code: null,
     }),
     getGeofencesIsLoading: ref(false),
     getGeofenceIsLoading: ref(false),
@@ -42,16 +42,30 @@ export const useGeofencesStore = defineStore('geofencesData', {
         let geofences = []
         if (res.data.geofences.length > 0) {
           geofences = res.data.geofences.map((item) => {
+            let operandText
+            switch (item.operand) {
+              case 0:
+                operandText = "On Exit"
+                break;
+              case 1:
+                operandText = "On Enter"
+                break;
+              case 2:
+                operandText = "On Both"
+                break;
+            }
             return {
               id: item.id,
               geofenceId: camelToNormalCase(item.geofenceId),
               name: item.name,
               operand: item.operand,
+              operandText: operandText,
               eventualRecord: item.eventualRecord,
               frameBorder: item.frameBorder,
               coordinates: item.coordinates,
               maxAllowedSpeed: item.maxAllowedSpeed,
               notes: item.notes,
+
             }
           })
           this.geofences = geofences
@@ -72,9 +86,9 @@ export const useGeofencesStore = defineStore('geofencesData', {
           case 'ERR_BAD_REQUEST':
             this.getGeofencesStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
-            default :
-              this.getGeofencesStatus.message = err.response.data.message
-              break;
+          default:
+            this.getGeofencesStatus.message = err.response.data.message
+            break;
         }
         this.getGeofencesIsLoading = false
         console.error(err)
@@ -94,7 +108,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
         this.getGeofenceStatus.isError = false
         this.getGeofenceIsLoading = false
       } catch (err) {
-        this.geofenceZone = {  
+        this.geofenceZone = {
           name: null,
           operand: 0,
           eventualRecord: false,
@@ -111,9 +125,9 @@ export const useGeofencesStore = defineStore('geofencesData', {
           case 'ERR_BAD_REQUEST':
             this.getGeofenceStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
-            default :
-              this.getGeofenceStatus.message = err.response.data.message
-              break;
+          default:
+            this.getGeofenceStatus.message = err.response.data.message
+            break;
         }
         this.getGeofenceIsLoading = false
         console.error(err)
@@ -138,9 +152,9 @@ export const useGeofencesStore = defineStore('geofencesData', {
           case 'ERR_BAD_REQUEST':
             this.geofencesStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
-            default :
-              this.geofencesStatus.message = err.response.data.message
-              break;
+          default:
+            this.geofencesStatus.message = err.response.data.message
+            break;
         }
         this.createGeofenceIsLoading = false
         console.error(err)
@@ -164,9 +178,9 @@ export const useGeofencesStore = defineStore('geofencesData', {
           case 'ERR_BAD_REQUEST':
             this.geofencesStatus.message = 'Invalid request. Make sure the request format and data are correct'
             break;
-            default :
-              this.geofencesStatus.message = err.response.data.message
-              break;
+          default:
+            this.geofencesStatus.message = err.response.data.message
+            break;
         }
         this.deleteGeofenceIsLoading = false
         console.error(err)
