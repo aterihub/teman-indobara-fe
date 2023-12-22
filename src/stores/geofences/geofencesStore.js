@@ -39,8 +39,22 @@ export const useGeofencesStore = defineStore('geofencesData', {
       this.getGeofencesIsLoading = true
       try {
         const res = await geofencesAPI.getGeofences()
-        this.geofences = res.data.geofences
-        if (this.geofences.length === 0) {
+        let geofences = []
+        if (res.data.geofences.length > 0) {
+          geofences = res.data.geofences.map((item) => {
+            return {
+              id: item.id,
+              geofenceId: camelToNormalCase(item.geofenceId),
+              name: item.name,
+              operand: item.operand,
+              eventualRecord: item.eventualRecord,
+              frameBorder: item.frameBorder,
+              coordinates: item.coordinates,
+              maxAllowedSpeed: item.maxAllowedSpeed,
+              notes: item.notes,
+            }
+          })
+          this.geofences = geofences
           this.getGeofencesStatus.message = 'No Geofences Available'
         } else {
           this.getGeofencesStatus.message = 'Geofences Fetched'
