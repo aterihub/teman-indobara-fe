@@ -80,7 +80,7 @@
           <Button type="button" class="filled__green" :label="uploadGeofenceLabel" @click="uploadGeofence" />
         </div>
       </div>
-      <EasyDataTable sort-by="geofenceId" v-model:items-selected="itemsSelected" :rows-per-page="15" hide-rows-per-page
+      <EasyDataTable @expand-row="highlightPolygon" sort-by="geofenceId" v-model:items-selected="itemsSelected" :rows-per-page="15" hide-rows-per-page
         table-class-name="customize-table" :headers="header" :items="geofences" theme-color="#1363df">
 
         <template #expand="item">
@@ -581,6 +581,13 @@ watch(isOpen, async (value) => {
     loadGeofenceZone()
   }
 }, { deep: true })
+
+function highlightPolygon(index){
+  let highlightedPolygon = geofences.value[index]
+  const centerX = highlightedPolygon.coordinates.reduce((sum, point) => sum + point[0], 0) / highlightedPolygon.coordinates.length;
+  const centerY = highlightedPolygon.coordinates.reduce((sum, point) => sum + point[1], 0) / highlightedPolygon.coordinates.length;
+  map.getView().setCenter(fromLonLat([centerY,centerX]))
+}
 
 </script>
 

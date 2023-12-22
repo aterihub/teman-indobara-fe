@@ -41,13 +41,13 @@ export const useViolationsStore = defineStore('violationData', {
         console.log(res)
         let violation = []
         let meta = []
-         if (res.data.violation.data.length > 0) {
+        if (res.data.violation.data.length > 0) {
           violation = res.data.violation.data.map((item) => {
             return {
               imei: item.imei,
               eventTime: item.time,
               deviceTime: new Date(item.time).toLocaleString(),
-              violation: item.violation.toUpperCase(),
+              violation: camelToNormalCase(item.violation),
               vehicle: item.vehicle,
               registrationNumber: item.registrationNumber,
               site: item.location,
