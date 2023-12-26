@@ -2,7 +2,7 @@
   <alert :message="status.message" :modalActive="status.isError" :isError="status.isError" @close="closeNotification" />
   <sideNav :isReportActive="true" />
   <div class="device-container">
-    <h1 class="title"> Dashboard</h1>
+    <h1 class="title"> Devices Health Status</h1>
     <EasyDataTable header-text-direction="center" body-text-direction="center" table-class-name="customize-table"
       :headers="header" :items="items" theme-color="#1363df">
       <template #item-status="item">
