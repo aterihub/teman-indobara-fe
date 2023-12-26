@@ -5,7 +5,9 @@
         class="nav"
         :value="index"
         :id="tab.value"
-        >{{tab.title}}
+        >
+        <img class="w-[36px] cursor-pointer pointer-events-none" :src="require(`@/assets/icon/${tab.src}`)">
+        {{tab.title}}
       </button>
   </div>
 </template>
@@ -14,10 +16,9 @@
 
 export default {
   props:[
-    'tabs'
+    'tabs',
   ],
   setup(props, {emit}) {
-    
     function changeTable(event) {
       var subNavs = document.getElementsByClassName("nav")
       for (var i of subNavs) {
@@ -36,19 +37,21 @@ export default {
 <style scoped>
 
 .tab {
-  @apply 
-    items-start justify-start h-full
-    flex flex-col w-[200px] gap-2
+  @apply w-fit grid grid-rows-2 gap-[14px] h-fit
 }
 
 button {
-  @apply disabled:opacity-75 flex items-center relative text-[#353535] cursor-pointer p-2 rounded-md
-  w-full text-[10px] sm:text-[14px] border-2
+  @apply disabled:opacity-75 flex flex-col gap-2 justify-center items-center relative 
+  text-[#353535] cursor-pointer p-4 rounded-md
+    w-[140px] text-[10px] sm:text-[12px] font-semibold
+    border-2 border-[#D9D9D9]
+    h-[140px]
+    
 } 
 
 button:hover {
-  @apply bg-gray-100 text-[#353535] outline-none 
-  transition-all duration-300 scale-105
+  @apply bg-[#f2f2f2]/60 text-[#353535]  
+  transition-colors duration-300 
 }
 
 .active {

@@ -5,7 +5,7 @@ import moment from 'moment'
 
 export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
   state: () => ({
-    vehicles: ref(''),
+    vehiclesData: ref(''),
     adasData: ref(''),
     dsmData: ref(''),
     status: ref({
@@ -46,6 +46,8 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
         this.adasData.events.speed.time = moment(this.adasData.events.speed.time).format("YYYY-MM-DD hh:mm")
         this.adasData.events.aheadDistance.time = moment(this.adasData.events.aheadDistance.time).format("YYYY-MM-DD hh:mm")
         this.adasData.events.aheadSpeed.time = moment(this.adasData.events.aheadSpeed.time).format("YYYY-MM-DD hh:mm")
+        this.adasData.deviceHealth.maps = `https://www.google.com/maps?q=${this.adasData.deviceHealth.latitude},${this.adasData.deviceHealth.longitude}`,
+        this.adasData.deviceHealth.latLong = `${this.adasData.deviceHealth.latitude},${this.adasData.deviceHealth.longitude}`,
         this.dsmData = res.data.vehicles[0].dsm
         this.dsmData.deviceHealth.time = moment(this.dsmData.deviceHealth.time).format("YYYY-MM-DD hh:mm")
         this.dsmData.dsmDetail.time = moment(this.dsmData.dsmDetail.time).format("YYYY-MM-DD hh:mm")
@@ -58,6 +60,8 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
         this.dsmData.events.mask.time = moment(this.dsmData.events.mask.time).format("YYYY-MM-DD hh:mm")
         this.dsmData.events.seatbelt.time = moment(this.dsmData.events.seatbelt.time).format("YYYY-MM-DD hh:mm")
         this.dsmData.events.gsensor.time = moment(this.dsmData.events.gsensor.time).format("YYYY-MM-DD hh:mm")
+        this.dsmData.deviceHealth.maps = `https://www.google.com/maps?q=${this.dsmData.deviceHealth.latitude},${this.dsmData.deviceHealth.longitude}`,
+        this.dsmData.deviceHealth.latLong = `${this.dsmData.deviceHealth.latitude},${this.dsmData.deviceHealth.longitude}`,
         this.getRealtimeDataIsLoading = false
       } catch (err) {
         this.status.isError = true

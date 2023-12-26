@@ -1,6 +1,6 @@
 <template>
-    <svg :width="width" :height="height" :viewBox="viewBox" :fill="fill">
-      <path :d="path" />
+    <svg :width="width" :height="height" :viewBox="viewBox" :fill="fill" >
+      <path :d="path"  fill-rule="evenodd" clip-rule="evenodd" />
       <slot></slot>
     </svg>
 </template>
