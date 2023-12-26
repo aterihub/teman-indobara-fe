@@ -8,7 +8,7 @@
   <div class="table-wrap">
     <div class="table-header">
       <h1 class="title">Location Hourly Report</h1>
-      <div class="flex">
+      <div class="flex justify-between w-full">
         <div class="grid grid-cols-2 gap-4">
           <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
             <h2 class="font-semibold text-xs">From</h2>
@@ -245,7 +245,7 @@ watch(serverOptions, (value) => { loadViolationReport(); }, { deep: true })
 }
 .table-header {
   @apply
-  flex flex-row w-full justify-between mb-6
+  flex flex-col w-full mb-4 gap-6
 }
 /* .search-wrapper {
   @apply
