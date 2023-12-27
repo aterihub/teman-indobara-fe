@@ -19,7 +19,7 @@ import LocationHourlyTable from './LocationHourlyTable.vue'
 import Playback from './Playback.vue'
 import DevicesRealtimeTable from './DevicesRealtimeTable.vue'
 import SearchBar from '@/components/SearchBar.vue'
-import ViolationTable from '../Violation/ViolationTable.vue'
+import ViolationTable from './ViolationReport.vue'
 import { onMounted, ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 
