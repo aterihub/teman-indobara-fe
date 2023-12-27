@@ -115,10 +115,15 @@ const getDateNdaysAgo = (n) => {
   return date.toLocaleDateString('en-CA')
 }
 
-const startDate = ref(getDateNdaysAgo(7))
-const startTime = ref(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }))
-const endDate = ref(new Date().toLocaleDateString('en-CA'))
-const endTime = ref(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }))
+const now = new Date();
+const last24Hours = 24 * 60 * 60 * 1000; // milliseconds in 24 hours
+
+const startDate = ref(new Date(now - last24Hours).toLocaleDateString('en-CA'));
+const startTime = ref(new Date(now - last24Hours).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }));
+
+const endDate = ref(now.toLocaleDateString('en-CA'));
+const endTime = ref(now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }));
+
 
 const violationsStore = useViolationsStore()
 const { violationsReport, violationStatus, getViolationReportIsLoading, violationsReportMeta, downloadViolationReportIsLoading, downloadViolationStatus } = storeToRefs(useViolationsStore())
@@ -131,11 +136,12 @@ const { vehicles } = storeToRefs(useVehiclesStore())
 const hullNumberStore = useHullsStore()
 const { hulls } = storeToRefs(useHullsStore())
 
-onMounted(() => {
+onMounted(async() => {
   violationsReport.value = []
-  sitesStore.getSites()
-  contractorsStore.getContractors()
-  hullNumberStore.getHulls()
+  await sitesStore.getSites()
+  await contractorsStore.getContractors()
+  await hullNumberStore.getHulls()
+  loadViolationReport()
   // vehiclesStore.getVehicles()
 })
 
