@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import reportAPI from '@/services/report/reportAPi'
+import realtimeAPI from '@/services/realtime/realtimeAPI'
 import { ref } from 'vue'
 import moment from 'moment'
 
@@ -12,8 +13,14 @@ function camelToNormalCase(camelCaseString) {
 export const useViolationsStore = defineStore('violationData', {
   state: () => ({
     violationsNotification: ref(''),
+    violationsRealtime: ref([]),
     violationsReport: ref(''),
     violationsReportMeta: ref(''),
+    violationRealtimeStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
     violationStatus: ref({
       isError:null,
       message: null,
@@ -29,11 +36,57 @@ export const useViolationsStore = defineStore('violationData', {
       message: null,
       code: null, 
     }),
+    getViolationRealtimeIsLoading: ref(false),
     getViolationReportIsLoading: ref(false),
     downloadViolationReportIsLoading: ref(false),
     getViolationNotificationIsLoading: ref(false),
   }),
   actions: {
+    async getViolationRealtime(params) {
+      this.getViolationRealtimeIsLoading = true
+      try {
+        const res = await realtimeAPI.getViolationRealtime(params)
+        console.log(res)
+        let violation = []
+        if (res.data.realtime.length > 0) {
+          violation = res.data.realtime.map((item) => {
+            return {
+              imei: item.imei,
+              eventTime: item._time,
+              deviceTime: new Date(item._time).toLocaleString(),
+              eventIo: item.eventIo,
+              violation: camelToNormalCase(item.eventIo),
+              vehicle: item.hullNumber,
+              registrationNumber: item.registrationNumber,
+              site: item.site,
+              contractor: item.contractor,
+              speed: item.speed,
+              coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude}, ${item.longitude}`}
+            }
+          })
+          this.violationRealtimeStatus.message = 'Violation Fetched'
+        } else {
+          this.violationRealtimeStatus.message = 'No Violation Available'
+        }
+        this.violationsRealtime = violation
+        this.violationRealtimeStatus.isError = false
+        this.getViolationRealtimeIsLoading = false
+      } catch (err) {
+        this.violationRealtimeStatus.isError = true
+        this.violationRealtimeStatus.code = err.code
+        switch (this.violationRealtimeStatus.code) {
+          case 'ERR_NETWORK':
+            this.violationRealtimeStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.violationRealtimeStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            break;
+        }
+        this.getViolationRealtimeIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
     async getViolationReport(params) {
       this.getViolationReportIsLoading = true
       try {

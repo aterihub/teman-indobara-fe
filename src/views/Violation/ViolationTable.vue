@@ -7,31 +7,15 @@
     :imei="imei"
   />
   <alert 
-    :message ="violationStatus.message"
+    :message ="violationRealtimeStatus.message"
     :modalActive="modalActive"
-    :isError="violationStatus.isError"
+    :isError="violationRealtimeStatus.isError"
     @close="closeNotification" 
   />
   <div class="table-wrap">
     <div class="table-header">
       <h1 class="title">Violation Table</h1>
-      <div class="flex justify-between w-full">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
-            <h2 class="font-semibold text-xs">From</h2>
-            <div class="flex gap-6 ">
-              <input class="cursor-pointer bg-transparent text-xs" type="date" name="startDate" id="startDate" v-model="startDate">
-              <input class="cursor-pointer bg-transparent text-xs" type="time" name="startTime" id="startTime" v-model="startTime">
-            </div>
-          </div>
-          <div class="text-left flex items-center gap-2 border rounded-md border-[#D9D9D9] p-2 w-fit">
-            <h2 class="font-semibold text-xs">To</h2>
-            <div class="flex gap-6">
-              <input class="cursor-pointer bg-transparent text-xs" type="date" name="endDate" id="endDate" v-model="endDate">
-              <input class="cursor-pointer bg-transparent text-xs" type="time" name="endTime" id="endTime" v-model="endTime">
-            </div>
-          </div>
-        </div>
+      <div class="flex justify-between">
         <div class="grid grid-cols-4 gap-4">
           <select name="contractorFilter" id="contractorFilter" 
             class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
@@ -52,23 +36,20 @@
             <option class="p-2 cursor-pointer" value="0" >All Hull</option>
             <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number" >{{vehicle.number}}</option>
           </select>
-          <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getViolationReportIsLoading" @click="loadViolationReport" />
+          <BaseButton type="button" class="filled__green h-fit" label="Filter" :loading="getViolationRealtimeIsLoading" @click="loadViolationReport" />
         </div>
       </div>
-
     </div>
     <SearchField class="outlined" v-model="searchValue" placeholder="Search by IMEI, variant, device name..."/>
     <EasyDataTable
       header-text-direction="center"
       body-text-direction="center"
-      v-model:server-options="serverOptions"
-      :server-items-length="serverItemsLength"
       table-class-name="customize-table"
       :headers="header"
-      :items="items"
+      :items="violationsRealtime"
       theme-color="#1363df"        
       :search-value="searchValue"
-      :loading="getViolationReportIsLoading">
+      :loading="getViolationRealtimeIsLoading">
       <template #item-coordinate="item">
         <a :href="item.coordinate.maps" target="_blank">{{item.coordinate.latLong}}</a>
       </template>
@@ -80,13 +61,13 @@
         </div>
       </template>
     </EasyDataTable>
-    <div class="w-fit self-end py-2">
-      <BaseButton v-if="violationsReport.length !== 0" type="button" class="outlined__green h-fit fill-[#99CC77] hover:fill-white" label="EXPORT TO EXCEL" :loading="downloadViolationReportIsLoading" @click="downloadViolationReport" >
+    <!-- <div class="w-fit self-end py-2">
+      <BaseButton v-if="violationsRealtime.length !== 0" type="button" class="outlined__green h-fit fill-[#99CC77] hover:fill-white" label="EXPORT TO EXCEL" :loading="downloadViolationReportIsLoading" @click="downloadViolationReport" >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
           <path d="M8.00002 10.667L4.66669 7.33366L5.60002 6.36699L7.33335 8.10033V2.66699H8.66669V8.10033L10.4 6.36699L11.3334 7.33366L8.00002 10.667ZM4.00002 13.3337C3.63335 13.3337 3.31958 13.2032 3.05869 12.9423C2.7978 12.6814 2.66713 12.3674 2.66669 12.0003V10.0003H4.00002V12.0003H12V10.0003H13.3334V12.0003C13.3334 12.367 13.2029 12.681 12.942 12.9423C12.6811 13.2037 12.3671 13.3341 12 13.3337H4.00002Z"/>
         </svg>
       </BaseButton>
-    </div>
+    </div> -->
   </div> 
 </template>
   
@@ -109,24 +90,8 @@ const selectedContractor = ref('0')
 const selectedHull = ref('0')
 const modalActive = ref(false)
 
-const getDateNdaysAgo = (n) => {
-  const date = new Date()
-  date.setDate(date.getDate() - n)
-  return date.toLocaleDateString('en-CA')
-}
-
-const now = new Date();
-const last24Hours = 24 * 60 * 60 * 1000; // milliseconds in 24 hours
-
-const startDate = ref(new Date(now - last24Hours).toLocaleDateString('en-CA'));
-const startTime = ref(new Date(now - last24Hours).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }));
-
-const endDate = ref(now.toLocaleDateString('en-CA'));
-const endTime = ref(now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }));
-
-
 const violationsStore = useViolationsStore()
-const { violationsReport, violationStatus, getViolationReportIsLoading, violationsReportMeta, downloadViolationReportIsLoading, downloadViolationStatus } = storeToRefs(useViolationsStore())
+const { violationRealtimeStatus, violationsRealtime, getViolationRealtimeIsLoading } = storeToRefs(useViolationsStore())
 const sitesStore = useSitesStore()
 const { sites } = storeToRefs(useSitesStore())
 const contractorsStore = useContractorsStore()
@@ -137,7 +102,7 @@ const hullNumberStore = useHullsStore()
 const { hulls } = storeToRefs(useHullsStore())
 
 onMounted(async() => {
-  violationsReport.value = []
+  violationsRealtime.value = []
   await sitesStore.getSites()
   await contractorsStore.getContractors()
   await hullNumberStore.getHulls()
@@ -180,35 +145,10 @@ async function loadViolationReport() {
     queryParams.contractorId = selectedContractor.value
   }
   if (selectedHull.value !== '0') {
-    queryParams.vehicle = selectedHull.value
+    queryParams.hullNumber = selectedHull.value
   }
-  queryParams.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
-  queryParams.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
-  queryParams.page = serverOptions.value.page
-  queryParams.rowsPerPage = serverOptions.value.rowsPerPage
   console.log(queryParams)
-  await violationsStore.getViolationReport(queryParams)
-  serverItemsLength.value = violationsReportMeta.value.total
-  items.value = violationsReport.value
-  modalActive.value = true
-  setTimeout(closeNotification, 3000)
-}
-
-async function downloadViolationReport() {
-  const queryParams = {}
-  if (selectedSite.value !== '0') {
-    queryParams.siteId = selectedSite.value
-  }
-  if (selectedContractor.value !== '0') {
-    queryParams.contractorId = selectedContractor.value
-  }
-  if (selectedHull.value !== '0') {
-    queryParams.vehicle = selectedHull.value
-  }
-  queryParams.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
-  queryParams.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
-  console.log(queryParams)
-  await violationsStore.downloadViolationReport(queryParams)
+  await violationsStore.getViolationRealtime(queryParams)
   modalActive.value = true
   setTimeout(closeNotification, 3000)
 }
@@ -219,6 +159,7 @@ function eventModalToggle() {
 }
 const eventParams = ref({})
 let imei
+
 function viewViolationFootage(item) {
   console.log(item)
   let eventStartTime = new Date(item.eventTime)
@@ -244,14 +185,7 @@ const header = [
   { text: "Coordinate", value: "coordinate"},
   { text: "", value: "operation"},
 ]
-const items = ref([])
-const serverItemsLength = ref(0)
-const serverOptions = ref({
-  page: 1,
-  rowsPerPage: 15,
-})
 
-watch(serverOptions, (value) => { loadViolationReport(); }, { deep: true })
 
 </script>
     
@@ -273,7 +207,7 @@ watch(serverOptions, (value) => { loadViolationReport(); }, { deep: true })
 }
 .table-header {
   @apply
-  flex flex-col w-full mb-4 gap-6
+  flex w-full justify-between mb-6
 }
 /* .search-wrapper {
   @apply

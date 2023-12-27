@@ -158,7 +158,8 @@ export const useGeoDataStore = defineStore('geo', {
             data.storedTime = new Date(data.storedTime).toLocaleString()
             data.batteryVoltage = data.batteryVoltage/1000
             data.externalVoltage = data.externalVoltage/1000
-            data.eventIo = camelToNormalCase(data.eventIo)
+            data.eventIo = data.eventIo
+            data.eventIoText = camelToNormalCase(data.eventIo)
             data.coordinate = {maps: `https://www.google.com/maps?q=${data.latitude},${data.longitude}`, latLong: `${data.latitude}, ${data.longitude}`}
           })
         })

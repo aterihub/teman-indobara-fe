@@ -2,7 +2,11 @@ import { defineStore } from 'pinia'
 import eventAPI from '@/services/event/eventAPI'
 import { ref } from 'vue'
 import moment from 'moment'
-
+function camelToNormalCase(camelCaseString) {
+  return camelCaseString
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/^./, str => str.toUpperCase());
+}
 export const useEventDevicesStore = defineStore('eventDevices', {
   state: () => ({
     eventMeta: ref(''),
@@ -32,7 +36,7 @@ export const useEventDevicesStore = defineStore('eventDevices', {
           const tmpEventData =  
             {
               _time: new Date(res.data.eventData._time).toLocaleString(),
-              event: res.data.eventData._field.toUpperCase(),
+              event: camelToNormalCase(res.data.eventData._field),
               contractor: res.data.eventData.contractor,
               hullNumber: res.data.eventData.hullNumber,
               registrationNumber: res.data.eventData.registrationNumber,
