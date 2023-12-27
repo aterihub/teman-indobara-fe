@@ -41,11 +41,11 @@
               <div class="grid grid-cols-2 gap-4 items-end justify-between mb-4 ">
                 <select v-model="selectedVehicle" class="select-option" @change="changeVehicle(selectedVehicle.id)">
                   <option v-for="item in vehicles" :key="item.id" :value="item">
-                    <p class="font-semibold">{{ item.name }}</p>
+                    <p class="font-semibold">{{ item.hullNumber }}</p>
                   </option>
                 </select>
                 <p class="font-bold px-3 py-2 border-b border-[#3a3a3e] w-full cursor-default">
-                  {{ selectedVehicle.registrationNumber }}</p>
+                  {{ selectedVehicle.name }}</p>
               </div>
               <!-- <div class="grid grid-cols-1 px-3 p  y-2 border-b border-[#3a3a3e] cursor-default mb-6 gap-4">
                   <div class="flex gap-2 w-full text-left items-center" v-for="(item, index) in vehicle.devices">
@@ -183,6 +183,7 @@ import BaseButton from '@/components/button/BaseButton.vue'
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
 import { useGeoDataStore } from '@/stores/GeoDataStore'
 import { useVehiclesStore } from '@/stores/master-data/vehiclesStore'
+import { useHullsStore } from '@/stores/master-data/hullNumberStore'
 import { storeToRefs } from 'pinia'
 import distanceFilter from '@/composable/distanceFilter.js'
 import MapLoading from '@/components/MapLoading.vue'
@@ -200,6 +201,8 @@ const mapContainer = ref(null)
 const geoDataStore = useGeoDataStore()
 const vehiclesStore = useVehiclesStore()
 const { vehicles, vehicle } = storeToRefs(useVehiclesStore())
+const hullsStore = useHullsStore()
+const { hulls } = storeToRefs(useHullsStore())
 const loadingStore = useMapLoadingStore()
 const selectedVehicle = ref({ id: null, registrationNumber: null })
 const selectedVariant = ref([])
@@ -319,6 +322,7 @@ function camelToNormalCase(camelCaseString) {
 }
 
 onMounted(async () => {
+  await hullsStore.getHulls()
   await vehiclesStore.getVehicles()
   initializeMap()
 })
