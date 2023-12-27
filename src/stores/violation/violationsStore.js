@@ -53,7 +53,7 @@ export const useViolationsStore = defineStore('violationData', {
               site: item.location,
               contractor: item.contractor,
               speed: item.speed,
-              coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude},${item.longitude}`}
+              coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude}, ${item.longitude}`}
             }
           })
           meta = res.data.violation.meta
