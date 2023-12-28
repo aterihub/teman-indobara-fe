@@ -16,7 +16,7 @@
         v-model="selectedSite"  
         @change="getContractorsList(selectedSite)">
         <option class="p-2 cursor-pointer" value="0" >All Site</option>
-        <option class="p-2 cursor-pointer" v-for="site in sites" :value="site.name" >{{site.name}}</option>
+        <option class="p-2 cursor-pointer" v-for="site in sites" :value="site" >{{site.name}}</option>
       </select>
       <select name="contractorFilter" id="contractorFilter" 
         class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
@@ -178,7 +178,7 @@ const { contractors } = storeToRefs(useContractorsStore())
 const hullNumberStore = useHullsStore()
 const { hulls } = storeToRefs(useHullsStore())
 
-const selectedSite = ref('')
+const selectedSite = ref('0')
 const selectedContractor = ref('0')
 const selectedHull = ref('0')
 
@@ -190,7 +190,7 @@ const closeNotification = () => {
 function getContractorsList(item) {
   if (item !== '0') {
     let params = {
-      siteId: item
+      siteId: item.id
     }
     contractorsStore.getContractors(params)
   } else {
@@ -219,7 +219,7 @@ function camelToNormalCase(camelCaseString) {
 
 onMounted( async () => {
   await sitesStore.getSites()
-  selectedSite.value = sites.value[0].name  
+  selectedSite.value = sites.value[0]  
   await contractorsStore.getContractors()
   await hullNumberStore.getHulls()
   initializeMap()
@@ -330,11 +330,11 @@ async function getCoordinates() {
 
   const queryParams = ref({ 
     startTime: "-10d",
-    site: selectedSite.value,
   })
-
+  if (selectedSite.value !== '0') {
+    queryParams.value.site = selectedSite.value.name
+  }
   if (selectedContractor.value !== '0') {
-    console.log('gak nol')
     queryParams.value.contractor = selectedContractor.value
   }
   if (selectedHull.value !== '0') {
