@@ -8,6 +8,7 @@
       <h1 class="font-medium">There is an violation</h1>
       <p class="font-normal">Time: {{ message.timestamp }}</p>
       <p class="font-normal">Hull: {{ message.hullNumber }}</p>
+      <p class="font-normal">Event: {{ message.eventIo }}</p>
       <p class="font-normal">Contractor: {{ message.contractor }}</p>
       <p class="font-normal">Coordinate: {{ message.latitude }},{{ message.longitude }}</p>
     </div>

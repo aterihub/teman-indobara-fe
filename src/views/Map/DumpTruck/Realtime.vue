@@ -411,18 +411,19 @@ async function getCoordinates() {
 
     map.addLayer(vectorLayer)
 
-
-    // if (geolocations.length > 1) {
-    //   let midPoint
-    //   for (let index = 0; index < geolocations.length-1; index++) {
-    //     let midpointX = (parseFloat(geolocations[index].longitude) + parseFloat(geolocations[index+1].longitude)) / 2
-    //     let midpointY = (parseFloat(geolocations[index].latitude) + parseFloat(geolocations[index+1].latitude)) / 2
-    //     midPoint = [midpointX,midpointY]
-    //   }
-    //   map.getView().setCenter(fromLonLat([geolocations[0].longitude, geolocations[0].latitude]))
-    // } else {
-    //   map.getView().setCenter(fromLonLat([geolocations[0].longitude, geolocations[0].latitude]))
-    // }
+    if (selectedHull.value !== '0') {
+      if (geolocations.length > 1) {
+        let midPoint
+        for (let index = 0; index < geolocations.length-1; index++) {
+          let midpointX = (parseFloat(geolocations[index].longitude) + parseFloat(geolocations[index+1].longitude)) / 2
+          let midpointY = (parseFloat(geolocations[index].latitude) + parseFloat(geolocations[index+1].latitude)) / 2
+          midPoint = [midpointX,midpointY]
+        }
+        map.getView().setCenter(fromLonLat([geolocations[0].longitude, geolocations[0].latitude]))
+      } else {
+        map.getView().setCenter(fromLonLat([geolocations[0].longitude, geolocations[0].latitude]))
+      }
+    }
   } else {
     modalActive.value = true
     setTimeout(closeNotification, 3000)
