@@ -329,7 +329,7 @@ async function getCoordinates() {
   isRequestPending = true
 
   const queryParams = ref({ 
-    startTime: "-10d",
+    startTime: "-1d",
   })
   if (selectedSite.value !== '0') {
     queryParams.value.site = selectedSite.value.name
