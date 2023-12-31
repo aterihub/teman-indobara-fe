@@ -108,6 +108,20 @@
               <p class="font-medium">{{ item.notes }}</p>
             </div>
           </div>
+          <div>
+            <table>
+              <tr>
+                <th>Number</th>
+                <th>Lat</th>
+                <th>Long</th>
+              </tr>
+              <tr v-for="(coord,index) in item.coordinates">
+                <td>P{{ index+1 }}</td>
+                <td>{{ coord[0] }}</td>
+                <td>{{ coord[1] }}</td>
+              </tr>
+            </table>
+          </div>
         </template>
         <template #item-action="item">
           <div class="action" v-if="isEditGeofence">
@@ -600,7 +614,7 @@ function highlightPolygon(index){
 <style scoped>
 .map-container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
 }
 
 .ol-popup {
@@ -683,6 +697,14 @@ function highlightPolygon(index){
   border-collapse: collapse;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+}
+
+table {
+  @apply border w-full mb-2
+}
+
+table tr {
+  @apply border
 }
 
 
