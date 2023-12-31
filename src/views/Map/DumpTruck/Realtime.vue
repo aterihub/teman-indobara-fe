@@ -445,6 +445,7 @@ function initializeMap() {
       let external_power = selectedFeature.get('value').externalVoltage
       let stored_time = selectedFeature.get('value').storedTime
       let time = selectedFeature.get('value')._time
+      let geofenceId = selectedFeature.get('value').geofenceId
       let event_io = camelToNormalCase(selectedFeature.get('value').eventIo)
       let popupContent =
         'Contractor: ' + contractor + '<br>'
@@ -465,6 +466,7 @@ function initializeMap() {
         + 'Stored time : ' + stored_time + '<br>'
         + 'Device time : ' + time + '<br>'
         + 'Event : ' + event_io + ' <br>'
+        + 'Geofence ID : ' + geofenceId + ' <br>'
       document.getElementById('popup').innerHTML = popupContent
       popupOverlay.setPosition(coordinates)
     } else {
