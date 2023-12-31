@@ -36,6 +36,10 @@
       </select>
       <p class="font-bold px-3 py-2 border-b border-[#3a3a3e] w-full cursor-default">{{selectedVehicle.registrationNumber}}</p> -->
     </div>
+    <div class="flex justify-start items-center gap-2 text-sm cursor-pointer pt-4">
+      <input class="cursor-pointer" type="checkbox" name="showGeofence" id="showGeofence" v-model="showGeofences">
+      <label class="cursor-pointer select-none" for="showGeofence">Geofences</label>
+    </div>
   </div>
   <!-- <div class="absolute right-2 top-14 flex gap-6">
     <div 
@@ -171,7 +175,50 @@ import { useContractorsStore } from '@/stores/master-data/contractorsStore'
 import { useSitesStore } from '@/stores/master-data/sitesStore'
 import { useGeofencesStore } from '@/stores/geofences/geofencesStore'
 
+const showGeofences =ref(true)
 
+async function showPolygon() {
+  let features = drawVector.value.getSource().getFeatures()
+  console.log(features)
+  features.forEach((feature) => {
+    const polygonStyle = new Style({
+      fill: new Fill({
+        color: 'rgba(100, 255, 0, 0.3)',
+      }),
+      stroke: new Stroke({
+        color: 'rgba(251, 139, 36, 0.8)',
+        width: 1,
+      }),
+      text: new Text({
+        text: feature.values_.name,
+        fill: new Fill({
+          color: 'black',
+        }),
+        offsetY: 0, // Adjust the offset if needed
+        textAlign: 'center',
+        font: 'bold 14px sans-serif',
+      }),
+    })
+    feature.setStyle(polygonStyle)
+  })
+
+}
+async function hidePolygon() {
+  let features = drawVector.value.getSource().getFeatures()
+  features.forEach((feature) => {
+    feature.setStyle(polygonStyleHidden)
+  })
+}
+
+watch(showGeofences, (newValue) => {
+  if (!newValue) {
+    hidePolygon()
+  } else if (newValue) {
+    showPolygon()
+  }
+},
+  { deep: true }
+)
 
 const sitesStore = useSitesStore()
 const { sites } = storeToRefs(useSitesStore())
