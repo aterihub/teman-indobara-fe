@@ -104,6 +104,7 @@ export const useViolationsStore = defineStore('violationData', {
               vehicle: item.vehicle,
               registrationNumber: item.registrationNumber,
               site: item.location,
+              geofence: item.geofence,
               contractor: item.contractor,
               speed: item.speed,
               coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude}, ${item.longitude}`}

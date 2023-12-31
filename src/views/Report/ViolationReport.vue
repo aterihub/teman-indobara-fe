@@ -235,6 +235,7 @@ const header = [
   { text: "Contractor", value: "contractor" },
   { text: "Speed (Km/h)", value: "speed"},
   { text: "Violation", value: "violation"},
+  { text: "Geofence", value: "geofence"},
   { text: "Coordinate", value: "coordinate"},
   { text: "", value: "operation"},
 ]
