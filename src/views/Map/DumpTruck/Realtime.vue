@@ -1,7 +1,7 @@
 <template>
-  <alert :message="geoDataStore.status.message" :modalActive="modalActive" :isError="geoDataStore.status.isError"/>
+  <alert :message="geoDataStore.status.message" :modalActive="modalActive" :isError="geoDataStore.status.isError" />
 
-  <MapLoading :loading="loadingStore.loading"/>
+  <MapLoading :loading="loadingStore.loading" />
   <div ref="mapContainer" class="map-container"></div>
   <div id="popup" title="myproject" class="ol-popup">
     <a href="#" id="popup-closer" class="ol-popup-closer"></a>
@@ -11,24 +11,23 @@
   <div class="filter-form">
     <h1 class="text-left font-bold text-[10px] sm:text-sm">Filter</h1>
     <div class="flex gap-1 sm:gap-4 items-center">
-      <select name="contractorFilter" id="contractorFilter" 
+      <select name="contractorFilter" id="contractorFilter"
         class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-        v-model="selectedSite"  
-        @change="getContractorsList(selectedSite)">
-        <option class="p-2 cursor-pointer" value="0" >All Site</option>
-        <option class="p-2 cursor-pointer" v-for="site in sites" :value="site" >{{site.name}}</option>
+        v-model="selectedSite" @change="getContractorsList(selectedSite)">
+        <option class="p-2 cursor-pointer" value="0">All Site</option>
+        <option class="p-2 cursor-pointer" v-for="site in sites" :value="site">{{ site.name }}</option>
       </select>
-      <select name="contractorFilter" id="contractorFilter" 
+      <select name="contractorFilter" id="contractorFilter"
         class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-        v-model="selectedContractor" >
-        <option class="p-2 cursor-pointer" value="0" >All Contractor</option>
-        <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.name" >{{contractor.name}}</option>
+        v-model="selectedContractor">
+        <option class="p-2 cursor-pointer" value="0">All Contractor</option>
+        <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.name">{{ contractor.name }}
+        </option>
       </select>
-      <select name="contractorFilter" id="contractorFilter" 
-        v-model="selectedHull" 
+      <select name="contractorFilter" id="contractorFilter" v-model="selectedHull"
         class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
-        <option class="p-2 cursor-pointer" value="0" >All Hull</option>
-        <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number" >{{vehicle.number}}</option>
+        <option class="p-2 cursor-pointer" value="0">All Hull</option>
+        <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number">{{ vehicle.number }}</option>
       </select>
       <!-- <select v-model="selectedVehicle" class="select-option">
         <option v-for="item in vehicles" :key="item.id" :value="{id: item.id, registrationNumber: item.registrationNumber}">
@@ -164,10 +163,13 @@ import Select from 'ol/interaction/Select'
 import { pointerMove, singleClick } from 'ol/events/condition'
 import { useMapLoadingStore } from '@/stores/MapLoadingStore'
 import MapLoading from '@/components/MapLoading.vue'
+import Polygon from 'ol/geom/Polygon';
+import Text from 'ol/style/Text';
 
 import { useHullsStore } from '@/stores/master-data/hullNumberStore'
 import { useContractorsStore } from '@/stores/master-data/contractorsStore'
 import { useSitesStore } from '@/stores/master-data/sitesStore'
+import { useGeofencesStore } from '@/stores/geofences/geofencesStore'
 
 
 
@@ -177,7 +179,8 @@ const contractorsStore = useContractorsStore()
 const { contractors } = storeToRefs(useContractorsStore())
 const hullNumberStore = useHullsStore()
 const { hulls } = storeToRefs(useHullsStore())
-
+const geofencesStore = useGeofencesStore()
+const { geofences, geofence, geofencesStatus, getGeofencesIsLoading, geofenceZone, getGeofenceIsLoading, getGeofenceStatus } = storeToRefs(useGeofencesStore())
 const selectedSite = ref('0')
 const selectedContractor = ref('0')
 const selectedHull = ref('0')
@@ -200,34 +203,134 @@ function getContractorsList(item) {
 
 let map
 let popupOverlay
-const isOpen = ref([false,false])
+const isOpen = ref([false, false])
 const mapContainer = ref(null)
 const geoDataStore = useGeoDataStore()
 const vehiclesStore = useVehiclesStore()
 const { vehicles, vehicle } = storeToRefs(useVehiclesStore())
 const vehicleStatusStore = useVehicleStatus()
 const loadingStore = useMapLoadingStore()
-const selectedVehicle = ref({imei:null, registrationNumber:null})
+const selectedVehicle = ref({ imei: null, registrationNumber: null })
 let dataInterval
 const mergedList = ref({})
 
 function camelToNormalCase(camelCaseString) {
-    return camelCaseString
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace(/^./, str => str.toUpperCase());
+  return camelCaseString
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/^./, str => str.toUpperCase());
 }
 
-onMounted( async () => {
+const drawVector = ref(null)
+const initialFeatures = ref([])
+
+const polygonStyle = new Style({
+  fill: new Fill({
+    color: 'rgba(100, 255, 0, 0.3)',
+  }),
+  stroke: new Stroke({
+    color: 'rgba(251, 139, 36, 0.8)',
+    width: 1,
+  }),
+})
+
+const polygonStyleHidden = new Style({
+  fill: new Fill({
+    color: 'transparent',
+  }),
+})
+function drawPolygon() {
+  // CODE UNDER TEST
+  let vector = drawVector.value.getSource()
+  vector.clear()
+  const features = []
+  initialFeatures.value = []
+  if (geofences.value.length !== 0) {
+    geofences.value.map(geofence => {
+      let lonLatCoordinates = geofence.coordinates.map(coordinate => {
+        return [coordinate[1], coordinate[0]]
+      })
+      let projectedCoordinates = lonLatCoordinates.map(coordinate => {
+        return fromLonLat(coordinate)
+      })
+      let obj =
+      {
+        geometry: new Polygon([projectedCoordinates]),
+        name: geofence.name,
+        id: geofence.id,
+        geofenceId: geofence.geofenceId,
+        geofenceIdText: geofence.geofenceIdText,
+        notes: geofence.notes,
+        operand: geofence.operand,
+        operandText: geofence.operandText,
+        eventualRecord: geofence.eventualRecord,
+        maxAllowedSpeed: geofence.maxAllowedSpeed,
+        frameBorder: geofence.frameBorder
+      }
+      initialFeatures.value.push(obj)
+      // let itemsObj =
+      // {
+      //   id: geofence.id,
+      //   geofenceId: geofence.geofenceId,
+      //   geofenceIdText: geofence.geofenceIdText,
+      //   name: geofence.name,
+      //   operand: geofence.operand,
+      //   operandText: geofence.operandText,
+      //   eventualRecord: geofence.eventualRecord,
+      //   frameBorder: geofence.frameBorder,
+      //   coordinates: geofence.coordinates,
+      //   maxAllowedSpeed: geofence.maxAllowedSpeed,
+      //   notes: geofence.notes,
+      // }
+      // itemsSelected.value.push(itemsObj)
+    })
+
+    for (const initialFeature of initialFeatures.value) {
+      const polygonStyle = new Style({
+        fill: new Fill({
+          color: 'rgba(100, 255, 0, 0.3)',
+        }),
+        stroke: new Stroke({
+          color: 'rgba(251, 139, 36, 0.8)',
+          width: 1,
+        }),
+        text: new Text({
+          text: initialFeature.name,
+          fill: new Fill({
+            color: 'black',
+          }),
+          offsetY: 0, // Adjust the offset if needed
+          textAlign: 'center',
+          font: 'bold 14px sans-serif',
+        }),
+      })
+
+      const feature = new Feature({
+        geometry: initialFeature.geometry,
+        id: initialFeature.id,
+        name: initialFeature.name,
+        notes: initialFeature.notes,
+      });
+      feature.setStyle(polygonStyle)
+      features.push(feature);
+    }
+    drawVector.value.getSource().addFeatures(features)
+    console.log('FEATURES')
+    console.log(drawVector.value.getSource().getFeatures())
+  }
+}
+
+onMounted(async () => {
   await sitesStore.getSites()
-  selectedSite.value = sites.value[0]  
+  selectedSite.value = sites.value[0]
   await contractorsStore.getContractors()
   await hullNumberStore.getHulls()
+  await geofencesStore.getGeofences()
   initializeMap()
   getCoordinates()
   dataInterval = setInterval(getCoordinates, 5000)
-})  
+})
 
-onUnmounted( async () => {
+onUnmounted(async () => {
   clearInterval(dataInterval)
 })
 
@@ -236,18 +339,24 @@ function toggleAccordion(index) {
   console.log(isOpen.value)
 }
 function initializeMap() {
+  drawVector.value = new VectorLayer({
+    source: new VectorSource(),
+    style: polygonStyle,
+  })
+  drawPolygon()
   map = new Map({
     target: mapContainer.value,
     layers: [
       new TileLayer({
         source: new OSM(),
       }),
+      drawVector.value
     ],
     view: new View({
       center: fromLonLat([118.015776, -2.600029]),
       zoom: 6,
     }),
-    controls:[]
+    controls: []
   })
   popupOverlay = new Overlay({
     element: document.getElementById('popup'),
@@ -261,10 +370,15 @@ function initializeMap() {
     condition: pointerMove,
     style: null,
   })
-  
+
   selectInteraction.on('select', (event) => {
     const selectedFeature = event.selected[0]
     if (selectedFeature) {
+      const geometryType = selectedFeature.getGeometry().getType();
+      // Skip if the selected feature is a Polygon
+      if (geometryType === 'Polygon') {
+        return;
+      }
       const coordinates = selectedFeature.getGeometry().getCoordinates()
       console.log(selectedFeature.get('value'))
       let contractor = selectedFeature.get('value').contractor
@@ -285,11 +399,11 @@ function initializeMap() {
       let stored_time = selectedFeature.get('value').storedTime
       let time = selectedFeature.get('value')._time
       let event_io = camelToNormalCase(selectedFeature.get('value').eventIo)
-      let popupContent = 
-        'Contractor: ' + contractor + '<br>' 
-        + 'Hull Number: ' + hullNumber + '<br>' 
-        + 'Registration Number: ' + registrationNumber + '<br>' 
-        + 'IMEI Number: ' + imei + '<br>' 
+      let popupContent =
+        'Contractor: ' + contractor + '<br>'
+        + 'Hull Number: ' + hullNumber + '<br>'
+        + 'Registration Number: ' + registrationNumber + '<br>'
+        + 'IMEI Number: ' + imei + '<br>'
         + 'GPS status: ' + fix_flag + '<br>'
         + 'Latitude: ' + latitude + '<br>'
         + 'Longitude:' + longitude + '<br>'
@@ -317,10 +431,10 @@ let isRequestPending = false
 
 async function getCoordinates() {
   watch([selectedSite, selectedContractor, selectedHull], ([newSite, newContractor, newHull], [oldSite, oldContractor, oldHull]) => {
-  if (newSite !== oldSite || newContractor !== oldContractor || newHull !== oldHull) {
-    loadingStore.startLoading()
-    clearLayer()
-  }
+    if (newSite !== oldSite || newContractor !== oldContractor || newHull !== oldHull) {
+      loadingStore.startLoading()
+      clearLayer()
+    }
   })
 
   if (isRequestPending) {
@@ -328,7 +442,7 @@ async function getCoordinates() {
   }
   isRequestPending = true
 
-  const queryParams = ref({ 
+  const queryParams = ref({
     startTime: "-1d",
   })
   if (selectedSite.value !== '0') {
@@ -347,7 +461,7 @@ async function getCoordinates() {
   const vectorSource = new VectorSource()
   let geolocations = geoDataStore.vehicleLastGeo
   if (geolocations.length > 0) {
-    geolocations.forEach((geolocation,index) => {
+    geolocations.forEach((geolocation, index) => {
       let angleInRadians = (geolocation.course * Math.PI) / 180
 
       const feature = new Feature({
@@ -358,14 +472,14 @@ async function getCoordinates() {
       let offset = 350
       if (index == 0) {
         let radiusHDOP = (geolocation.radius * map.getView().getZoom() * scale) - offset
-        if (radiusHDOP <= 1 ) {
+        if (radiusHDOP <= 1) {
           radiusHDOP = 1
         }
         const point = new Style({
           image: new Icon({
             // radius: 10,
             // fill: new Fill({ color: 'rgba(10,110,189,1.000)' }),
-            src: require('../../../assets/icon/car-icon.png'), 
+            src: require('../../../assets/icon/car-icon.png'),
             scale: 0.15,
             rotation: angleInRadians
           }),
@@ -374,20 +488,20 @@ async function getCoordinates() {
           image: new Circle({
             radius: radiusHDOP,
             fill: new Fill({ color: 'rgba(10,110,189,0.1)' }),
-            stroke: new Stroke({ color: 'rgba(10,110,189,0.5)', width: 1, lineCap: 'butt'}),
+            stroke: new Stroke({ color: 'rgba(10,110,189,0.5)', width: 1, lineCap: 'butt' }),
           }),
         })
         feature.setStyle([point])
       } else {
         let radiusHDOP = (geolocation.radius * map.getView().getZoom() * scale) - offset
-        if (radiusHDOP <= 1 ) {
+        if (radiusHDOP <= 1) {
           radiusHDOP = 1
         }
         const point = new Style({
           image: new Icon({
             // radius: 10,
             // fill: new Fill({ color: 'rgba(0,223,162,1.000)' }),
-            src: require('../../../assets/icon/car-icon.png'), 
+            src: require('../../../assets/icon/car-icon.png'),
             scale: 0.15,
             rotation: angleInRadians
           }),
@@ -396,7 +510,7 @@ async function getCoordinates() {
           image: new Circle({
             radius: radiusHDOP,
             fill: new Fill({ color: 'rgba(0,223,162,0.1)' }),
-            stroke: new Stroke({ color: 'rgba(0,223,162,0.5)', width: 1, lineCap: 'butt'}),
+            stroke: new Stroke({ color: 'rgba(0,223,162,0.5)', width: 1, lineCap: 'butt' }),
           }),
         })
         feature.setStyle([point])
@@ -414,10 +528,10 @@ async function getCoordinates() {
     if (selectedHull.value !== '0') {
       if (geolocations.length > 1) {
         let midPoint
-        for (let index = 0; index < geolocations.length-1; index++) {
-          let midpointX = (parseFloat(geolocations[index].longitude) + parseFloat(geolocations[index+1].longitude)) / 2
-          let midpointY = (parseFloat(geolocations[index].latitude) + parseFloat(geolocations[index+1].latitude)) / 2
-          midPoint = [midpointX,midpointY]
+        for (let index = 0; index < geolocations.length - 1; index++) {
+          let midpointX = (parseFloat(geolocations[index].longitude) + parseFloat(geolocations[index + 1].longitude)) / 2
+          let midpointY = (parseFloat(geolocations[index].latitude) + parseFloat(geolocations[index + 1].latitude)) / 2
+          midPoint = [midpointX, midpointY]
         }
         map.getView().setCenter(fromLonLat([geolocations[0].longitude, geolocations[0].latitude]))
       } else {
@@ -428,7 +542,7 @@ async function getCoordinates() {
     modalActive.value = true
     setTimeout(closeNotification, 3000)
   }
-  
+
   isRequestPending = false
   loadingStore.stopLoading()
 
@@ -436,13 +550,20 @@ async function getCoordinates() {
 
 
 
-function clearLayer(){
+function clearLayer() {
   map.getLayers().forEach((layer) => {
     if (layer instanceof VectorLayer) {
-      map.removeLayer(layer);
+      const features = layer.getSource().getFeatures();
+      const hasPolygons = features.some((feature) => feature.getGeometry() instanceof Polygon);
+
+      if (!hasPolygons) {
+        map.removeLayer(layer);
+      }
     }
-  })
+  });
 }
+
+
 </script>
 
 <style scoped>
@@ -452,74 +573,59 @@ function clearLayer(){
 }
 
 .ol-popup {
-    position: absolute;
-    background-color: white;
-    /*--webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));*/
-    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #cccccc;
-    bottom: 12px;
-    left: -50px;
-    min-width: 280px;
-    margin-bottom: 10px;
+  position: absolute;
+  background-color: white;
+  /*--webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));*/
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: 280px;
+  margin-bottom: 10px;
 
 }
-.ol-popup:after, .ol-popup:before {
-    top: 100%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-}
-.ol-popup:after {
-    border-top-color: white;
-    border-width: 10px;
-    left: 48px;
-    margin-left: -10px;
-}
+
+.ol-popup:after,
 .ol-popup:before {
-    border-top-color: #cccccc;
-    border-width: 11px;
-    left: 48px;
-    margin-left: -11px;
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.ol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+
+.ol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
 }
 
 .select-option {
-  @apply  px-3 py-2 cursor-pointer
-          border-b border-[#3a3a3e]
-          bg-transparent
-          outline-none
-} 
+  @apply px-3 py-2 cursor-pointer border-b border-[#3a3a3e] bg-transparent outline-none
+}
+
 .filter-form {
-  @apply 
-    text-[#3a3a3e] text-base px-4 py-4
-    absolute 
-    right-2 top-14
-    flex flex-col gap-2
-    rounded-lg 
-    w-fit h-fit
-    shadow-blue-300/50
-    shadow-sm
-    bg-white
-    /* backdrop-blur-sm */
+  @apply text-[#3a3a3e] text-base px-4 py-4 absolute right-2 top-14 flex flex-col gap-2 rounded-lg w-fit h-fit shadow-blue-300/50 shadow-sm bg-white
+  /* backdrop-blur-sm */
   /* bg-slate-50/40 */
-    /* bg-gradient-to-b from-slate-50/80 */
-    /* bg-[#3a3a3e]/10 */
+  /* bg-gradient-to-b from-slate-50/80 */
+  /* bg-[#3a3a3e]/10 */
 }
 
 .vehicle-info {
-  @apply     
-    shadow-sm
-    shadow-blue-300/50
-    backdrop-blur-md
-    bg-gradient-to-b from-slate-50/80
-    rounded-lg w-fit h-full px-4 py-6 gap-2 flex flex-col
-    min-w-[260px]
-    cursor-pointer
-    select-none
+  @apply shadow-sm shadow-blue-300/50 backdrop-blur-md bg-gradient-to-b from-slate-50/80 rounded-lg w-fit h-full px-4 py-6 gap-2 flex flex-col min-w-[260px] cursor-pointer select-none
 }
 
 .active {
@@ -527,7 +633,6 @@ function clearLayer(){
 }
 
 .content {
-  @apply hidden h-fit flex-col
-  text-left gap-4 mb-2 
+  @apply hidden h-fit flex-col text-left gap-4 mb-2
 }
 </style>
