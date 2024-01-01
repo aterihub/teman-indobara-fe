@@ -12,10 +12,16 @@ function camelToNormalCase(camelCaseString) {
 
 export const useViolationsStore = defineStore('violationData', {
   state: () => ({
+    violationsGraphic: ref([]),
     violationsNotification: ref(''),
     violationsRealtime: ref([]),
     violationsReport: ref(''),
     violationsReportMeta: ref(''),
+    violationGraphicStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
     violationRealtimeStatus: ref({
       isError:null,
       message: null,
@@ -36,6 +42,7 @@ export const useViolationsStore = defineStore('violationData', {
       message: null,
       code: null, 
     }),
+    getViolationGraphicIsLoading: ref(false),
     getViolationRealtimeIsLoading: ref(false),
     getViolationReportIsLoading: ref(false),
     downloadViolationReportIsLoading: ref(false),
@@ -196,6 +203,56 @@ export const useViolationsStore = defineStore('violationData', {
         console.error(err)
         return err
       }
-    }
+    },
+    async getViolationGraphic() {
+      this.getViolationGraphicIsLoading = true
+      try {
+        const res = await reportAPI.getViolationGraphic()
+        this.violationsGraphic = res.data
+        let totalCount = res.data.graphic.reduce((sum, graphic) => sum + graphic.count, 0);
+        this.violationsGraphic.totalCount = totalCount
+        // let violation = []
+        // let meta = []
+        // if (res.data.violation.data.length > 0) {
+        //   violation = res.data.violation.data.map((item) => {
+        //     return {
+        //       imei: item.imei,
+        //       eventTime: item.time,
+        //       deviceTime: new Date(item.time).toLocaleString(),
+        //       violation: camelToNormalCase(item.violation),
+        //       vehicle: item.vehicle,
+        //       registrationNumber: item.registrationNumber,
+        //       site: item.location,
+        //       geofence: item.geofence,
+        //       contractor: item.contractor,
+        //       speed: item.speed,
+        //       coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude}, ${item.longitude}`}
+        //     }
+        //   })
+        //   meta = res.data.violation.meta
+        //   this.violationGraphicStatus.message = 'Violation Fetched'
+        // } else {
+        //   this.violationGraphicStatus.message = 'No Violation Available'
+        // }
+        // this.violationsReport = violation
+        // this.violationsReportMeta = meta
+        this.violationGraphicStatus.isError = false
+        this.getViolationGraphicIsLoading = false
+      } catch (err) {
+        this.violationGraphicStatus.isError = true
+        this.violationGraphicStatus.code = err.code
+        switch (this.violationGraphicStatus.code) {
+          case 'ERR_NETWORK':
+            this.violationGraphicStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.violationGraphicStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            break;
+        }
+        this.getViolationGraphicIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
   }
 })

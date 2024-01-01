@@ -5,6 +5,9 @@ export default {
   getViolationReport(params) {
     return apiClient.get('/violation/report', {params})
   },
+  getViolationGraphic() {
+    return apiClient.get('/violation/graphic')
+  },
   getViolationNotification() {
     return apiClient.get('/violation/notification')
   },
