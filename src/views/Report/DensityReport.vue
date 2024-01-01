@@ -118,7 +118,6 @@ const reportStore = useReportStore()
 const { densityReport, getDensityReportIsLoading, getDensityReportStatus } = storeToRefs(useReportStore())
 //table
 const header = [
-  { text: "Geofence ID", value: "geofenceId", },
   { text: "Name", value: "name" },
   { text: "Vehicle Count", value: "vehicleCount" },
 ]
