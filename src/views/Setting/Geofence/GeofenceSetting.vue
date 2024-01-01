@@ -80,8 +80,9 @@
           <Button type="button" class="filled__green" :label="uploadGeofenceLabel" @click="uploadGeofence" />
         </div>
       </div>
-      <EasyDataTable sort-by="geofenceId" v-model:items-selected="itemsSelected" :rows-per-page="15" hide-rows-per-page
-        table-class-name="customize-table" :headers="header" :items="geofences" theme-color="#1363df">
+      <EasyDataTable v-model:items-selected="itemsSelected" :rows-per-page="15" hide-rows-per-page
+        table-class-name="customize-table" :headers="header" :items="geofences" theme-color="#1363df"
+        @expand-row="highlightPolygon">
 
         <template #expand="item">
           <div class="grid grid-cols-3 p-2">
@@ -182,7 +183,7 @@ const geofencesId = Array.from(Array(100).keys()).map((item) => {
 const geofencesStore = useGeofencesStore()
 const { geofences, geofence, geofencesStatus, getGeofencesIsLoading, createGeofenceIsLoading, geofenceZone, getGeofenceIsLoading, getGeofenceStatus } = storeToRefs(useGeofencesStore())
 const header = [
-  { text: "Geofence ID", value: "geofenceId", sortable: true },
+  { text: "Geofence ID", value: "geofenceId" },
   { text: "Name", value: "name" },
   { text: "", value: "action", width: 30 },
 ]
@@ -598,15 +599,15 @@ watch(isOpen, async (value) => {
   }
 }, { deep: true })
 
-function highlightPolygon(index){
+function highlightPolygon(index) {
   let highlightedGeofence = geofences.value[index].id
   let features = drawVector.value.getSource().getFeatures()
   const highlightedFeature = features.filter(feature => feature.values_.id === highlightedGeofence)
-  let coordinates = highlightedFeature[0].getGeometry().getCoordinates()
-  console.log(coordinates)
-  const centerX = coordinates.reduce((sum, point) => sum + point[0], 0) / coordinates.length;
-  const centerY = coordinates.reduce((sum, point) => sum + point[1], 0) / coordinates.length;
-  map.getView().setCenter(coordinates[0])
+  if (highlightedFeature) {
+    let geometry = highlightedFeature[0].getGeometry();
+    let extent = geometry.getExtent();
+    map.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 1000 });
+  }
 }
 
 </script>
@@ -614,7 +615,7 @@ function highlightPolygon(index){
 <style scoped>
 .map-container {
   width: 100%;
-  height: 100vh;
+  max-height: 950px;
 }
 
 .ol-popup {

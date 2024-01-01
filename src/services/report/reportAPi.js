@@ -29,4 +29,7 @@ export default {
   getDevicesReport(params) {
     return apiClient.get('/data-devices/history', {params})
   },
+  getDensityReport(params) {
+    return apiClient.get('/location-report/geofence', {params})
+  },
 }

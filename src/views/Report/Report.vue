@@ -20,12 +20,13 @@ import Playback from './Playback.vue'
 import DevicesRealtimeTable from './DevicesStatus/DevicesStatus.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import ViolationTable from './ViolationReport.vue'
+import DensityReport from './DensityReport.vue'
 import { onMounted, ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 
   export default {
     components: {
-      LargeChip, DeviceInfo , EditDevice, sideNav, Button, SearchBar, LocationTable, ViolationTable, LocationHourlyTable, Playback, DevicesRealtimeTable
+      LargeChip, DeviceInfo , EditDevice, sideNav, Button, SearchBar, LocationTable, ViolationTable, LocationHourlyTable, Playback, DevicesRealtimeTable, DensityReport
     },
     props: ['id'],
 
@@ -43,6 +44,11 @@ import { useLocalStorage } from '@vueuse/core'
           src: 'ic-hourlyLocation-OFF.png'
         },        
         {
+          title: 'Density Report',
+          value: 'DensityReport',
+          src: 'ic-density-OFF.png'
+        },
+        {
           title: 'Violation Historical',
           value: 'ViolationTable',
           src: 'ic-violation-OFF.png'
@@ -56,7 +62,8 @@ import { useLocalStorage } from '@vueuse/core'
           title: 'Devices Health Status',
           value: 'DevicesRealtimeTable',
           src: 'ic-deviceHealth-OFF.png'
-        }
+        },       
+        
       ]
  
       function changeNavigation(navigation) {
