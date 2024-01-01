@@ -1,5 +1,5 @@
 <template>
-  <alert :message="status.message" :modalActive="status.isError" :isError="status.isError" @close="closeNotification" />
+  <alert :message="status.message" :modalActive="modalActive" :isError="status.isError" @close="closeNotification" />
   <sideNav :isReportActive="true" />
   <div class="device-container">
     <h1 class="title">Realtime Devices Health Status</h1>
@@ -67,7 +67,7 @@ import { storeToRefs } from 'pinia'
 import { useLocalStorage } from '@vueuse/core';
 
 const realtimeDevicesStore = useRealtimeDevicesStore()
-const { devicesData, dsmData, getRealtimeDataIsLoading, status } = storeToRefs(useRealtimeDevicesStore())
+const { devicesData, getRealtimeDataIsLoading, status } = storeToRefs(useRealtimeDevicesStore())
 
 let header = []
 const delay = require('delay')
@@ -78,6 +78,8 @@ const selectedDeviceType = useLocalStorage('selectedDeviceType','ADAS')
 onBeforeMount(async () => {
   setFlexibleHeader()
   await realtimeDevicesStore.getRealtimeDevicesByType(selectedDeviceType.value)
+  modalActive.value = true
+  setTimeout(closeNotification, 3000)
   loading.value = false
   while (whileState.value) {
     await realtimeDevicesStore.getRealtimeDevicesByType(selectedDeviceType.value)
@@ -90,12 +92,15 @@ async function loadRealtimeDevice() {
   console.log(header)
   loading.value = true
   await realtimeDevicesStore.getRealtimeDevicesByType(selectedDeviceType.value)
+  modalActive.value = true
+  setTimeout(closeNotification, 3000)
   loading.value = false
 }
 
 onUnmounted(() => {
   whileState.value = false
 })
+const modalActive = ref(false)
 const closeNotification = () => {
   modalActive.value = false
 }

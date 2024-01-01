@@ -33,11 +33,6 @@ export default {
       selectedComponent.value = 'DevicesRealtimeTable'
     }
 
-
-    onMounted(async () => {
-      var element = document.getElementById("Vehicle Management");
-      element.classList.add("active");
-    })
     return {
       selectedComponent,
       moveToDeviceHistory,
