@@ -632,7 +632,7 @@ function setFlexibleHeader() {
         { text: "GSM Signal", value: "gsmSignal", sortable:true },
         { text: "GPS Status", value: "gpsStatus", sortable:true },
         { text: "GNSS Status", value: "gnssStatus", sortable:true },
-        { text: "Speed", value: "speed", sortable:true },
+        { text: "Speed (KM/h)", value: " (KM/h)", sortable:true },
         { text: "Satellites Qty.", value: "satellites", sortable:true },
         { text: "Battery Percentage", value: "batteryPercentage", sortable:true },
         { text: "Record Status", value: "recordingStatus", sortable:true },
@@ -644,11 +644,11 @@ function setFlexibleHeader() {
     case 'MDVR':
       header.push(
         { text: "Time", value: "_time", sortable:true },
-        { text: "Fuel", value: "fuel", sortable:true },
-        { text: "Speed", value: "speed", sortable:true },
+        { text: "Fuel (Litres)", value: "fuel", sortable:true },
+        { text: "Speed (KM/h)", value: "speed", sortable:true },
         { text: "Course", value: "course", sortable:true },
         { text: "Deviation", value: "deviation", sortable:true },
-        { text: "Parking Time", value: "parkingTime", sortable:true },
+        { text: "Parking Time (second)", value: "parkingTime", sortable:true },
         { text: "Audio Type", value: "audioType", sortable:true },
         { text: "Factory Subtype", value: "factorySubtype", sortable:true },
         { text: "Hard Type", value: "hardType", sortable:true },

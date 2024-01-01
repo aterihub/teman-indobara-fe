@@ -5,8 +5,18 @@ import moment from 'moment'
 
 function camelToNormalCase(camelCaseString) {
   return camelCaseString
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .replace(/^./, str => str.toUpperCase());
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/^./, str => str.toUpperCase());
+}
+function convertCamelCaseToNormalCase(obj) {
+  const convertedObject = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const convertedKey = key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, str => str.toUpperCase())
+      convertedObject[convertedKey] = obj[key];
+    }
+  }
+  return convertedObject;
 }
 
 export const useReportStore = defineStore('reportData', {
@@ -15,14 +25,14 @@ export const useReportStore = defineStore('reportData', {
     locationReport: ref([]),
     locationReportMeta: ref({}),
     getLocationStatus: ref({
-      isError:null,
+      isError: null,
       message: null,
-      code: null, 
+      code: null,
     }),
     downloadLocationStatus: ref({
-      isError:null,
+      isError: null,
       message: null,
-      code: null, 
+      code: null,
     }),
     getDevicesReportIsLoading: ref(false),
     getLocationReportIsLoading: ref(false),
@@ -30,14 +40,14 @@ export const useReportStore = defineStore('reportData', {
     locationHourlyReport: ref([]),
     locationHourlyReportMeta: ref({}),
     getLocationHourlyStatus: ref({
-      isError:null,
+      isError: null,
       message: null,
-      code: null, 
+      code: null,
     }),
     downloadLocationHourlyStatus: ref({
-      isError:null,
+      isError: null,
       message: null,
-      code: null, 
+      code: null,
     }),
     getLocationHourlyReportIsLoading: ref(false),
     downloadLocationHourlyReportIsLoading: ref(false),
@@ -50,26 +60,26 @@ export const useReportStore = defineStore('reportData', {
         console.log(res)
         let location = []
         let meta = {}
-         if (res.data.report.data.length > 0) {
+        if (res.data.report.data.length > 0) {
           location = res.data.report.data.map((item) => {
             return {
-              contractor: item.contractor === null? '-' : item.contractor,
-              fuel: item.fuel === null? '-' : item.fuel,
-              geofence: item.geofence === null? '-' : item.geofence,
-              gpsStatus: item.gpsStatus === null? '-' : item.gpsStatus,
-              gsm: item.gsm === null? '-' : item.gsm,
-              imei: item.imei === null? '-' : item.imei,
-              odometer: item.odometer === null? '-' : item.odometer,
-              coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude}, ${item.longitude}`},
-              registrationNumber: item.registrationNumber === null? '-' : item.registrationNumber,
+              contractor: item.contractor === null ? '-' : item.contractor,
+              fuel: item.fuel === null ? '-' : item.fuel,
+              geofence: item.geofence === null ? '-' : item.geofence,
+              gpsStatus: item.gpsStatus === null ? '-' : item.gpsStatus,
+              gsm: item.gsm === null ? '-' : item.gsm,
+              imei: item.imei === null ? '-' : item.imei,
+              odometer: item.odometer === null ? '-' : item.odometer,
+              coordinate: { maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude}, ${item.longitude}` },
+              registrationNumber: item.registrationNumber === null ? '-' : item.registrationNumber,
               deviceTime: new Date(item.time).toLocaleString(),
-              satellite: item.satellite === null? '-' : item.satellite,
-              vehicle: item.vehicle === null? '-' : item.vehicle,
-              status: item.status === null? '-' : item.status,
-              site: item.location === null? '-' : item.location,
-              speed: item.speed === null? '-' : item.speed,
-              gps: item.gps === null? '-' : item.gps,
-              track: item.track === null? '-' : item.track,
+              satellite: item.satellite === null ? '-' : item.satellite,
+              vehicle: item.vehicle === null ? '-' : item.vehicle,
+              status: item.status === null ? '-' : item.status,
+              site: item.location === null ? '-' : item.location,
+              speed: item.speed === null ? '-' : item.speed,
+              gps: item.gps === null ? '-' : item.gps,
+              track: item.track === null ? '-' : item.track,
             }
           })
           meta = res.data.report.meta
@@ -121,14 +131,14 @@ export const useReportStore = defineStore('reportData', {
         console.log(res)
         let locationHourly = []
         let meta = {}
-         if (res.data.hourly.data.length > 0) {
+        if (res.data.hourly.data.length > 0) {
           locationHourly = res.data.hourly.data.map((item) => {
             return {
               contractor: item.contractor,
               geofence: item.geofence,
               id: item.id,
               imei: item.imei,
-              coordinate: {maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude}, ${item.longitude}`},
+              coordinate: { maps: `https://www.google.com/maps?q=${item.latitude},${item.longitude}`, latLong: `${item.latitude}, ${item.longitude}` },
               registrationNumber: item.registrationNumber,
               deviceTime: new Date(item.time).toLocaleString(),
               vehicle: item.vehicle,
@@ -183,6 +193,17 @@ export const useReportStore = defineStore('reportData', {
       try {
         const res = await reportAPI.getDevicesReport(params)
         this.devicesReport = res.data.data
+        if (res.data.type !== 'MDVR') {
+          this.devicesReport.map((data) => {
+            data._time = new Date(data._time).toLocaleString()
+            data.batteryPercentage = data.batteryPercentage.toFixed(2)
+            data.event = convertCamelCaseToNormalCase(data.event)
+          })
+        } else {
+          this.devicesReport.map((data) => {
+            data._time = new Date(data._time).toLocaleString()
+          })
+        }
         console.log(this.devicesReport)
         // let locationHourly = []
         // let meta = {}
