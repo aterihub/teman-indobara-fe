@@ -11,22 +11,23 @@
   </div>
 
   <div class="grid grid-cols-8 gap-8">
-    <div class="border  shadow rounded-md p-4 bg-[#5863BB]/60" v-for="item in 8" v-if="loading">
-      <div class="animate-pulse flex space-x-4">
-        <div class="flex-1 space-y-6 py-1">
-          <div class="h-2 bg-slate-200 rounded"></div>
-          <div class="space-y-3">
-            <div class="grid grid-cols-3 gap-4">
-              <div class="h-2 bg-slate-200 rounded col-span-2"></div>
-            </div>
-            <div class="grid grid-cols-3 gap-4">
-              <div class="h-2 bg-slate-200 rounded col-span-2"></div>
-            </div>
+    <div class="flex flex-col gap-1" v-for="item in 8" v-if="loading">
+      <div class="border  shadow rounded-md p-4 bg-[#5863BB]/60" >
+        <div class="animate-pulse flex space-x-4">
+          <div class="flex-1 space-y-6 py-1">
+            <div class="h-2 bg-white rounded"></div>
+          </div>
+        </div>
+      </div>
+      <div class="border-2 rounded-md p-4 border-[#BA000D]">
+        <div class="animate-pulse flex space-x-4">
+          <div class="flex-1 space-y-6 py-1">
+            <div class="h-2 bg-[#BA000D]/20 rounded"></div>
           </div>
         </div>
       </div>
     </div>
-    <div class="flex flex-col gap-[5px]" v-for="graph in violationsGraphic.graphic">
+    <div class="flex flex-col gap-[5px]" v-for="graph in violationsGraphic.graphic" v-if="!loading">
       <div class="h-12 w-full flex rounded-lg bg-[#5863BB] justify-center items-center text-white font-semibold">
         {{ graph.name }}
       </div>
