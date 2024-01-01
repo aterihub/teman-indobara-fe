@@ -325,7 +325,7 @@ const closeNotification = () => { modalActive.value = false }
 
 
 .filter-form {
-  @apply text-[#3a3a3e] text-base px-4 py-4 absolute left-2 top-2 flex flex-col gap-2 rounded-lg w-fit h-fit shadow-blue-300/50 shadow-sm bg-white z-20
+  @apply text-[#3a3a3e] text-base px-4 py-4 absolute left-2 top-2 flex flex-col gap-2 rounded-lg w-fit h-fit shadow-blue-300/50 shadow-sm bg-white z-10
 }
 
 .vehicle-info {

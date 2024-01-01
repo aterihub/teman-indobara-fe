@@ -235,7 +235,7 @@ const props = defineProps({
   ml-[47px]
   w-screen h-[47px] pr-8
   bg-white
-  fixed z-10 flex gap-2 justify-between items-center
+  fixed z-20 flex gap-2 justify-between items-center
   transition-all ease-in-out duration-200
   top-0 left-0
   shadow-md

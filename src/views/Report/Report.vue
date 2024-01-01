@@ -103,6 +103,20 @@ import { useLocalStorage } from '@vueuse/core'
     w-full rounded-lg bg-white p-8
 }
 .navigation {
-  @apply border-r pr-6
+  @apply border-r pr-6 overflow-y-auto overflow-x-clip
+}
+
+.navigation::-webkit-scrollbar {
+  width: 4px;
+}
+ 
+.navigation::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
+}
+ 
+.navigation::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid darkgrey;
+  border-radius: 10%;
 }
 </style>
