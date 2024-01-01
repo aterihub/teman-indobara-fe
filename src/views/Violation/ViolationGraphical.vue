@@ -1,13 +1,31 @@
 <template>
   <!-- <ViolationSummaryModal :isOpen="isModalPops" @close="isModalPops = !isModalPops" :deviceInfo="summaryData" /> -->
-  <div class="flex justify-between items-start">
-    <h1 class="title">Violation Graphical</h1>
-    <div class="px-6 py-4 rounded bg-white shadow-md border w-fit flex flex-col gap-5 text-left">
-      <p>Total:  <span class="font-semibold">{{violationsGraphic.totalCount}} Violations</span></p>
+  <div class="flex justify-between items-center">
+    <div class="flex flex-col gap-2">
+      <h1 class="title">Violation Graphical</h1>
+      <p>{{ new Date() }}</p>
+    </div>
+    <div class="px-6 py-4 rounded-lg bg-white shadow-md border w-fit flex flex-col gap-5 text-left">
+      <p>Total: <span class="font-semibold">{{ violationsGraphic.totalCount }} Violations</span></p>
     </div>
   </div>
 
   <div class="grid grid-cols-8 gap-8">
+    <div class="border  shadow rounded-md p-4 bg-[#5863BB]/60" v-for="item in 8" v-if="loading">
+      <div class="animate-pulse flex space-x-4">
+        <div class="flex-1 space-y-6 py-1">
+          <div class="h-2 bg-slate-200 rounded"></div>
+          <div class="space-y-3">
+            <div class="grid grid-cols-3 gap-4">
+              <div class="h-2 bg-slate-200 rounded col-span-2"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="h-2 bg-slate-200 rounded col-span-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="flex flex-col gap-[5px]" v-for="graph in violationsGraphic.graphic">
       <div class="h-12 w-full flex rounded-lg bg-[#5863BB] justify-center items-center text-white font-semibold">
         {{ graph.name }}
@@ -24,13 +42,26 @@
 import ViolationSummaryModal from '@/components/modal/violation/ViolationSummaryModal'
 import { useViolationsStore } from '@/stores/violation/violationsStore'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 const violationsStore = useViolationsStore()
 const { violationGraphicStatus, violationsGraphic, getViolationGraphicIsLoading } = storeToRefs(useViolationsStore())
 
+const delay = require('delay')
+const whileState = ref(true)
+const loading = ref(true)
+
 onMounted(async () => {
   await violationsStore.getViolationGraphic()
+  loading.value = false
+  while (whileState.value) {
+    await violationsStore.getViolationGraphic()
+    await delay(10000)
+  }
+})
+
+onUnmounted(() => {
+  whileState.value = false
 })
 
 const isModalPops = ref(false)
