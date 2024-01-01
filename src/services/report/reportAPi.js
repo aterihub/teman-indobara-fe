@@ -23,4 +23,7 @@ export default {
   downloadLocationHourlyReport(params) {
     return apiClient.get('/location-report/hourly/export', {params})
   },
+  getDevicesReport(params) {
+    return apiClient.get('/data-devices/history', {params})
+  },
 }
