@@ -21,6 +21,7 @@ function convertCamelCaseToNormalCase(obj) {
 
 export const useReportStore = defineStore('reportData', {
   state: () => ({
+    densityDetail: ref([]),
     densityReport: ref([]),
     devicesReport: ref(''),
     locationReport: ref([]),
@@ -33,6 +34,12 @@ export const useReportStore = defineStore('reportData', {
     getLocationHourlyReportIsLoading: ref(false),
     downloadLocationHourlyReportIsLoading: ref(false),
     getDensityReportIsLoading: ref(false),
+    getDensityDetailIsLoading: ref(false),
+    getDensityDetailStatus: ref({
+      isError: null,
+      message: null,
+      code: null,
+    }),
     getLocationStatus: ref({
       isError: null,
       message: null,
@@ -258,6 +265,32 @@ export const useReportStore = defineStore('reportData', {
             break;
         }
         this.getDensityReportIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    async getDensityDetail(params) {
+      this.getDensityDetailIsLoading = true
+      try {
+        const res = await reportAPI.getDensityDetail(params)
+        console.log(res)
+        this.densityDetail = res.data.detail
+        this.getDensityDetailStatus.message = 'Detail Fetched'
+        this.getDensityDetailStatus.isError = false
+        this.getDensityDetailIsLoading = false
+      } catch (err) {
+        this.getDensityDetailStatus.message = 'Detail Not Found'
+        this.getDensityDetailStatus.isError = true
+        this.getDensityDetailStatus.code = err.code
+        switch (this.getDensityDetailStatus.code) {
+          case 'ERR_NETWORK':
+            this.getDensityDetailStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.getDensityDetailStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            break;
+        }
+        this.getDensityDetailIsLoading = false
         console.error(err)
         return err
       }

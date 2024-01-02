@@ -4,7 +4,9 @@
   <div class="navigation">
     <LargeChip :tabs="tabs" @clicked="changeNavigation" />
   </div>
-  <component :is="selectedComponent" />
+  <div class="ml-[200px] w-full">
+    <component  :is="selectedComponent" />
+  </div>
 </div>
 </template>     
          
@@ -95,7 +97,7 @@ import { useLocalStorage } from '@vueuse/core'
         
 <style scoped>
 .content {
-    @apply relative w-full h-full ml-[47px] pt-[80px] pb-6 px-6 flex gap-6 
+    @apply relative w-full h-screen ml-[47px] pt-[80px] pb-6 px-6 flex gap-6 
 }
 .form {
   box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
@@ -103,7 +105,7 @@ import { useLocalStorage } from '@vueuse/core'
     w-full rounded-lg bg-white p-8
 }
 .navigation {
-  @apply border-r pr-6 overflow-y-auto overflow-x-clip
+  @apply border-r pr-6 overflow-y-auto overflow-x-clip fixed z-10 h-screen 
 }
 
 .navigation::-webkit-scrollbar {

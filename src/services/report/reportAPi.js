@@ -32,4 +32,7 @@ export default {
   getDensityReport(params) {
     return apiClient.get('/location-report/geofence', {params})
   },
+  getDensityDetail(params) {
+    return apiClient.get('/location-report/geofence/detail', {params})
+  },
 }
