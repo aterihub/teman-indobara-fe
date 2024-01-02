@@ -94,6 +94,8 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
         console.log(this.devicesData)
         this.getRealtimeDevicesIsLoading = false
       } catch (err) {
+        this.devicesData = []
+        this.status.message = 'No Device Found'
         this.status.isError = true
         this.status.code = err.code
         switch (this.status.code) {
