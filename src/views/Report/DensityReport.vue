@@ -3,7 +3,7 @@
     @close="closeNotification" />
   <MapLoading :loading="loadingStore.loading" />
   <div class="grid grid-cols-3 w-full gap-4">
-    <div ref="mapContainer" class="map-container col-span-2 relative">
+    <div ref="mapContainer" class="map-container col-span-2 relative overflow-auto">
       <div class="filter-form">
         <h1 class="text-left font-bold text-[10px] sm:text-sm">Filter</h1>
         <div class="flex gap-1 sm:gap-4 text-[10px] sm:text-xs items-start">
@@ -37,7 +37,7 @@
         </div>
       </div>
     </div>
-    <div class="flex gap-2 w-full">
+    <div class="flex gap-2 w-full relative">
       <EasyDataTable :rows-per-page="20" hide-rows-per-page header-text-direction="center" body-text-direction="center"
         table-class-name="customize-table" :headers="header" :items="densityReport" theme-color="#1363df"
         @expand-row="highlightPolygon" :loading="getDensityReportIsLoading">
@@ -91,13 +91,15 @@
           </div>
         </template>
       </EasyDataTable>
-      <div
-        class="densityDetail bg-white h-[950px] right-0 rounded-xl z-10 overflow-hidden transition-all duration-300 flex flex-col gap-4 w-0 "
-        :class="detailExpanded === true ? 'detailExpanded' : ''">
-        <div class="w-full flex items-center justify-between pt-4 cursor-pointer">
+      <div class="densityDetail" :class="detailExpanded === true ? 'detailExpanded' : ''">
+        <div class="w-full flex items-center justify-between pt-4">
           <p></p>
-          <h1 class="font-medium">{{ densityDetail.geofence }}</h1>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"  @click="detailExpanded=false">
+          <div class="flex gap-2">
+            <h1 class="font-medium">{{ densityDetail.geofence }} :</h1>
+            <h1 class="font-medium">{{ densityDetail.totalVehicles }} Vehicles</h1>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            @click="detailExpanded = false" class="cursor-pointer">
             <g clip-path="url(#clip0_617_2)">
               <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M6.29303 6.29279C6.48056 6.10532 6.73487 6 7.00003 6C7.26519 6 7.5195 6.10532 7.70703 6.29279L12.707 11.2928C12.8945 11.4803 12.9998 11.7346 12.9998 11.9998C12.9998 12.265 12.8945 12.5193 12.707 12.7068L7.70703 17.7068C7.51843 17.8889 7.26583 17.9897 7.00363 17.9875C6.74143 17.9852 6.49062 17.88 6.30521 17.6946C6.1198 17.5092 6.01463 17.2584 6.01236 16.9962C6.01008 16.734 6.11087 16.4814 6.29303 16.2928L10.586 11.9998L6.29303 7.70679C6.10556 7.51926 6.00024 7.26495 6.00024 6.99979C6.00024 6.73462 6.10556 6.48031 6.29303 6.29279ZM12.293 6.29279C12.4806 6.10532 12.7349 6 13 6C13.2652 6 13.5195 6.10532 13.707 6.29279L18.707 11.2928C18.8945 11.4803 18.9998 11.7346 18.9998 11.9998C18.9998 12.265 18.8945 12.5193 18.707 12.7068L13.707 17.7068C13.5184 17.8889 13.2658 17.9897 13.0036 17.9875C12.7414 17.9852 12.4906 17.88 12.3052 17.6946C12.1198 17.5092 12.0146 17.2584 12.0124 16.9962C12.0101 16.734 12.1109 16.4814 12.293 16.2928L16.586 11.9998L12.293 7.70679C12.1056 7.51926 12.0002 7.26495 12.0002 6.99979C12.0002 6.73462 12.1056 6.48031 12.293 6.29279Z"
@@ -110,24 +112,25 @@
             </defs>
           </svg>
         </div>
-        <div class="flex flex-col gap-1" v-for="item in 1" v-if="getDensityDetailIsLoading">
-          <div class="border  shadow rounded-full py-2 px-4 bg-slate-200">
-            <div class="animate-pulse flex space-x-4">
-              <div class="flex-1 space-y-6 py-1">
-                <div class="h-2 bg-slate-100 rounded"></div>
+        <div class="densityDetailContent">
+          <div class="flex flex-col gap-1" v-for="item in 1" v-if="getDensityDetailIsLoading">
+            <div class="border  shadow rounded-full py-2 px-4 bg-slate-200">
+              <div class="animate-pulse flex space-x-4">
+                <div class="flex-1 space-y-6 py-1">
+                  <div class="h-2 bg-slate-100 rounded"></div>
+                </div>
               </div>
             </div>
           </div>
+          <div v-if="densityDetailLength === 0 && !getDensityDetailIsLoading"
+            class="font-medium py-2 px-4 rounded-full bg-[#C21629] h-fit w-full text-xs text-white">
+            No Vehicle
+          </div>
+          <div v-for="detail in densityDetail.geofenceData" v-if="!getDensityDetailIsLoading"
+            class="font-medium py-2 px-4 rounded-full bg-[#93C76A] h-fit w-fit text-xs text-white">
+            {{ detail.vehicle }}
+          </div>
         </div>
-        <div v-if="densityDetailLength === 0 && !getDensityDetailIsLoading"
-          class="font-medium p-2 rounded-full bg-[#C21629] h-fit w-full text-xs text-white">
-          No Vehicle
-        </div>
-        <div v-for="detail in densityDetail.geofenceData" v-if="!getDensityDetailIsLoading"
-          class="font-medium p-2 rounded-full bg-[#93C76A] h-fit w-full text-xs text-white">
-          {{ detail.vehicle }}
-        </div>
-
       </div>
     </div>
   </div>
@@ -212,8 +215,6 @@ async function loadDensityDetail(item) {
     queryParams.value.contractor = selectedContractor.value
   }
   await reportStore.getDensityDetail(queryParams.value)
-  modalActive.value = true
-  setTimeout(closeNotification, 3000)
 }
 //map init
 let map
@@ -524,7 +525,14 @@ input[type=checkbox] {
   border-radius: 10%;
 }
 
+.densityDetail {
+  @apply bg-white h-[950px] right-0 rounded-l-xl z-10 overflow-hidden transition-all duration-300 gap-4 w-0 absolute
+}
+
+.densityDetailContent {
+  @apply mt-6 flex flex-wrap gap-2
+}
 .detailExpanded {
-  @apply border px-4 w-80
+  @apply border px-4 w-full overflow-y-auto
 }
 </style>
