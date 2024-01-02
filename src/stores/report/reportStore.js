@@ -21,6 +21,7 @@ function convertCamelCaseToNormalCase(obj) {
 
 export const useReportStore = defineStore('reportData', {
   state: () => ({
+    densityDetailLength: ref(0),
     densityDetail: ref([]),
     densityReport: ref([]),
     devicesReport: ref(''),
@@ -275,6 +276,7 @@ export const useReportStore = defineStore('reportData', {
         const res = await reportAPI.getDensityDetail(params)
         console.log(res)
         this.densityDetail = res.data.detail
+        this.densityDetailLength = res.data.detail.geofenceData.length
         this.getDensityDetailStatus.message = 'Detail Fetched'
         this.getDensityDetailStatus.isError = false
         this.getDensityDetailIsLoading = false
