@@ -31,7 +31,7 @@
                       <p class="text-md font-semibold">Top 5 Violating Contractors</p>
                       <div class="tab">
                         <button v-for="(tab, index) in tabs" :key="tab.value" @click="changeContractorNav(tab.value)"
-                          class="contractorTab" :value="index" :id="tab.value" :class="selectedContractorComponent === tab.value? 'active' : ''">{{ tab.title }}
+                          class="contractorTab outline-none" :value="index" :id="tab.value" :class="selectedContractorComponent === tab.value? 'active' : ''">{{ tab.title }}
                         </button>
                       </div>
                     </div>
@@ -44,7 +44,7 @@
                     </select>
                   </div>
                 </div>
-                <div :class="selectedContractorComponent === 'table' ? 'visible' : 'invisible'">
+                <div :class="selectedContractorComponent === 'table' ? '' : 'hidden'">
                   <table class="w-full">
                     <tr class="bg-[#F6F6F9]">
                       <th class="border text-sm font-medium">Contractor</th>
@@ -56,19 +56,19 @@
                     </tr>
                   </table>
                 </div>
-                <canvas :class="selectedContractorComponent === 'chart' ? 'visible' : 'invisible'"
+                <canvas :class="selectedContractorComponent === 'chart' ? '' : 'invisible'"
                   ref="topContractorChartCanvas"></canvas>
               </div>
             </div>
             <div class="flex flex-col text-start gap-[14px]">
-              <div class="chart-card flex flex-col">
+              <div class="chart-card flex flex-col overflow-hidden">
                 <div class="flex justify-between">
                   <div class="flex flex-col gap-4 w-full mb-4">
                     <div class="flex justify-between">
                       <p class="text-md font-semibold">Top 5 Violating Zones</p>
                       <div class="tab">
                         <button v-for="(tab, index) in tabs" :key="tab.value" @click="changeZoneNav(tab.value)"
-                          class="zoneTab" :value="index" :id="tab.value" :class="selectedGeofenceComponent === tab.value? 'active' : ''">{{ tab.title }}
+                          class="zoneTab outline-none" :value="index" :id="tab.value" :class="selectedGeofenceComponent === tab.value? 'active' : ''">{{ tab.title }}
                         </button>
                       </div>
                     </div>
@@ -81,7 +81,7 @@
                     </select>
                   </div>
                 </div>
-                <div :class="selectedGeofenceComponent === 'table' ? 'visible' : 'invisible h-0'">
+                <div :class="selectedGeofenceComponent === 'table' ? '' : 'hidden'">
                   <table class="w-full">
                     <tr class="bg-[#F6F6F9]">
                       <th class="border text-sm font-medium">Contractor</th>
@@ -93,20 +93,20 @@
                     </tr>
                   </table>
                 </div>
-                <canvas :class="selectedGeofenceComponent === 'chart' ? 'visible' : 'invisible'"
+                <canvas :class="selectedGeofenceComponent === 'chart' ? '' : 'invisible'"
                   ref="topGeofenceChartCanvas"></canvas>
               </div>
             </div>
           </div>
           <div class="flex flex-col text-start gap-[14px]">
-            <div class="chart-card flex flex-col">
+            <div class="chart-card-2 flex flex-col">
               <div class="flex justify-between">
                 <div class="flex flex-col gap-4 w-full mb-4">
                     <div class="flex justify-between">
                       <p class="text-md font-semibold">Top 5 Frequent Violations</p>
                       <div class="tab">
                         <button v-for="(tab, index) in tabs" :key="tab.value" @click="changeViolationNav(tab.value)"
-                          class="violationTab" :value="index" :id="tab.value" :class="selectedViolationComponent === tab.value? 'active' : ''">{{ tab.title }}
+                          class="violationTab outline-none" :value="index" :id="tab.value" :class="selectedViolationComponent === tab.value? 'active' : ''">{{ tab.title }}
                         </button>
                       </div>
                     </div>
@@ -119,7 +119,7 @@
                   </select>
                 </div>
               </div>
-              <div :class="selectedViolationComponent === 'table' ? 'visible' : 'invisible h-0'">
+              <div :class="selectedViolationComponent === 'table' ? '' : 'hidden'">
                   <table class="w-full">
                     <tr class="bg-[#F6F6F9]">
                       <th class="border text-sm font-medium">Contractor</th>
@@ -131,7 +131,7 @@
                     </tr>
                   </table>
                 </div>
-                <canvas :class="selectedViolationComponent === 'chart' ? 'visible' : 'invisible'"
+                <canvas :class="selectedViolationComponent === 'chart' ? '' : 'invisible'"
                   ref="topViolationChartCanvas"></canvas>
             </div>
           </div>
@@ -509,7 +509,13 @@ const violationChartData = {
   border-radius: 3.526px;
   background: #FFF;
   box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.10);
-  @apply py-[18px] w-full px-[21px]
+  @apply py-[18px] w-full px-[21px] h-[500px]
+}
+.chart-card-2 {
+  border-radius: 3.526px;
+  background: #FFF;
+  box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.10);
+  @apply py-[18px] w-full px-[21px] h-[800px]
 }
 
 .violation-card {
@@ -555,5 +561,12 @@ button:hover {
 
 .active:hover {
   @apply bg-white text-[#353535] transition-colors duration-300 cursor-default
+}
+
+table th {
+  @apply py-2
+}
+table td {
+  @apply py-2
 }
 </style>

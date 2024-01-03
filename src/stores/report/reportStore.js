@@ -363,7 +363,11 @@ export const useReportStore = defineStore('reportData', {
         this.topViolation = res.data.topMostViolation
         this.topViolation.chartData.count = res.data.topMostViolation.chartData.count.slice(0,5)
         this.topViolation.chartData.violation = res.data.topMostViolation.chartData.violation.slice(0,5)
+
         this.topViolation.tableData = res.data.topMostViolation.tableData.slice(0,5)
+        this.topViolation.tableData.map((data) => {
+          data.violation = camelToNormalCase(data.violation)
+        })
         if (this.topViolation.chartData.violation.length === 0) {
           this.topViolationIsEmpty = true
         } else {
