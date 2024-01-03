@@ -138,23 +138,22 @@
         </div>
         <div class="flex flex-col text-start gap-[14px]">
           <h1 class="text-lg font-bold text-[#00000]">Latest Notification</h1>
-          <div class="violation-card flex flex-col" v-for="item in 10">
+          <div class="violation-card flex flex-col" v-for="item in latestViolation">
             <div class="h-7 bg-[#C21629] p-6 flex justify-between items-center text-white text-sm font-semibold">
-              <p>Overspeed</p>
-              <p>2023 / 09 / 10 22:54:18</p>
+              <p>{{item.eventIo}}</p>
+              <p>{{item._time}}</p>
             </div>
             <div class="grid grid-cols-3 justify-between items-center p-6">
               <div class="flex flex-col gap-3 col-span-2">
-                <p class="text-sm font-normal">Speed 55 Kmph</p>
-                <p class="text-sm font-bold text-[#C21629]">Limit 50 Kmph</p>
+                <p class="text-sm font-normal">Speed {{item.speed}} Kmph</p>
               </div>
               <div class="border border-[#D9D9D9] rounded h-full items-center justify-center flex col-span-1">
-                <p class="text-md">KM 4</p>
+                <p class="text-md">{{item.geofence}}</p>
               </div>
             </div>
             <div class="h-7 border-t p-6 flex justify-between items-center text-sm font-semibold">
-              <p class="text-[#C21629]">GEC 9083</p>
-              <p class="text-black">Kosongan</p>
+              <p class="text-[#C21629]">{{item.hullNumber}}</p>
+              <p class="text-black">{{item.registrationNumber}}</p>
             </div>
           </div>
         </div>
@@ -317,7 +316,7 @@ import { useContractorsStore } from '@/stores/master-data/contractorsStore';
 const contractorStore = useContractorsStore()
 const { contractors } = storeToRefs(useContractorsStore())
 const realtimeDevicesStore = useRealtimeDevicesStore()
-const { dashboardData } = storeToRefs(useRealtimeDevicesStore())
+const { dashboardData, latestViolation } = storeToRefs(useRealtimeDevicesStore())
 const reportStore = useReportStore()
 const { topContractor, topContractorIsEmpty, topViolation, topViolationIsEmpty, topGeofence, topGeofenceIsEmpty } = storeToRefs(useReportStore())
 
@@ -406,7 +405,8 @@ onMounted(async () => {
   // console.log(element)
   // element.classList.add("active");
   loading.value = true
-  await realtimeDevicesStore.getRealtimeDashboard()
+  realtimeDevicesStore.getRealtimeDashboard()
+  realtimeDevicesStore.getLatestViolation()
   await reportStore.getTopContractor()
   renderTopContractorChart()
   await reportStore.getTopGeofence()
@@ -417,6 +417,7 @@ onMounted(async () => {
   loading.value = false
   while (whileState.value) {
     await realtimeDevicesStore.getRealtimeDashboard()
+    await realtimeDevicesStore.getLatestViolation()
     await delay(10000)
   }
   // this.renderChart(this.chartData, this.chartOptions)

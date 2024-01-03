@@ -3,8 +3,14 @@ import realtimeAPI from '@/services/realtime/realtimeAPI'
 import { ref } from 'vue'
 import moment from 'moment'
 
+function camelToNormalCase(camelCaseString) {
+  return camelCaseString
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/^./, str => str.toUpperCase());
+}
 export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
   state: () => ({
+    latestViolation: ref({}),
     dashboardData: ref({}),
     devicesData: ref([]),
     adasData: ref(''),
@@ -14,6 +20,12 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
       message: null,
       code: null, 
     }),
+    latestViolationStatus: ref({
+      isError:null,
+      message: null,
+      code: null, 
+    }),
+    getlatestViolationIsLoading: ref(false),
     getRealtimeDataIsLoading: ref(false),
     getRealtimeDevicesIsLoading: ref(false),
   }),
@@ -129,6 +141,32 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
         console.error(err)
         return err
       }
-    }
+    },
+    async getLatestViolation() {
+      this.getlatestViolationIsLoading = true
+      try {
+        const res = await realtimeAPI.getLatestViolation()
+        console.log(res)
+        this.latestViolation = res.data.notificationData
+        this.latestViolation.map((data) => {
+          data.eventIo = camelToNormalCase(data.eventIo)
+          data._time = new Date(data._time).toLocaleString()
+        })
+        this.latestViolationStatus.isError = false
+        this.getlatestViolationIsLoading = false
+      } catch (err) {
+        this.latestViolationStatus.isError = true
+        this.latestViolationStatus.code = err.code
+        switch (this.latestViolationStatus.code) {
+          case 'ERR_NETWORK':
+            this.latestViolationStatus.message = 'Network Error'
+            break;
+        }
+        this.getlatestViolationIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    
   }
 })

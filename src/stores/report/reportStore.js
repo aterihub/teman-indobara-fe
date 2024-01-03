@@ -363,7 +363,9 @@ export const useReportStore = defineStore('reportData', {
         this.topViolation = res.data.topMostViolation
         this.topViolation.chartData.count = res.data.topMostViolation.chartData.count.slice(0,5)
         this.topViolation.chartData.violation = res.data.topMostViolation.chartData.violation.slice(0,5)
-
+        this.topViolation.chartData.violation.map((data) => {
+          data = camelToNormalCase(data)
+        })
         this.topViolation.tableData = res.data.topMostViolation.tableData.slice(0,5)
         this.topViolation.tableData.map((data) => {
           data.violation = camelToNormalCase(data.violation)

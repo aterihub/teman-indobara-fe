@@ -11,6 +11,9 @@ export default {
   getViolationRealtime(params) {
     return apiClient.get('/violation/realtime',{params})
   },
+  getLatestViolation() {
+    return apiClient.get('/violation/latest-notification')
+  },
   getRealtimeDashboard() {
     return apiClient.get(`/data-devices/dashboard`)
   },

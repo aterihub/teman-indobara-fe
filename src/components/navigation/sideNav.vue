@@ -13,7 +13,7 @@
         </svg>
     </div>
     <transition name="modal-animation">
-      <div v-if="isNotificationShow"  class="rounded-md bg-white absolute right-20 top-12 shadow-md" ref="target">
+      <div v-if="isNotificationShow"  class="notif-modal rounded-md bg-white absolute right-20 top-12 shadow-md overflow-y-auto h-screen" ref="target">
         
         <div v-if="!getViolationNotificationIsLoading && violationsNotification.length !== 0" v-for="notif in violationsNotification" class="border-b px-3 py-2 text-left flex gap-2">
           <div>
@@ -258,6 +258,18 @@ const props = defineProps({
     flex justify-center items-center w-full flex-col gap-10
 }
 
-
+.notif-modal::-webkit-scrollbar {
+  width: 4px;
+}
+ 
+.notif-modal::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
+}
+ 
+.notif-modal::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid darkgrey;
+  border-radius: 10%;
+}
  
 </style>
