@@ -76,8 +76,8 @@
             </div>
           </div>
           <div>
-            <table>
-              <tr>
+            <table class="w-full">
+              <tr class="bg-[#F6F6F9]">
                 <th>Number</th>
                 <th>Lat</th>
                 <th>Long</th>
@@ -126,10 +126,20 @@
             class="font-medium py-2 px-4 rounded-full bg-[#C21629] h-fit w-full text-xs text-white">
             No Vehicle
           </div>
-          <div v-for="detail in densityDetail.geofenceData" v-if="!getDensityDetailIsLoading"
+          <table class="w-full" v-if="!getDensityDetailIsLoading && densityDetailLength !== 0">
+            <tr class="bg-[#F6F6F9]">
+              <th>Vehicle</th>
+              <th>Contractor</th>
+            </tr>
+            <tr v-for="detail in densityDetail.geofenceData">
+              <td>{{ detail.vehicle }}</td>
+              <td>{{ detail.contractor }}</td>
+            </tr>
+          </table>
+          <!-- <div v-for="detail in densityDetail.geofenceData" v-if="!getDensityDetailIsLoading"
             class="font-medium py-2 px-4 rounded-full bg-[#93C76A] h-fit w-fit text-xs text-white">
             {{ detail.vehicle }}
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -254,6 +264,7 @@ const polygonStyle = new Style({
     width: 1,
   }),
 })
+
 function drawPolygon() {
   // CODE UNDER TEST
   let vector = drawVector.value.getSource()
@@ -281,7 +292,8 @@ function drawPolygon() {
           operandText: geofence.operandText,
           eventualRecord: geofence.eventualRecord,
           maxAllowedSpeed: geofence.maxAllowedSpeed,
-          frameBorder: geofence.frameBorder
+          frameBorder: geofence.frameBorder,
+          vehicleCount: geofence.vehicleCount
         }
         initialFeatures.value.push(obj)
       }
@@ -289,25 +301,86 @@ function drawPolygon() {
     })
 
     for (const initialFeature of initialFeatures.value) {
-      const polygonStyle = new Style({
-        fill: new Fill({
-          color: 'rgba(100, 255, 0, 0.3)',
-        }),
-        stroke: new Stroke({
-          color: 'rgba(251, 139, 36, 0.8)',
-          width: 1,
-        }),
-        text: new Text({
-          text: initialFeature.name,
+      console.log('here', initialFeature.vehicleCount)
+      let polygonStyle
+      let count = initialFeature.vehicleCount
+      if (count >= 0 && count <= 1) {
+        polygonStyle = new Style({
           fill: new Fill({
-            color: 'black',
+            color: 'rgba(100, 255, 0, 0.3)',
           }),
-          offsetY: 0, // Adjust the offset if needed
-          textAlign: 'center',
-          font: 'bold 14px sans-serif',
-        }),
-      })
-
+          stroke: new Stroke({
+            color: 'rgba(100, 255, 0, 1)',
+            width: 1,
+          }),
+          text: new Text({
+            text: initialFeature.name,
+            fill: new Fill({
+              color: 'black',
+            }),
+            offsetY: 0, // Adjust the offset if needed
+            textAlign: 'center',
+            font: 'bold 14px sans-serif',
+          }),
+        })
+      } else if (count >= 11 && count <= 100) {
+        polygonStyle = new Style({
+          fill: new Fill({
+            color: 'rgba(255, 199, 0, 0.3)',
+          }),
+          stroke: new Stroke({
+            color: 'rgba(255, 199, 0, 1)',
+            width: 1,
+          }),
+          text: new Text({
+            text: initialFeature.name,
+            fill: new Fill({
+              color: 'black',
+            }),
+            offsetY: 0, // Adjust the offset if needed
+            textAlign: 'center',
+            font: 'bold 14px sans-serif',
+          }),
+        })
+      } else if (count >= 101 && count <= 500) {
+        polygonStyle = new Style({
+          fill: new Fill({
+            color: 'rgba(251, 139, 36, 0.3)',
+          }),
+          stroke: new Stroke({
+            color: 'rgba(251, 139, 36, 1)',
+            width: 1,
+          }),
+          text: new Text({
+            text: initialFeature.name,
+            fill: new Fill({
+              color: 'black',
+            }),
+            offsetY: 0, // Adjust the offset if needed
+            textAlign: 'center',
+            font: 'bold 14px sans-serif',
+          }),
+        })
+      } else if (count >= 501 && count <= 1000) {
+        polygonStyle = new Style({
+          fill: new Fill({
+            color: 'rgba(243, 0, 24, 0.3)',
+          }),
+          stroke: new Stroke({
+            color: 'rgba(243, 0, 24, 1)',
+            width: 1,
+          }),
+          text: new Text({
+            text: initialFeature.name,
+            fill: new Fill({
+              color: 'black',
+            }),
+            offsetY: 0, // Adjust the offset if needed
+            textAlign: 'center',
+            font: 'bold 14px sans-serif',
+          }),
+        })
+      }
       const feature = new Feature({
         geometry: initialFeature.geometry,
         id: initialFeature.id,
@@ -532,7 +605,16 @@ input[type=checkbox] {
 .densityDetailContent {
   @apply mt-6 flex flex-wrap gap-2
 }
+
 .detailExpanded {
   @apply border px-4 w-full overflow-y-auto
+}
+
+table th {
+  @apply py-2 border text-xs font-medium
+}
+
+table td {
+  @apply py-2 border text-xs font-medium text-center
 }
 </style>
