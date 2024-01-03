@@ -35,4 +35,13 @@ export default {
   getDensityDetail(params) {
     return apiClient.get('/location-report/geofence/detail', {params})
   },
+  getTopContractor(params) {
+    return apiClient.get('/violation/top-contractor', {params})
+  },
+  getTopViolation(params) {
+    return apiClient.get('/violation/top-violation', {params})
+  },
+  getTopGeofence(params) {
+    return apiClient.get('/violation/top-geofence ', {params})
+  },
 }

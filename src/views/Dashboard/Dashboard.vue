@@ -1,9 +1,8 @@
 <template>
-
   <sideNav :isDashboardActive="true" />
   <div class="content">
     <div class="device-container">
-      <div class="datepicker-wrapper">
+      <!-- <div class="datepicker-wrapper">
         <p>Date Range from</p>
         <div class="border border-[#D9D9D9] py-[7px] px-[9px] rounded">
           <input type="date" name="start_date" id="start_date">
@@ -12,22 +11,22 @@
         <div class="border border-[#D9D9D9] py-[7px] px-[9px] rounded">
           <input type="date" name="end_date" id="end_date">
         </div>
-      </div>
+      </div> -->
       <div class="status-card-wrapper">
         <div class="status-card">
-          <h1 class="self-end text-[58px] font-normal">721</h1>
-          <p class="self-start text-[18px] font-bold">Vehicle on the Road</p>
+          <h1 class="self-end text-[58px] font-normal">{{ dashboardData.online }}</h1>
+          <p class="self-start text-[18px] font-bold">Online Devices</p>
         </div>
         <div class="status-card">
-          <h1 class="self-end text-[58px] font-normal">217</h1>
-          <p class="self-start text-[18px] font-bold">Vehicle on the Pool</p>
+          <h1 class="self-end text-[58px] font-normal">{{ dashboardData.offline }}</h1>
+          <p class="self-start text-[18px] font-bold">Offline Devices</p>
         </div>
         <div class="status-card">
-          <h1 class="self-end text-[58px] font-normal">36</h1>
+          <h1 class="self-end text-[58px] font-normal">{{ dashboardData.totalContractor }}</h1>
           <p class="self-start text-[18px] font-bold">Contractor</p>
         </div>
         <div class="status-card">
-          <h1 class="self-end text-[58px] font-normal">1.213</h1>
+          <h1 class="self-end text-[58px] font-normal">{{ dashboardData.violation }}</h1>
           <p class="self-start text-[18px] font-bold">Violation</p>
         </div>
       </div>
@@ -79,29 +78,37 @@
         <div class="flex flex-col col-span-3 gap-[21px] pb-10">
           <div class="grid grid-cols-2 gap-[21px]">
             <div class="flex flex-col text-start gap-[14px]">
-              <h1 class="text-lg font-bold text-[#00000]">Truck on Duty Graph</h1>
               <div class="chart-card flex flex-col">
                 <div class="flex justify-between">
-                  <div class="flex flex-col text-start gap-1">
-                    <p class="text-md font-semibold">Total Unit All Contractor</p>
-                    <p class="text-2xl font-medium text-[#93C76A]">1.709</p>
-                    <p class="text-sm font-light">2023/September/08</p>
+                  <div class="flex flex-col gap-4 w-full mb-4">
+                    <p class="text-md font-semibold">Top Contractor by Violations</p>
+                    <select name="contractorFilter" id="contractorFilter"
+                      class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+                      v-model="selectedViolation" @change="loadTopContractor()">
+                      <option class="p-2 cursor-pointer" value="0">All Violations</option>
+                      <option class="p-2 cursor-pointer" v-for="violation in violationFilterList" :value="violation.code">
+                        {{ violation.name }}</option>
+                    </select>
                   </div>
                 </div>
-                <canvas ref="truckOnDutyChart"></canvas>
+                <canvas ref="topContractorChartCanvas"></canvas>
               </div>
             </div>
             <div class="flex flex-col text-start gap-[14px]">
-              <h1 class="text-lg font-bold text-[#00000]">Truck on Pool Graph</h1>
               <div class="chart-card flex flex-col">
                 <div class="flex justify-between">
-                  <div class="flex flex-col text-start gap-1">
-                    <p class="text-md font-semibold">Total Unit All Contractor</p>
-                    <p class="text-2xl font-medium text-[#5863BB]">1.709</p>
-                    <p class="text-sm font-light">2023/September/08</p>
+                  <div class="flex flex-col gap-4 w-full mb-4">
+                    <p class="text-md font-semibold">Top Violation by Contractors</p>
+                    <select name="contractorFilter" id="contractorFilter"
+                      class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+                      v-model="selectedContractor" @change="loadTopViolation()">
+                      <option class="p-2 cursor-pointer" value="0">All Contractors</option>
+                      <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.name">
+                        {{ contractor.name }}</option>
+                    </select>
                   </div>
                 </div>
-                <canvas ref="truckOnPoolChart"></canvas>
+                <canvas ref="topViolationChartCanvas"></canvas>
               </div>
             </div>
           </div>
@@ -142,111 +149,173 @@
           </div>
         </div>
       </div>
-    </div> 
-  </div>    
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { Chart, BarElement, BarController, CategoryScale, Decimation, Filler, Legend, Title, Tooltip,PointElement, LineElement, LinearScale} from 'chart.js';
-Chart.register(BarElement, BarController, CategoryScale, Decimation, Filler, Legend, Title, Tooltip,PointElement, LineElement,LinearScale)
+import { Chart, BarElement, BarController, CategoryScale, Decimation, Filler, Legend, Title, Tooltip, PointElement, LineElement, LinearScale } from 'chart.js';
+Chart.register(BarElement, BarController, CategoryScale, Decimation, Filler, Legend, Title, Tooltip, PointElement, LineElement, LinearScale)
+import { shallowRef } from 'vue'
+const topContractorChartCanvas = ref(null)
+let topContractorChart
+const topViolationChartCanvas = ref(null)
+let topViolationChart
 
-const truckOnDutyChart = ref(null)
-const truckOnPoolChart = ref(null)
 const violationChart = ref(null)
-onMounted(() => {
-  const truckOnDutyChartCtx = truckOnDutyChart.value.getContext('2d')
-  const truckOnPoolChartCtx = truckOnPoolChart.value.getContext('2d')
-  const violationChartCtx = violationChart.value.getContext('2d')
-  new Chart(truckOnDutyChartCtx, {
-    type: 'bar', 
-    data: truckOnDutyChartData,
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true
+
+function renderTopContractorChart() {
+  if (!topContractorIsEmpty.value) {
+    let topContractorChartData = {
+      labels: topContractor.value.chartData.contractor,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Contractor',
+          data: topContractor.value.chartData.count,
+          backgroundColor: createGradient('rgba(147, 199, 106, 0.28)', 'rgba(147, 199, 106, 1)'),
+          borderRadius: 10,
+        },
+      ],
+    }
+
+    const topContractorChartCtx = topContractorChartCanvas.value.getContext('2d')
+    topContractorChart = shallowRef(new Chart(topContractorChartCtx, {
+      type: 'bar',
+      data: topContractorChartData,
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
       }
+    }))
+  }
+}
+
+
+function renderTopViolationChart() {
+  if (!topViolationIsEmpty.value) {
+    let topViolationChartData = {
+      labels: topViolation.value.chartData.violation,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Violation',
+          data: topViolation.value.chartData.count,
+          backgroundColor: createGradient('rgba(11, 19, 84, 0.28)', 'rgba(11, 19, 84, 1)'),
+          borderRadius: 10,
+        },
+      ],
     }
-  })
-  new Chart(truckOnPoolChartCtx, {
-    type: 'bar', 
-    data: truckOnPoolChartData,
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true
+
+    const topViolationChartCtx = topViolationChartCanvas.value.getContext('2d')
+    topViolationChart = shallowRef(new Chart(topViolationChartCtx, {
+      type: 'bar',
+      data: topViolationChartData,
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
       }
-    }
-  })
-  new Chart(violationChartCtx, {
-    type: 'bar', 
-    data: violationChartData,
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  })
-})
+    }))
+  }
+}
+
+function renderNoDataMessage(ctx) {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#888';
+  ctx.font = '18px Arial';
+  ctx.fillText('No data available', ctx.canvas.width / 2, ctx.canvas.height / 2);
+}
+
+function addData(chart, label, newData) {
+  chart.data.labels = []
+  chart.data.labels = label;
+  chart.data.datasets.forEach((dataset) => {
+    dataset.data = []
+  });
+  chart.data.datasets.forEach((dataset) => {
+    newData.forEach((data) => {
+      dataset.data.push(data)
+    })
+  });
+  console.log(chart.data.datasets)
+  chart.update();
+}
+
+function updateTopContractor() {
+  addData(topContractorChart.value, topContractor.value.chartData.contractor, topContractor.value.chartData.count)
+}
+function updateTopViolation() {
+  addData(topViolationChart.value, topViolation.value.chartData.violation, topViolation.value.chartData.count)
+}
 
 
-// import { Bar } from 'vue-chartjs'
-// import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
-// ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
-
-import lazyCard from '@/components/loading/lazyCard.vue';
+import lazyCard from '@/components/loading/lazyCard.vue'
 import Indicator from '@/components/Indicator.vue'
 import sideNav from '@/components/navigation/sideNav.vue'
-import { onBeforeMount, ref, onUnmounted, onMounted } from 'vue';
-import { useDevicesStore } from '@/stores/DevicesStore'
-import { useRealtimeDataStore } from '@/stores/RealtimeDataStore'
+import { onBeforeMount, ref, onUnmounted, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import router from '@/router'
-import SignalIndicator from '@/components/SignalIndicator.vue';
-const devicesStore = useDevicesStore()
-const realtimeDataStore = useRealtimeDataStore()
-const { devicesList } = storeToRefs(useDevicesStore())
-const { devicesStatus, devicesGeneralData } = storeToRefs(useRealtimeDataStore())
-const mergedList = ref([])
+import { useRealtimeDevicesStore } from '@/stores/realtime/realtimeDevicesStore'
+import { useReportStore } from '@/stores/report/reportStore';
+import { useContractorsStore } from '@/stores/master-data/contractorsStore';
+
+const contractorStore = useContractorsStore()
+const { contractors } = storeToRefs(useContractorsStore())
+const realtimeDevicesStore = useRealtimeDevicesStore()
+const { dashboardData } = storeToRefs(useRealtimeDevicesStore())
+const reportStore = useReportStore()
+const { topContractor, topContractorIsEmpty, topViolation, topViolationIsEmpty } = storeToRefs(useReportStore())
+const violationFilterList = [
+  { code: "drowsiness", name: "Drowsiness" },
+  { code: "distraction", name: "Distraction" },
+  { code: "yawning", name: "Yawning" },
+  { code: "phone", name: "Phone" },
+  { code: "smoking", name: "Smoking" },
+  { code: "seatbelt", name: "Seatbelt" },
+  { code: "fatigueDrivingAlarmLevelOneStart", name: "Fatigue Driving Alarm Level One Start" },
+  { code: "fatigueDrivingAlarmLevelTwoStart", name: "Fatigue Driving Alarm Level Two Start" },
+  { code: "facialFatigueStart", name: "Facial Fatigue Start" },
+  { code: "fatigueDrivingAlarmStart", name: "Fatigue Driving Alarm Start" },
+  { code: "distractedDrivingAlarmLevelOneStart", name: "Distracted Driving Alarm Level One Start" },
+  { code: "distractedDrivingAlarmLevelTwoStart", name: "Distracted Driving Alarm Level Two Start" },
+  { code: "smokingAlarmLevelOneStart", name: "Smoking Alarm Level One Start" },
+  { code: "smokingAlarmLevelTwoStart", name: "Smoking Alarm Level Two Start" },
+  { code: "smokingWarningStart", name: "Smoking Warning Start" },
+  { code: "callToCallTheAlarmLevelOneStart", name: "Call To Call The Alarm Level One Start" },
+  { code: "callToCallTheAlarmLevelTwoStart", name: "Call To Call The Alarm Level Two Start" },
+  { code: "driverAbnormalAlarmLevelOneStart", name: "Driver Abnormal Alarm Level One Start" },
+  { code: "driverAbnormalAlarmLevelTwoStart", name: "Driver Abnormal Alarm Level Two Start" },
+  { code: "noSeatBeltsStart", name: "No Seat Belts Start" },
+  { code: "unfastenedSeatBeltLevelOneStart", name: "Unfastened Seat Belt Level One Start" },
+  { code: "unfastenedSeatBeltLevelTwoStart", name: "Unfastened Seat Belt Level Two Start" },
+];
 const loading = ref(false)
-
-async function getDevicesList() {
-  await realtimeDataStore.getDevicesStatus()
-  
-  for (let index = 0; index < devicesStatus.value.length; index++) {
-    await realtimeDataStore.getGeneralData(devicesStatus.value[index].imei)
-    devicesStatus.value[index].batteryVoltage = devicesGeneralData.value.batteryVoltage
-    devicesStatus.value[index].batteryCurrent = devicesGeneralData.value.batteryCurrent
-    devicesStatus.value[index].externalVoltage = devicesGeneralData.value.externalVoltage
-    devicesStatus.value[index].GSMSignal = devicesGeneralData.value.GSMSignal
-    devicesStatus.value[index].satellites = devicesGeneralData.value.satellites
-    devicesStatus.value[index].GNSSStatus = devicesGeneralData.value.GNSSStatus
-  } 
-
-  const defaultValue = { IPAddress: "-",imei: "-",indicator: 0,lastHandshake: "-",port: "-",status: "OFFLINE",_measurement: "-",_time: "-", batteryVoltage: "-", GSMSignal: 0,batteryCurrent: "-",externalVoltage:'-'}
-  mergedList.value = devicesList.value.map(device => {
-    const tcpStatusData = devicesStatus.value.find(status => status.imei === device.IMEINumber) || defaultValue
-    return { ...device, ...tcpStatusData }
-  })
-  console.log(mergedList.value, 'Fine Data')
-}
+const selectedViolation = ref('0')
+const selectedContractor = ref('0')
 
 const delay = require('delay')
 const whileState = ref(true)
 
-onBeforeMount( async () => {
+onMounted(async () => {
   loading.value = true
-  await devicesStore.loadDevices()
-  await getDevicesList()
+  await realtimeDevicesStore.getRealtimeDashboard()
+  await reportStore.getTopContractor()
+  renderTopContractorChart()
+  await contractorStore.getContractors()
+  await reportStore.getTopViolation()
+  renderTopViolationChart()
   loading.value = false
   while (whileState.value) {
-    await getDevicesList()
+    await realtimeDevicesStore.getRealtimeDashboard()
     await delay(10000)
   }
   // this.renderChart(this.chartData, this.chartOptions)
@@ -255,6 +324,28 @@ onBeforeMount( async () => {
 onUnmounted(() => {
   whileState.value = false
 })
+
+
+
+async function loadTopContractor() {
+  const queryParams = ref({})
+  if (selectedViolation.value !== '0') {
+    queryParams.value.violation = selectedViolation.value
+  }
+  await reportStore.getTopContractor(queryParams.value)
+  updateTopContractor()
+}
+
+async function loadTopViolation() {
+  const queryParams = ref({})
+  if (selectedContractor.value !== '0') {
+    queryParams.value.contractor = selectedContractor.value
+  }
+  await reportStore.getTopViolation(queryParams.value)
+  updateTopViolation()
+}
+
+
 function createGradient(gradientColor, borderColor) {
   const ctx = document.createElement('canvas').getContext('2d');
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -262,106 +353,75 @@ function createGradient(gradientColor, borderColor) {
   gradient.addColorStop(1, borderColor);
   return gradient;
 }
-const truckOnDutyChartData = {
-  labels: ['06','07','08','09','10', '11', '12', '13', '14', '15','16'],
-  datasets: [
-    {
-     type: 'bar',
-     label: 'Active',
-     data: [500, 1100, 250, 100, 1000, 800, 164, 503, 200, 400, 460],
-     backgroundColor: createGradient('rgba(147, 199, 106, 0.28)', 'rgba(147, 199, 106, 1)'),
-     borderRadius: 10,
-    },
-  ],
-}
-const truckOnPoolChartData = {
-  labels: ['06','07','08','09','10', '11', '12', '13', '14', '15','16'],
-  datasets: [
-    {
-     type: 'bar',
-     label: 'Active',
-     data: [500, 1100, 250, 100, 1000, 800, 164, 503, 200, 400, 460],
-     backgroundColor: createGradient('rgba(11, 19, 84, 0.28)', 'rgba(11, 19, 84, 1)'),
-     borderRadius: 10,
-   }, 
-  //  {
-  //    type: 'line',
-  //    label: 'Average',
-  //    data: [600, 1200, 250, 100, 1000, 800, 164, 503, 200, 400, 460], 
-  //    fill: false,
-  //    borderColor: '#D9D9D9'
-  //  }
-  ]
-}
+
 
 const violationChartData = {
-  labels: ['06','07','08','09','10', '11', '12', '13', '14', '15','16'],
+  labels: ['06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16'],
   datasets: [
     {
-     type: 'bar',
-     label: 'Active',
-     data: [500, 1100, 250, 100, 1000, 800, 164, 503, 200, 400, 460],
-     backgroundColor: createGradient('rgba(194, 22, 41, 0.28)', 'rgba(194, 22, 41, 1)'),
-     borderRadius: 10,
+      type: 'bar',
+      label: 'Active',
+      data: [500, 1100, 250, 100, 1000, 800, 164, 503, 200, 400, 460],
+      backgroundColor: createGradient('rgba(194, 22, 41, 0.28)', 'rgba(194, 22, 41, 1)'),
+      borderRadius: 10,
     },
   ],
 }
 </script>
 
 <style scoped>
-
-
 .content {
-@apply w-full h-full relative ml-[47px] mt-[47px]
+  @apply w-full h-full relative ml-[47px] mt-[47px]
 }
+
 .device-container {
-@apply 
-  flex flex-col gap-[20px] p-[24px] h-full 
+  @apply flex flex-col gap-[20px] p-[24px] h-full
 }
 
 .datepicker-wrapper {
-border-radius: 3.526px;
-background: #FFF;
-box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.10);
-@apply w-full py-[14px] flex justify-center items-center gap-3
+  border-radius: 3.526px;
+  background: #FFF;
+  box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.10);
+  @apply w-full py-[14px] flex justify-center items-center gap-3
 }
 
 .status-card-wrapper {
-@apply grid grid-cols-2 sm:grid-cols-4 gap-[21px]
+  @apply grid grid-cols-2 sm:grid-cols-4 gap-[21px]
 }
+
 .status-card {
-font-family: 'Plus Jakarta Sans', sans-serif;
-@apply rounded-[5px] bg-[#5863BB] text-white flex flex-col justify-between px-[12px] pb-[14px]
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  @apply rounded-[5px] bg-[#5863BB] text-white flex flex-col justify-between px-[12px] pb-[14px]
 }
 
 .chart-card {
-border-radius: 3.526px;
-background: #FFF;
-box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.10);
-@apply py-[18px] w-full px-[21px]
-}
-.violation-card {
-border-radius: 5px;
-background: #FFF;
-box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.10);
-@apply w-full overflow-hidden border border-[#D9D9D9]
-}
-.title {
-@apply
-  text-[24px] font-thin flex justify-start items-center text-[#353535] opacity-80
-}
-.card-wrapper {
-@apply
-  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 
-}
-.card {
-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
-@apply 
-  rounded-md bg-white cursor-pointer
-  flex flex-col p-6 text-left border gap-2
-}
-.card:hover {
-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 3.526px;
+  background: #FFF;
+  box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.10);
+  @apply py-[18px] w-full px-[21px]
 }
 
+.violation-card {
+  border-radius: 5px;
+  background: #FFF;
+  box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.10);
+  @apply w-full overflow-hidden border border-[#D9D9D9]
+}
+
+.title {
+  @apply text-[24px] font-thin flex justify-start items-center text-[#353535] opacity-80
+}
+
+.card-wrapper {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5
+}
+
+.card {
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
+  @apply rounded-md bg-white cursor-pointer flex flex-col p-6 text-left border gap-2
+}
+
+.card:hover {
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+}
 </style>

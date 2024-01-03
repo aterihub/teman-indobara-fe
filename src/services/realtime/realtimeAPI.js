@@ -10,5 +10,8 @@ export default {
   },
   getViolationRealtime(params) {
     return apiClient.get('/violation/realtime',{params})
-  }
+  },
+  getRealtimeDashboard() {
+    return apiClient.get(`/data-devices/dashboard`)
+  },
 }

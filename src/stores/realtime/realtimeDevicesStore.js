@@ -5,6 +5,7 @@ import moment from 'moment'
 
 export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
   state: () => ({
+    dashboardData: ref({}),
     devicesData: ref([]),
     adasData: ref(''),
     dsmData: ref(''),
@@ -104,6 +105,27 @@ export const useRealtimeDevicesStore = defineStore('realtimeDevices', {
             break;
         }
         this.getRealtimeDevicesIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    async getRealtimeDashboard() {
+      this.getRealtimeDashboardIsLoading = true
+      try {
+        const res = await realtimeAPI.getRealtimeDashboard()
+        console.log(res)
+        this.dashboardData = res.data.dashboard
+        this.status.isError = false
+        this.getRealtimeDashboardIsLoading = false
+      } catch (err) {
+        this.status.isError = true
+        this.status.code = err.code
+        switch (this.status.code) {
+          case 'ERR_NETWORK':
+            this.status.message = 'Network Error'
+            break;
+        }
+        this.getRealtimeDashboardIsLoading = false
         console.error(err)
         return err
       }

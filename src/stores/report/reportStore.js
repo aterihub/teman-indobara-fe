@@ -21,6 +21,10 @@ function convertCamelCaseToNormalCase(obj) {
 
 export const useReportStore = defineStore('reportData', {
   state: () => ({
+    topViolationIsEmpty: ref(true),
+    topViolation: ref([]),
+    topContractorIsEmpty: ref(true),
+    topContractor: ref([]),
     densityDetailLength: ref(0),
     densityDetail: ref([]),
     densityReport: ref([]),
@@ -36,6 +40,18 @@ export const useReportStore = defineStore('reportData', {
     downloadLocationHourlyReportIsLoading: ref(false),
     getDensityReportIsLoading: ref(false),
     getDensityDetailIsLoading: ref(false),
+    getTopViolationIsLoading: ref(false),
+    getTopViolationStatus: ref({
+      isError: null,
+      message: null,
+      code: null,
+    }),
+    getTopContractorIsLoading: ref(false),
+    getTopContractorStatus: ref({
+      isError: null,
+      message: null,
+      code: null,
+    }),
     getDensityDetailStatus: ref({
       isError: null,
       message: null,
@@ -293,6 +309,68 @@ export const useReportStore = defineStore('reportData', {
             break;
         }
         this.getDensityDetailIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    async getTopContractor(params) {
+      this.getTopContractorIsLoading = true
+      try {
+        const res = await reportAPI.getTopContractor(params)
+        console.log(res)
+        this.topContractor = res.data.topContractor
+        if (this.topContractor.chartData.contractor.length === 0) {
+          this.topContractorIsEmpty = true
+        } else {
+          this.topContractorIsEmpty = false
+        }
+        this.getTopContractorStatus.message = 'Detail Fetched'
+        this.getTopContractorStatus.isError = false
+        this.getTopContractorIsLoading = false
+      } catch (err) {
+        this.getTopContractorStatus.message = 'Detail Not Found'
+        this.getTopContractorStatus.isError = true
+        this.getTopContractorStatus.code = err.code
+        switch (this.getTopContractorStatus.code) {
+          case 'ERR_NETWORK':
+            this.getTopContractorStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.getTopContractorStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            break;
+        }
+        this.getTopContractorIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    async getTopViolation(params) {
+      this.getTopViolationIsLoading = true
+      try {
+        const res = await reportAPI.getTopViolation(params)
+        console.log(res)
+        this.topViolation = res.data.topMostViolation
+        if (this.topViolation.chartData.violation.length === 0) {
+          this.topViolationIsEmpty = true
+        } else {
+          this.topViolationIsEmpty = false
+        }
+        this.getTopViolationStatus.message = 'Detail Fetched'
+        this.getTopViolationStatus.isError = false
+        this.getTopViolationIsLoading = false
+      } catch (err) {
+        this.getTopViolationStatus.message = 'Detail Not Found'
+        this.getTopViolationStatus.isError = true
+        this.getTopViolationStatus.code = err.code
+        switch (this.getTopViolationStatus.code) {
+          case 'ERR_NETWORK':
+            this.getTopViolationStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.getTopViolationStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            break;
+        }
+        this.getTopViolationIsLoading = false
         console.error(err)
         return err
       }
