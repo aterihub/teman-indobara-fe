@@ -4,20 +4,20 @@
     <div class="device-container">
       <div class="status-card-wrapper">
         <div class="status-card">
-          <h1 class="self-end text-[58px] font-normal">{{ dashboardData.online }}</h1>
-          <p class="self-start text-[18px] font-bold">Online Devices</p>
+          <h1 class="text-[58px] font-normal">{{ dashboardData.online }}</h1>
+          <p class="text-[18px] font-bold">Online Devices</p>
         </div>
         <div class="status-card">
-          <h1 class="self-end text-[58px] font-normal">{{ dashboardData.offline }}</h1>
-          <p class="self-start text-[18px] font-bold">Offline Devices</p>
+          <h1 class="text-[58px] font-normal">{{ dashboardData.offline }}</h1>
+          <p class="text-[18px] font-bold">Offline Devices</p>
         </div>
         <div class="status-card">
-          <h1 class="self-end text-[58px] font-normal">{{ dashboardData.totalContractor }}</h1>
-          <p class="self-start text-[18px] font-bold">Contractor</p>
+          <h1 class="text-[58px] font-normal">{{ dashboardData.totalContractor }}</h1>
+          <p class="text-[18px] font-bold">Contractor</p>
         </div>
         <div class="status-card">
-          <h1 class="self-end text-[58px] font-normal">{{ dashboardData.violation }}</h1>
-          <p class="self-start text-[18px] font-bold">Violation</p>
+          <h1 class="text-[58px] font-normal">{{ dashboardData.violation }}</h1>
+          <p class="text-[18px] font-bold">Violation</p>
         </div>
       </div>
       <div class="grid grid-cols-4 gap-[21px] h-52">
@@ -47,12 +47,12 @@
                 <div :class="selectedContractorComponent === 'table' ? '' : 'hidden'">
                   <table class="w-full">
                     <tr class="bg-[#F6F6F9]">
-                      <th class="border text-sm font-medium">Contractor</th>
-                      <th class="border text-sm font-medium">Violation</th>
+                      <th >Contractor</th>
+                      <th >Violation</th>
                     </tr>
                     <tr v-for="data in topContractor.tableData">
-                      <td class="border text-sm font-medium text-center">{{ data.contractor }}</td>
-                      <td class="border text-sm font-medium text-center">{{ data.count }}</td>
+                      <td >{{ data.contractor }}</td>
+                      <td >{{ data.count }}</td>
                     </tr>
                   </table>
                 </div>
@@ -84,12 +84,12 @@
                 <div :class="selectedGeofenceComponent === 'table' ? '' : 'hidden'">
                   <table class="w-full">
                     <tr class="bg-[#F6F6F9]">
-                      <th class="border text-sm font-medium">Contractor</th>
-                      <th class="border text-sm font-medium">Violation</th>
+                      <th >Contractor</th>
+                      <th >Violation</th>
                     </tr>
                     <tr v-for="data in topGeofence.tableData">
-                      <td class="border text-sm font-medium text-center">{{ data.geofence }}</td>
-                      <td class="border text-sm font-medium text-center">{{ data.count }}</td>
+                      <td >{{ data.geofence }}</td>
+                      <td >{{ data.count }}</td>
                     </tr>
                   </table>
                 </div>
@@ -122,12 +122,12 @@
               <div :class="selectedViolationComponent === 'table' ? '' : 'hidden'">
                   <table class="w-full">
                     <tr class="bg-[#F6F6F9]">
-                      <th class="border text-sm font-medium">Contractor</th>
-                      <th class="border text-sm font-medium">Violation</th>
+                      <th >Contractor</th>
+                      <th >Violation</th>
                     </tr>
                     <tr v-for="data in topViolation.tableData">
-                      <td class="border text-sm font-medium text-center">{{ data.violation }}</td>
-                      <td class="border text-sm font-medium text-center">{{ data.count }}</td>
+                      <td >{{ data.violation }}</td>
+                      <td >{{ data.count }}</td>
                     </tr>
                   </table>
                 </div>
@@ -503,7 +503,8 @@ const violationChartData = {
 
 .status-card {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  @apply rounded-[5px] bg-[#5863BB] text-white flex flex-col justify-between px-[12px] pb-[14px]
+  box-shadow: 0px 1.17545px 5.87724px 0px rgba(0, 0, 0, 0.2);
+  @apply rounded-[5px] bg-[#5863BB] text-white flex flex-col justify-between pb-4 text-center
 }
 
 .chart-card {
@@ -545,11 +546,11 @@ const violationChartData = {
 
 
 .tab {
-  @apply flex justify-between w-fit border rounded-lg shadow-inner p-1 bg-[#F1F1F1] gap-2
+  @apply flex justify-between w-fit border rounded-lg shadow-inner p-[2px] bg-[#F1F1F1] gap-2
 }
 
 button {
-  @apply disabled:opacity-75 flex justify-center items-center relative text-[#353535] cursor-pointer py-[6px] rounded-md w-[full] text-[10px] sm:text-[14px] font-medium px-6
+  @apply disabled:opacity-75 flex justify-center items-center relative text-[#353535] cursor-pointer py-[4px] rounded-md w-[full] text-[10px] sm:text-[12px] font-medium px-6
 }
 
 button:hover {
@@ -565,9 +566,9 @@ button:hover {
 }
 
 table th {
-  @apply py-2
+  @apply py-2 border text-sm font-medium
 }
 table td {
-  @apply py-2
+  @apply py-2 border text-sm font-medium text-center
 }
 </style>
