@@ -42,6 +42,6 @@ export default {
     return apiClient.get('/violation/top-violation', {params})
   },
   getTopGeofence(params) {
-    return apiClient.get('/violation/top-geofence ', {params})
+    return apiClient.get('/violation/top-geofence', {params})
   },
 }

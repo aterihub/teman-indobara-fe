@@ -21,6 +21,8 @@ function convertCamelCaseToNormalCase(obj) {
 
 export const useReportStore = defineStore('reportData', {
   state: () => ({
+    topGeofenceIsEmpty: ref(true),
+    topGeofence: ref([]),
     topViolationIsEmpty: ref(true),
     topViolation: ref([]),
     topContractorIsEmpty: ref(true),
@@ -41,6 +43,12 @@ export const useReportStore = defineStore('reportData', {
     getDensityReportIsLoading: ref(false),
     getDensityDetailIsLoading: ref(false),
     getTopViolationIsLoading: ref(false),
+    getTopGeofenceIsLoading: ref(false),
+    getTopGeofenceStatus: ref({
+      isError: null,
+      message: null,
+      code: null,
+    }),
     getTopViolationStatus: ref({
       isError: null,
       message: null,
@@ -319,6 +327,9 @@ export const useReportStore = defineStore('reportData', {
         const res = await reportAPI.getTopContractor(params)
         console.log(res)
         this.topContractor = res.data.topContractor
+        this.topContractor.chartData.count = res.data.topContractor.chartData.count.slice(0,5)
+        this.topContractor.chartData.contractor = res.data.topContractor.chartData.contractor.slice(0,5)
+        this.topContractor.tableData = res.data.topContractor.tableData.slice(0,5)
         if (this.topContractor.chartData.contractor.length === 0) {
           this.topContractorIsEmpty = true
         } else {
@@ -350,6 +361,9 @@ export const useReportStore = defineStore('reportData', {
         const res = await reportAPI.getTopViolation(params)
         console.log(res)
         this.topViolation = res.data.topMostViolation
+        this.topViolation.chartData.count = res.data.topMostViolation.chartData.count.slice(0,5)
+        this.topViolation.chartData.violation = res.data.topMostViolation.chartData.violation.slice(0,5)
+        this.topViolation.tableData = res.data.topMostViolation.tableData.slice(0,5)
         if (this.topViolation.chartData.violation.length === 0) {
           this.topViolationIsEmpty = true
         } else {
@@ -371,6 +385,40 @@ export const useReportStore = defineStore('reportData', {
             break;
         }
         this.getTopViolationIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
+    async getTopGeofence(params) {
+      this.getTopGeofenceIsLoading = true
+      try {
+        const res = await reportAPI.getTopGeofence(params)
+        console.log(res)
+        this.topGeofence = res.data.topGeofence
+        this.topGeofence.chartData.count = res.data.topGeofence.chartData.count.slice(0,5)
+        this.topGeofence.chartData.geofence = res.data.topGeofence.chartData.geofence.slice(0,5)
+        this.topGeofence.tableData = res.data.topGeofence.tableData.slice(0,5)
+        if (this.topGeofence.chartData.geofence.length === 0) {
+          this.topGeofenceIsEmpty = true
+        } else {
+          this.topGeofenceIsEmpty = false
+        }
+        this.getTopGeofenceStatus.message = 'Detail Fetched'
+        this.getTopGeofenceStatus.isError = false
+        this.getTopGeofenceIsLoading = false
+      } catch (err) {
+        this.getTopGeofenceStatus.message = 'Detail Not Found'
+        this.getTopGeofenceStatus.isError = true
+        this.getTopGeofenceStatus.code = err.code
+        switch (this.getTopGeofenceStatus.code) {
+          case 'ERR_NETWORK':
+            this.getTopGeofenceStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.getTopGeofenceStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            break;
+        }
+        this.getTopGeofenceIsLoading = false
         console.error(err)
         return err
       }

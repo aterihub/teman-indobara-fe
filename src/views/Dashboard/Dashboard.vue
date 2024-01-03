@@ -2,16 +2,6 @@
   <sideNav :isDashboardActive="true" />
   <div class="content">
     <div class="device-container">
-      <!-- <div class="datepicker-wrapper">
-        <p>Date Range from</p>
-        <div class="border border-[#D9D9D9] py-[7px] px-[9px] rounded">
-          <input type="date" name="start_date" id="start_date">
-        </div>
-        <p>to</p>
-        <div class="border border-[#D9D9D9] py-[7px] px-[9px] rounded">
-          <input type="date" name="end_date" id="end_date">
-        </div>
-      </div> -->
       <div class="status-card-wrapper">
         <div class="status-card">
           <h1 class="self-end text-[58px] font-normal">{{ dashboardData.online }}</h1>
@@ -30,50 +20,6 @@
           <p class="self-start text-[18px] font-bold">Violation</p>
         </div>
       </div>
-      <!-- <div class="card-wrapper">
-        <lazyCard v-if="loading" v-for="card in 4" />
-        <div v-for="device in mergedList" :key="device.id" class="card" @click="router.push({ name: 'Dashboard Details', params: { id: device.IMEINumber }})">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <Indicator :status="device.indicator"/>
-              <h1 class="font-medium text-lg text-[#353535]">{{device.deviceName}}</h1>
-            </div>
-            <SignalIndicator :status="device.GSMSignal" />
-          </div>
-          <div class="flex gap-2">
-            <label for="batt" class="text-sm text-[#353535]/60">IMEI:</label>
-            <h1 class="text-sm text-[#353535]">{{device.IMEINumber}}</h1>
-          </div>
-          <div class="mt-4 flex flex-col gap-2">
-            <div class="grid grid-cols-2">
-              <div class="flex flex-col gap-1">
-                <label for="batt" class="text-sm text-[#353535]/60">Battery Voltage</label>
-                <h1 class="text-sm text-[#353535]">{{device.batteryVoltage}} mV</h1>
-              </div>
-              <div class="flex flex-col gap-1">
-                <label for="batt" class="text-sm text-[#353535]/60">Battery Current</label>
-                <h1 class="text-sm text-[#353535]">{{device.batteryCurrent}} mA</h1>
-              </div>
-            </div>
-            <div class="grid grid-cols-2">
-              <div class="flex flex-col gap-1">
-                <label for="batt" class="text-sm text-[#353535]/60">External Voltage</label>
-                <h1 class="text-sm text-[#353535]">{{device.externalVoltage}} mV</h1>
-              </div>
-              <div class="flex flex-col gap-1">
-                <label for="batt" class="text-sm text-[#353535]/60">Satellites Number</label>
-                <h1 class="text-sm text-[#353535]">{{device.satellites}}</h1>
-              </div>
-            </div>
-            <div class="grid grid-cols-2">
-              <div class="flex flex-col gap-1">
-                <label for="batt" class="text-sm text-[#353535]/60">GNSS Status</label>
-                <h1 class="text-sm text-[#353535]">{{device.GNSSStatus}}</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
       <div class="grid grid-cols-4 gap-[21px] h-52">
         <div class="flex flex-col col-span-3 gap-[21px] pb-10">
           <div class="grid grid-cols-2 gap-[21px]">
@@ -81,7 +27,14 @@
               <div class="chart-card flex flex-col">
                 <div class="flex justify-between">
                   <div class="flex flex-col gap-4 w-full mb-4">
-                    <p class="text-md font-semibold">Top Contractor by Violations</p>
+                    <div class="flex justify-between">
+                      <p class="text-md font-semibold">Top 5 Violating Contractors</p>
+                      <div class="tab">
+                        <button v-for="(tab, index) in tabs" :key="tab.value" @click="changeContractorNav(tab.value)"
+                          class="contractorTab" :value="index" :id="tab.value" :class="selectedContractorComponent === tab.value? 'active' : ''">{{ tab.title }}
+                        </button>
+                      </div>
+                    </div>
                     <select name="contractorFilter" id="contractorFilter"
                       class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
                       v-model="selectedViolation" @change="loadTopContractor()">
@@ -91,38 +44,95 @@
                     </select>
                   </div>
                 </div>
-                <canvas ref="topContractorChartCanvas"></canvas>
+                <div :class="selectedContractorComponent === 'table' ? 'visible' : 'invisible'">
+                  <table class="w-full">
+                    <tr class="bg-[#F6F6F9]">
+                      <th class="border text-sm font-medium">Contractor</th>
+                      <th class="border text-sm font-medium">Violation</th>
+                    </tr>
+                    <tr v-for="data in topContractor.tableData">
+                      <td class="border text-sm font-medium text-center">{{ data.contractor }}</td>
+                      <td class="border text-sm font-medium text-center">{{ data.count }}</td>
+                    </tr>
+                  </table>
+                </div>
+                <canvas :class="selectedContractorComponent === 'chart' ? 'visible' : 'invisible'"
+                  ref="topContractorChartCanvas"></canvas>
               </div>
             </div>
             <div class="flex flex-col text-start gap-[14px]">
               <div class="chart-card flex flex-col">
                 <div class="flex justify-between">
                   <div class="flex flex-col gap-4 w-full mb-4">
-                    <p class="text-md font-semibold">Top Violation by Contractors</p>
+                    <div class="flex justify-between">
+                      <p class="text-md font-semibold">Top 5 Violating Zones</p>
+                      <div class="tab">
+                        <button v-for="(tab, index) in tabs" :key="tab.value" @click="changeZoneNav(tab.value)"
+                          class="zoneTab" :value="index" :id="tab.value" :class="selectedGeofenceComponent === tab.value? 'active' : ''">{{ tab.title }}
+                        </button>
+                      </div>
+                    </div>
                     <select name="contractorFilter" id="contractorFilter"
                       class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
-                      v-model="selectedContractor" @change="loadTopViolation()">
+                      v-model="selectedContractorGeofence" @change="loadTopGeofence()">
                       <option class="p-2 cursor-pointer" value="0">All Contractors</option>
                       <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.name">
                         {{ contractor.name }}</option>
                     </select>
                   </div>
                 </div>
-                <canvas ref="topViolationChartCanvas"></canvas>
+                <div :class="selectedGeofenceComponent === 'table' ? 'visible' : 'invisible h-0'">
+                  <table class="w-full">
+                    <tr class="bg-[#F6F6F9]">
+                      <th class="border text-sm font-medium">Contractor</th>
+                      <th class="border text-sm font-medium">Violation</th>
+                    </tr>
+                    <tr v-for="data in topGeofence.tableData">
+                      <td class="border text-sm font-medium text-center">{{ data.geofence }}</td>
+                      <td class="border text-sm font-medium text-center">{{ data.count }}</td>
+                    </tr>
+                  </table>
+                </div>
+                <canvas :class="selectedGeofenceComponent === 'chart' ? 'visible' : 'invisible'"
+                  ref="topGeofenceChartCanvas"></canvas>
               </div>
             </div>
           </div>
           <div class="flex flex-col text-start gap-[14px]">
-            <h1 class="text-lg font-bold text-[#00000]">Violation Graph</h1>
             <div class="chart-card flex flex-col">
               <div class="flex justify-between">
-                <div class="flex flex-col text-start gap-1">
-                  <p class="text-md font-semibold">Total Violation</p>
-                  <p class="text-2xl font-medium text-[#C21629]">4.610</p>
-                  <p class="text-sm font-light">2023/September/08</p>
+                <div class="flex flex-col gap-4 w-full mb-4">
+                    <div class="flex justify-between">
+                      <p class="text-md font-semibold">Top 5 Frequent Violations</p>
+                      <div class="tab">
+                        <button v-for="(tab, index) in tabs" :key="tab.value" @click="changeViolationNav(tab.value)"
+                          class="violationTab" :value="index" :id="tab.value" :class="selectedViolationComponent === tab.value? 'active' : ''">{{ tab.title }}
+                        </button>
+                      </div>
+                    </div>
+                  <select name="contractorFilter" id="contractorFilter"
+                    class="outline-none text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
+                    v-model="selectedContractor" @change="loadTopViolation()">
+                    <option class="p-2 cursor-pointer" value="0">All Contractors</option>
+                    <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.name">
+                      {{ contractor.name }}</option>
+                  </select>
                 </div>
               </div>
-              <canvas ref="violationChart" style="max-height: 300px;"></canvas>
+              <div :class="selectedViolationComponent === 'table' ? 'visible' : 'invisible h-0'">
+                  <table class="w-full">
+                    <tr class="bg-[#F6F6F9]">
+                      <th class="border text-sm font-medium">Contractor</th>
+                      <th class="border text-sm font-medium">Violation</th>
+                    </tr>
+                    <tr v-for="data in topViolation.tableData">
+                      <td class="border text-sm font-medium text-center">{{ data.violation }}</td>
+                      <td class="border text-sm font-medium text-center">{{ data.count }}</td>
+                    </tr>
+                  </table>
+                </div>
+                <canvas :class="selectedViolationComponent === 'chart' ? 'visible' : 'invisible'"
+                  ref="topViolationChartCanvas"></canvas>
             </div>
           </div>
         </div>
@@ -154,15 +164,18 @@
 </template>
 
 <script setup>
+
 import { Chart, BarElement, BarController, CategoryScale, Decimation, Filler, Legend, Title, Tooltip, PointElement, LineElement, LinearScale } from 'chart.js';
 Chart.register(BarElement, BarController, CategoryScale, Decimation, Filler, Legend, Title, Tooltip, PointElement, LineElement, LinearScale)
 import { shallowRef } from 'vue'
+import Chip from '@/components/tab/Tab.vue'
+
 const topContractorChartCanvas = ref(null)
 let topContractorChart
 const topViolationChartCanvas = ref(null)
 let topViolationChart
-
-const violationChart = ref(null)
+const topGeofenceChartCanvas = ref(null)
+let topGeofenceChart
 
 function renderTopContractorChart() {
   if (!topContractorIsEmpty.value) {
@@ -171,7 +184,7 @@ function renderTopContractorChart() {
       datasets: [
         {
           type: 'bar',
-          label: 'Contractor',
+          label: 'Violation',
           data: topContractor.value.chartData.count,
           backgroundColor: createGradient('rgba(147, 199, 106, 0.28)', 'rgba(147, 199, 106, 1)'),
           borderRadius: 10,
@@ -195,7 +208,6 @@ function renderTopContractorChart() {
   }
 }
 
-
 function renderTopViolationChart() {
   if (!topViolationIsEmpty.value) {
     let topViolationChartData = {
@@ -205,7 +217,7 @@ function renderTopViolationChart() {
           type: 'bar',
           label: 'Violation',
           data: topViolation.value.chartData.count,
-          backgroundColor: createGradient('rgba(11, 19, 84, 0.28)', 'rgba(11, 19, 84, 1)'),
+          backgroundColor: createGradient('rgba(194, 22, 41, 0.28)', 'rgba(194, 22, 41, 1)'),
           borderRadius: 10,
         },
       ],
@@ -215,6 +227,37 @@ function renderTopViolationChart() {
     topViolationChart = shallowRef(new Chart(topViolationChartCtx, {
       type: 'bar',
       data: topViolationChartData,
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    }))
+  }
+}
+
+function renderTopGeofenceChart() {
+  if (!topGeofenceIsEmpty.value) {
+    let topGeofenceChartData = {
+      labels: topGeofence.value.chartData.geofence,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Violation',
+          data: topGeofence.value.chartData.count,
+          backgroundColor: createGradient('rgba(11, 19, 84, 0.28)', 'rgba(11, 19, 84, 1)'),
+          borderRadius: 10,
+        },
+      ],
+    }
+
+    const topGeofenceChartCtx = topGeofenceChartCanvas.value.getContext('2d')
+    topGeofenceChart = shallowRef(new Chart(topGeofenceChartCtx, {
+      type: 'bar',
+      data: topGeofenceChartData,
       options: {
         responsive: true,
         scales: {
@@ -257,6 +300,9 @@ function updateTopContractor() {
 function updateTopViolation() {
   addData(topViolationChart.value, topViolation.value.chartData.violation, topViolation.value.chartData.count)
 }
+function updateTopGeofence() {
+  addData(topGeofenceChart.value, topGeofence.value.chartData.geofence, topGeofence.value.chartData.count)
+}
 
 
 import lazyCard from '@/components/loading/lazyCard.vue'
@@ -273,7 +319,8 @@ const { contractors } = storeToRefs(useContractorsStore())
 const realtimeDevicesStore = useRealtimeDevicesStore()
 const { dashboardData } = storeToRefs(useRealtimeDevicesStore())
 const reportStore = useReportStore()
-const { topContractor, topContractorIsEmpty, topViolation, topViolationIsEmpty } = storeToRefs(useReportStore())
+const { topContractor, topContractorIsEmpty, topViolation, topViolationIsEmpty, topGeofence, topGeofenceIsEmpty } = storeToRefs(useReportStore())
+
 const violationFilterList = [
   { code: "drowsiness", name: "Drowsiness" },
   { code: "distraction", name: "Distraction" },
@@ -301,15 +348,69 @@ const violationFilterList = [
 const loading = ref(false)
 const selectedViolation = ref('0')
 const selectedContractor = ref('0')
+const selectedContractorGeofence = ref('0')
+
 
 const delay = require('delay')
 const whileState = ref(true)
+const tabs = [
+  {
+    title: 'Chart',
+    value: 'chart',
+  },
+  {
+    title: 'Table',
+    value: 'table',
+  }
+]
+const selectedContractorComponent = ref('chart')
+const selectedGeofenceComponent = ref('chart')
+const selectedViolationComponent = ref('chart')
+
+
+function changeContractorNav(navigation) {
+  var subNavs = document.getElementsByClassName("contractorTab")
+  console.log(subNavs)
+  for (var i of subNavs) {
+    i.classList.remove("active");
+  }
+  console.log(navigation)
+  event.target.className += " active"
+  selectedContractorComponent.value = navigation
+}
+
+function changeZoneNav(navigation) {
+  var subNavs = document.getElementsByClassName("zoneTab")
+  console.log(subNavs)
+  for (var i of subNavs) {
+    i.classList.remove("active");
+  }
+  console.log(navigation)
+  event.target.className += " active"
+  selectedGeofenceComponent.value = navigation
+}
+function changeViolationNav(navigation) {
+  var subNavs = document.getElementsByClassName("violationTab")
+  console.log(subNavs)
+  for (var i of subNavs) {
+    i.classList.remove("active");
+  }
+  console.log(navigation)
+  event.target.className += " active"
+  selectedViolationComponent.value = navigation
+}
+
 
 onMounted(async () => {
+  // var element = document.getElementById('chart');
+  // console.log(element)
+  // element.classList.add("active");
   loading.value = true
   await realtimeDevicesStore.getRealtimeDashboard()
   await reportStore.getTopContractor()
   renderTopContractorChart()
+  await reportStore.getTopGeofence()
+  renderTopGeofenceChart()
   await contractorStore.getContractors()
   await reportStore.getTopViolation()
   renderTopViolationChart()
@@ -344,6 +445,16 @@ async function loadTopViolation() {
   await reportStore.getTopViolation(queryParams.value)
   updateTopViolation()
 }
+
+async function loadTopGeofence() {
+  const queryParams = ref({})
+  if (selectedContractorGeofence.value !== '0') {
+    queryParams.value.contractor = selectedContractorGeofence.value
+  }
+  await reportStore.getTopGeofence(queryParams.value)
+  updateTopGeofence()
+}
+
 
 
 function createGradient(gradientColor, borderColor) {
@@ -423,5 +534,26 @@ const violationChartData = {
 
 .card:hover {
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+
+.tab {
+  @apply flex justify-between w-fit border rounded-lg shadow-inner p-1 bg-[#F1F1F1] gap-2
+}
+
+button {
+  @apply disabled:opacity-75 flex justify-center items-center relative text-[#353535] cursor-pointer py-[6px] rounded-md w-[full] text-[10px] sm:text-[14px] font-medium px-6
+}
+
+button:hover {
+  @apply bg-white text-[#353535] transition-colors duration-700
+}
+
+.active {
+  @apply bg-white text-[#353535] transition-colors duration-300
+}
+
+.active:hover {
+  @apply bg-white text-[#353535] transition-colors duration-300 cursor-default
 }
 </style>
