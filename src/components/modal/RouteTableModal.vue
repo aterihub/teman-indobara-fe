@@ -108,7 +108,7 @@ import BasicButton from '../button/BaseButton.vue'
   @apply
     fixed top-0 left-0 w-full h-full
     overflow-x-hidden overflow-y-auto
-    bg-[#ABADAF]/20 z-10 flex items-end
+    bg-[#ABADAF]/20 z-20 flex items-end
     pl-14 pr-2
 }
 
