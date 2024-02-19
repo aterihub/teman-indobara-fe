@@ -601,14 +601,13 @@ input[type=checkbox] {
 .densityDetail {
   @apply bg-white h-[950px] right-0 rounded-l-xl z-10 overflow-hidden transition-all duration-300 gap-4 w-0 absolute
 }
-
+.detailExpanded {
+  @apply border px-4 w-full overflow-y-auto
+}
 .densityDetailContent {
   @apply mt-6 flex flex-wrap gap-2
 }
 
-.detailExpanded {
-  @apply border px-4 w-full overflow-y-auto
-}
 
 table th {
   @apply py-2 border text-xs font-medium
