@@ -19,6 +19,10 @@ import 'vue3-easy-data-table/dist/style.css'
 import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from '@/components/breadcrumbs/breadcrumbs.vue';
 
+import keycloak from './composable/keycloak';
+
+
+
 const pinia = createPinia()
 const app = createApp(App)
 
@@ -26,7 +30,16 @@ app.use(router)
 app.use(pinia)
 app.use(OpenLayersMap)
 
-app.mount('#app')
+keycloak.init({ onLoad: 'login-required' }).then((auth) => {
+  if (!auth) {
+    console.error('Authentication failed');
+  } else {
+    console.log(keycloak.token)
+    localStorage.setItem('auth.accessToken', keycloak.token)
+    console.log('Authenticated')
+  }
+  app.mount('#app');
+})
 
 app.component('alert', defineAsyncComponent(() =>
   import('@/components/alert/BaseAlert.vue')
@@ -36,12 +49,12 @@ app.component('NotificationAlert', defineAsyncComponent(() =>
 ))
 
 app
-.component('EasyDataTable', Vue3EasyDataTable)
-.component('Breadcrumbs', Breadcrumbs)
-.component('modal', modal)
-.component('lottie', lottie)
-.component('loading', loading)
-.component('downloadCsv', JsonCSV)
+  .component('EasyDataTable', Vue3EasyDataTable)
+  .component('Breadcrumbs', Breadcrumbs)
+  .component('modal', modal)
+  .component('lottie', lottie)
+  .component('loading', loading)
+  .component('downloadCsv', JsonCSV)
 // .component('VueSlider', VueSlider)
 
 

@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useLoadingStore } from '@/stores/LoadingStore'
-
+import keycloak from '@/composable/keycloak'
 import LoginForm from '@/views/Auth/LoginFormNew.vue'
 import Dashboard from '@/views/Dashboard/Dashboard.vue'
-import DashboardDetails from '@/views/Dashboard/TDashboardDetails.vue'
+import DashboardDetails from '@/views/Dashboard/DashboardDetails.vue'
 import DevicesList from '@/views/Devices/DevicesList.vue'
 import DumpTruck from '@/views/Map/DumpTruck/MainMap.vue'
 import Excavator from '@/views/Map/Excavator/NotFound.vue'
@@ -49,7 +49,8 @@ const router = createRouter({
 router.beforeEach(async (to, from,  next) => {
   document.title = 'Teman Indobara | Terukur dan Aman'
   if (to.meta.requiresAuth && !localStorage.getItem('auth.accessToken')){
-    next({ name: 'Login Page'})
+    keycloak.login()
+    // next({ name: 'Dashboard'})
   } else if (to.meta.requiresAuth && localStorage.getItem('auth.accessToken') || to.meta.freeAccess){
     next()
   } else if (!to.meta.requiresAuth && localStorage.getItem('auth.accessToken')){
@@ -57,16 +58,5 @@ router.beforeEach(async (to, from,  next) => {
   } else next()
   }) 
 
-  //loading
-// router.beforeEach(async (to, from, next) => {
-//   const loadingStore = useLoadingStore()
-//   loadingStore.startLoading()
-
-//   // Wait for 500ms to simulate async operation 
-//   await new Promise(resolve => setTimeout(resolve, 500))
-
-//   loadingStore.stopLoading()
-//   next()
-// })
 
 export default router
