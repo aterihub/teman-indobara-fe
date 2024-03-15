@@ -3,7 +3,7 @@ import { useLoadingStore } from '@/stores/LoadingStore'
 
 import LoginForm from '@/views/Auth/LoginFormNew.vue'
 import Dashboard from '@/views/Dashboard/Dashboard.vue'
-import DashboardDetails from '@/views/Dashboard/TDashboardDetails.vue'
+import DashboardDetails from '@/views/Dashboard/DashboardDetails.vue'
 import DevicesList from '@/views/Devices/DevicesList.vue'
 import DumpTruck from '@/views/Map/DumpTruck/MainMap.vue'
 import Excavator from '@/views/Map/Excavator/NotFound.vue'
