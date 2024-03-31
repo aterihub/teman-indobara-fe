@@ -104,6 +104,7 @@ export const useViolationsStore = defineStore('violationData', {
         if (res.data.violation.data.length > 0) {
           violation = res.data.violation.data.map((item) => {
             return {
+              eventIo: item.violation,
               imei: item.imei,
               eventTime: item.time,
               deviceTime: new Date(item.time).toLocaleString(),
