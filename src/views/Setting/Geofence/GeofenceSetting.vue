@@ -104,7 +104,7 @@
               </div>
               <div class="grid grid-cols-2 text-left gap-2">
                 <p>Operand: </p>
-                <p class="font-medium">{{ item.operandText }}</p>
+                <p class="font-medium">{{ item.operand }}</p>
               </div>
               <div class="grid grid-cols-2 text-left gap-2">
                 <p>Frame Border: </p>
