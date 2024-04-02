@@ -2,6 +2,9 @@ import apiClient from "../API"
 
 
 export default {
+  getQuickCount() {
+    return apiClient.get('/geofences/area/graphic')
+  },
   getGeofences() {
     return apiClient.get('/geofences')
   },

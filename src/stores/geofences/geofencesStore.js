@@ -11,10 +11,16 @@ function camelToNormalCase(camelCaseString) {
 
 export const useGeofencesStore = defineStore('geofencesData', {
   state: () => ({
+    quickCount: ref([]),
     geofences: ref([]),
     geofenceZone: ref({}),
     geofence: ref([]),
     getGeofencesStatus: ref({
+      isError: null,
+      message: null,
+      code: null,
+    }),
+    quickCountStatus: ref({
       isError: null,
       message: null,
       code: null,
@@ -29,6 +35,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
       message: null,
       code: null,
     }),
+    getQuickCountIsLoading: ref(false),
     getGeofencesIsLoading: ref(false),
     getGeofenceIsLoading: ref(false),
     createGeofenceIsLoading: ref(false),
@@ -187,6 +194,32 @@ export const useGeofencesStore = defineStore('geofencesData', {
         console.error(err)
         return err
       }
-    }
+    },
+    async getQuickCount() {
+      this.getQuickCountIsLoading = true
+      try {
+        const res = await geofencesAPI.getQuickCount()
+        this.quickCount = res.data
+        let totalQuickCount = res.data.graphicData.reduce((sum, graphicData) => sum + graphicData.count, 0);
+        this.quickCount.total = totalQuickCount
+        console.log(this.quickCount)
+        this.quickCountStatus.isError = false
+        this.getQuickCountIsLoading = false
+      } catch (err) {
+        this.quickCountStatus.isError = true
+        this.quickCountStatus.code = err.code
+        switch (this.quickCountStatus.code) {
+          case 'ERR_NETWORK':
+            this.quickCountStatus.message = 'Network Error'
+            break;
+          case 'ERR_BAD_REQUEST':
+            this.quickCountStatus.message = 'Invalid request. Make sure the request format and data are correct'
+            break;
+        }
+        this.getQuickCountIsLoading = false
+        console.error(err)
+        return err
+      }
+    },
   }
 })
