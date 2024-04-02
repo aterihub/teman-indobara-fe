@@ -64,6 +64,7 @@ export const useGeofencesStore = defineStore('geofencesData', {
               frameBorder: item.frameBorder,
               coordinates: item.coordinates,
               maxAllowedSpeed: item.maxAllowedSpeed,
+              maxAllowedSpeedLoad: item.maxAllowedSpeedLoad,
               notes: item.notes,
 
             }

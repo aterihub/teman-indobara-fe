@@ -45,6 +45,9 @@
                     <BaseInput :class="{ 'disable-svg': getGeofenceIsLoading }" v-model="formData.maxAllowedSpeed" required
                       name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined"
                       label="Max Speed" />
+                    <BaseInput :class="{ 'disable-svg': getGeofenceIsLoading }" v-model="formData.maxAllowedSpeedLoad" required
+                      name="maxAllowedSpeedLoad" type="number" max="1000" placeholder="0-1000" class="outlined"
+                      label="Max Speed Load" />
                     <BaseInput :class="{ 'disable-svg': getGeofenceIsLoading }" v-model="formData.notes" required
                       name="notes" type="text" placeholder="Type notes here" class="outlined" label="Notes" />
                     <div class="flex justify-between gap-10">
@@ -94,6 +97,10 @@
               <div class="grid grid-cols-2 text-left gap-2">
                 <p>Max Allowed Speed: </p>
                 <p class="font-medium">{{ item.maxAllowedSpeed }}</p>
+              </div>
+              <div class="grid grid-cols-2 text-left gap-2">
+                <p>Max Allowed Speed Load: </p>
+                <p class="font-medium">{{ item.maxAllowedSpeedLoad }}</p>
               </div>
               <div class="grid grid-cols-2 text-left gap-2">
                 <p>Operand: </p>
@@ -197,6 +204,7 @@ const formData = ref({
   eventualRecord: false,
   frameBorder: 0,
   maxAllowedSpeed: 0,
+  maxAllowedSpeedLoad: 0,
   notes: null
 })
 
@@ -257,6 +265,7 @@ function drawPolygon() {
         operandText: geofence.operandText,
         eventualRecord: geofence.eventualRecord,
         maxAllowedSpeed: geofence.maxAllowedSpeed,
+        maxAllowedSpeedLoad: geofence.maxAllowedSpeedLoad,
         frameBorder: geofence.frameBorder
       }
       initialFeatures.value.push(obj)
@@ -272,6 +281,7 @@ function drawPolygon() {
         frameBorder: geofence.frameBorder,
         coordinates: geofence.coordinates,
         maxAllowedSpeed: geofence.maxAllowedSpeed,
+        maxAllowedSpeedLoad: geofence.maxAllowedSpeedLoad,
         notes: geofence.notes,
       }
       itemsSelected.value.push(itemsObj)
