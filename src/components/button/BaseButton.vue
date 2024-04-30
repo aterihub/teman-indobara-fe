@@ -86,6 +86,14 @@ button {
 .outlined:hover {
   @apply bg-[#2482E6] text-white
 }
+.outlined__red {
+  @apply border-solid border-2 border-[#C21629] rounded-md p-2 cursor-pointer text-xs font-medium justify-center items-center text-center
+  transition-colors duration-300 text-[#C21629] box-border
+}
+
+.outlined__red:hover {
+  @apply bg-[#C21629] text-white
+}
 
 .floating {
   @apply bg-[#2482E6]/70 rounded-md p-2 cursor-pointer text-xs font-medium justify-center items-center text-center shadow-md

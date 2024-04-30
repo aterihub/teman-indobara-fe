@@ -22,7 +22,6 @@ import Breadcrumbs from '@/components/breadcrumbs/breadcrumbs.vue';
 import keycloak from './composable/keycloak';
 
 
-
 const pinia = createPinia()
 const app = createApp(App)
 
@@ -30,13 +29,10 @@ app.use(router)
 app.use(pinia)
 app.use(OpenLayersMap)
 
-keycloak.init({ onLoad: 'login-required' }).then((auth) => {
-  if (!auth) {
-    console.error('Authentication failed');
-  } else {
-    console.log(keycloak.token)
+keycloak.init({ onLoad: 'check-sso' }).then((auth) => {
+  if (auth && !localStorage.getItem('auth.accessToken')) {
     localStorage.setItem('auth.accessToken', keycloak.token)
-    console.log('Authenticated')
+    window.location.reload()
   }
   app.mount('#app');
 })
