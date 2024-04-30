@@ -16,7 +16,8 @@
                       <div class="select-option ">
                         <select name="geofenceId" v-model="selectedGeofenceId" @change="loadGeofenceZone()"
                           class="cursor-pointer bg-[#F2F2F2] w-full" required>
-                          <option v-for="geofenceId in geofencesId" :value="geofenceId.value">{{ geofenceId.text }}</option>
+                          <option v-for="geofenceId in geofencesId" :value="geofenceId.value">{{ geofenceId.text }}
+                          </option>
                         </select>
                       </div>
                     </div>
@@ -42,9 +43,12 @@
                     <BaseInput :class="{ 'disable-svg': getGeofenceIsLoading }" v-model="formData.frameBorder" required
                       name="frameBorder" type="number" max="1000000" placeholder="0 to 1000000" class="outlined"
                       label="Frame Border" />
-                    <BaseInput :class="{ 'disable-svg': getGeofenceIsLoading }" v-model="formData.maxAllowedSpeed" required
-                      name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined"
+                    <BaseInput :class="{ 'disable-svg': getGeofenceIsLoading }" v-model="formData.maxAllowedSpeed"
+                      required name="maxAllowedSpeed" type="number" max="1000" placeholder="0-1000" class="outlined"
                       label="Max Speed" />
+                    <BaseInput :class="{ 'disable-svg': getGeofenceIsLoading }" v-model="formData.maxAllowedSpeedLoad"
+                      required name="maxAllowedSpeedLoad" type="number" max="1000" placeholder="0-1000" class="outlined"
+                      label="Max Speed Load" />
                     <BaseInput :class="{ 'disable-svg': getGeofenceIsLoading }" v-model="formData.notes" required
                       name="notes" type="text" placeholder="Type notes here" class="outlined" label="Notes" />
                     <div class="flex justify-between gap-10">
@@ -96,6 +100,10 @@
                 <p class="font-medium">{{ item.maxAllowedSpeed }}</p>
               </div>
               <div class="grid grid-cols-2 text-left gap-2">
+                <p>Max Allowed Speed Load: </p>
+                <p class="font-medium">{{ item.maxAllowedSpeedLoad }}</p>
+              </div>
+              <div class="grid grid-cols-2 text-left gap-2">
                 <p>Operand: </p>
                 <p class="font-medium">{{ item.operandText }}</p>
               </div>
@@ -116,8 +124,8 @@
                 <th>Lat</th>
                 <th>Long</th>
               </tr>
-              <tr v-for="(coord,index) in item.coordinates">
-                <td>P{{ index+1 }}</td>
+              <tr v-for="(coord, index) in item.coordinates">
+                <td>P{{ index + 1 }}</td>
                 <td>{{ coord[0] }}</td>
                 <td>{{ coord[1] }}</td>
               </tr>
@@ -197,6 +205,7 @@ const formData = ref({
   eventualRecord: false,
   frameBorder: 0,
   maxAllowedSpeed: 0,
+  maxAllowedSpeedLoad: 0,
   notes: null
 })
 
@@ -257,6 +266,7 @@ function drawPolygon() {
         operandText: geofence.operandText,
         eventualRecord: geofence.eventualRecord,
         maxAllowedSpeed: geofence.maxAllowedSpeed,
+        maxAllowedSpeedLoad: geofence.maxAllowedSpeedLoad,
         frameBorder: geofence.frameBorder
       }
       initialFeatures.value.push(obj)
@@ -272,6 +282,7 @@ function drawPolygon() {
         frameBorder: geofence.frameBorder,
         coordinates: geofence.coordinates,
         maxAllowedSpeed: geofence.maxAllowedSpeed,
+        maxAllowedSpeedLoad: geofence.maxAllowedSpeedLoad,
         notes: geofence.notes,
       }
       itemsSelected.value.push(itemsObj)
