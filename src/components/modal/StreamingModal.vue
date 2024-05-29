@@ -83,13 +83,12 @@ onClickOutside(target, () => {
 
 onUpdated(async () => {
   if (props.isOpen) {
-    console.log('opened bray')
     await streamingStore.getStreamingToken()
   }
 })
 
 function openStreaming() {
-  let streamingUrl = `http://47.252.16.64:9966/vss/apiPage/RealVideo.html?token=${streamingToken.value}&deviceId=${props.imei}&chs=1_3&stream=0&wnum=4&panel=1&buffer=2000`
+  let streamingUrl = `http://47.252.16.64:9966/vss/apiPage/RealVideo.html?token=${streamingToken.value}&deviceId=${props.imei}&chs=1_2&stream=0&wnum=4&panel=1&buffer=2000`
   window.open(streamingUrl, '_blank');
 }
 
