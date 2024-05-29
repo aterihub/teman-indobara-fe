@@ -36,7 +36,7 @@ apiClient.interceptors.response.use(
       try {
         // Make a request to refresh the auth token
         const response = await axios.get(
-          `${process.env.VUE_APP_API_URL}auth/refresh`,
+          `${process.env.VUE_APP_API_URL}/auth/refresh`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('auth.refreshToken')}`,
