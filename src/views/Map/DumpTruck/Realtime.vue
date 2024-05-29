@@ -1,6 +1,7 @@
 <template>
-  <alert :message="geoDataStore.status.message" :modalActive="modalActive" :isError="geoDataStore.status.isError" />
+  <StreamingModal :isOpen="isStreamingModalPops" @close="streamingModalToggle" title="Launch Streaming" :imei="selectedImei" />
 
+  <alert :message="geoDataStore.status.message" :modalActive="modalActive" :isError="geoDataStore.status.isError" />
   <MapLoading :loading="loadingStore.loading" />
   <div ref="mapContainer" class="map-container"></div>
   <div id="popup" title="myproject" class="ol-popup">
@@ -21,13 +22,15 @@
         class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit"
         v-model="selectedContractor">
         <option class="p-2 cursor-pointer" value="0">All Contractor</option>
-        <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.name">{{ contractor.name }}
+        <option class="p-2 cursor-pointer" v-for="contractor in contractors" :value="contractor.name">{{ contractor.name
+          }}
         </option>
       </select>
       <select name="contractorFilter" id="contractorFilter" v-model="selectedHull"
         class="outline-none text-[10px] sm:text-[12px] text-[#353535] p-2 border border-[#D9D9D9] rounded-md cursor-pointer h-fit">
         <option class="p-2 cursor-pointer" value="0">All Hull</option>
-        <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number">{{ vehicle.number }}</option>
+        <option class="p-2 cursor-pointer" v-for="vehicle in hulls" :value="vehicle.number">{{ vehicle.number }}
+        </option>
       </select>
       <!-- <select v-model="selectedVehicle" class="select-option">
         <option v-for="item in vehicles" :key="item.id" :value="{id: item.id, registrationNumber: item.registrationNumber}">
@@ -164,7 +167,7 @@ import { useVehicleStatus } from '@/stores/StatusStore'
 import { useVehiclesStore } from '@/stores/master-data/vehiclesStore'
 import { useGeoDataStore } from '@/stores/GeoDataStore'
 import Select from 'ol/interaction/Select'
-import { pointerMove, singleClick } from 'ol/events/condition'
+import { click, pointerMove, singleClick } from 'ol/events/condition'
 import { useMapLoadingStore } from '@/stores/MapLoadingStore'
 import MapLoading from '@/components/MapLoading.vue'
 import Polygon from 'ol/geom/Polygon';
@@ -175,7 +178,10 @@ import { useContractorsStore } from '@/stores/master-data/contractorsStore'
 import { useSitesStore } from '@/stores/master-data/sitesStore'
 import { useGeofencesStore } from '@/stores/geofences/geofencesStore'
 
-const showGeofences =ref(true)
+import StreamingModal from '@/components/modal/StreamingModal.vue'
+
+const showGeofences = ref(true)
+const selectedImei = ref('')
 
 async function showPolygon() {
   let features = drawVector.value.getSource().getFeatures()
@@ -385,6 +391,7 @@ function toggleAccordion(index) {
   isOpen.value[index] = !isOpen.value[index]
   console.log(isOpen.value)
 }
+
 function initializeMap() {
   drawVector.value = new VectorLayer({
     source: new VectorSource(),
@@ -413,11 +420,12 @@ function initializeMap() {
     },
   })
   map.addOverlay(popupOverlay)
+
+  //handle hover on icon
   const selectInteraction = new Select({
     condition: pointerMove,
     style: null,
   })
-
   selectInteraction.on('select', (event) => {
     const selectedFeature = event.selected[0]
     if (selectedFeature) {
@@ -427,7 +435,6 @@ function initializeMap() {
         return;
       }
       const coordinates = selectedFeature.getGeometry().getCoordinates()
-      console.log(selectedFeature.get('value'))
       let contractor = selectedFeature.get('value').contractor
       let hullNumber = selectedFeature.get('value').hullNumber
       let registrationNumber = selectedFeature.get('value').registrationNumber
@@ -474,7 +481,31 @@ function initializeMap() {
     }
   })
   map.addInteraction(selectInteraction)
+
+  //handle click on icon
+  const clickInteraction = new Select({
+    condition: singleClick,
+    style: null,
+  })
+  clickInteraction.on('select', (event) => {
+    selectedImei.value = ''
+    const selectedFeature = event.selected[0]
+    if (selectedFeature) {
+      const geometryType = selectedFeature.getGeometry().getType();
+      // Skip if the selected feature is a Polygon
+      if (geometryType === 'Polygon') {
+        return;
+      }
+      console.log(selectedFeature.get('value'))
+      selectedImei.value = selectedFeature.get('value').imei
+      isStreamingModalPops.value = true
+    } else {
+    }
+  })
+  map.addInteraction(clickInteraction)
 }
+
+
 
 let isRequestPending = false
 
@@ -594,7 +625,6 @@ async function getCoordinates() {
 
   isRequestPending = false
   loadingStore.stopLoading()
-
 }
 
 
@@ -612,7 +642,12 @@ function clearLayer() {
   });
 }
 
+/// streaming handler
+const isStreamingModalPops = ref(false)
 
+function streamingModalToggle() {
+  isStreamingModalPops.value = !isStreamingModalPops.value
+}
 </script>
 
 <style scoped>
