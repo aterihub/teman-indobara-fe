@@ -163,7 +163,11 @@ let imei
 function viewViolationFootage(item) {
   console.log(item)
   let eventStartTime = new Date(item.eventTime)
+  if (item.alarmId === null) {
+    item.alarmId = 'null'
+  } 
   eventParams.value = {
+    alarmId: item.alarmId,
     event: item.eventIo,
     eventTime: item.eventTime,
     eventStartTime: new Date(eventStartTime.getTime() - 3000),

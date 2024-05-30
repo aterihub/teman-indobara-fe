@@ -58,6 +58,7 @@ export const useViolationsStore = defineStore('violationData', {
         if (res.data.realtime.length > 0) {
           violation = res.data.realtime.map((item) => {
             return {
+              alarmId: item.referenceId,
               imei: item.imei,
               eventTime: item._time,
               deviceTime: new Date(item._time).toLocaleString(),
@@ -98,12 +99,12 @@ export const useViolationsStore = defineStore('violationData', {
       this.getViolationReportIsLoading = true
       try {
         const res = await reportAPI.getViolationReport(params)
-        console.log(res)
         let violation = []
         let meta = []
         if (res.data.violation.data.length > 0) {
           violation = res.data.violation.data.map((item) => {
             return {
+              alarmId: item.referenceId,
               eventIo: item.violation,
               imei: item.imei,
               eventTime: item.time,

@@ -201,7 +201,6 @@ async function downloadViolationReport() {
   }
   queryParams.startTime = new Date(startDate.value + 'T' + startTime.value).toISOString()
   queryParams.endTime = new Date(endDate.value + 'T' + endTime.value).toISOString()
-  console.log(queryParams)
   await violationsStore.downloadViolationReport(queryParams)
   modalActive.value = true
   setTimeout(closeNotification, 3000)
@@ -214,9 +213,13 @@ function eventModalToggle() {
 const eventParams = ref({})
 let imei
 function viewViolationFootage(item) {
-  console.log(item)
   let eventStartTime = new Date(item.eventTime)
+  if (item.alarmId === null) {
+    item.alarmId = 'null'
+  } 
+   
   eventParams.value = {
+    alarmId: item.alarmId,
     event: item.eventIo,
     eventTime: item.eventTime,
     eventStartTime: new Date(eventStartTime.getTime() - 3000),
