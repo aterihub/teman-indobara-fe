@@ -56,6 +56,7 @@ import { storeToRefs } from 'pinia'
 import { onUpdated, ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { useStreamingStore } from '@/stores/streaming/streamingStore'
+import router from '@/router'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -88,8 +89,9 @@ onUpdated(async () => {
 })
 
 function openStreaming() {
-  let streamingUrl = `http://47.252.16.64:9966/vss/apiPage/RealVideo.html?token=${streamingToken.value}&deviceId=${props.imei}&chs=1_2&stream=0&wnum=4&panel=1&buffer=2000`
-  window.open(streamingUrl, '_blank');
+  router.push({ name: 'StreamingPage', params: { imei: props.imei, token: streamingToken.value } })
+  // let streamingUrl = `http://47.252.16.64:9966/vss/apiPage/RealVideo.html?token=${streamingToken.value}&deviceId=${props.imei}&chs=1_2&stream=0&wnum=4&panel=1&buffer=2000`
+  // window.open(streamingUrl, '_blank');
 }
 
 </script>
