@@ -20,7 +20,8 @@
               <div class="flex flex-col gap-2">
                 <div class="flex gap-2">
                   <label>Device: </label>
-                  <p>{{ props.imei }}</p>
+                  <p>{{ props.info.hullNumber }} - </p>
+                  <p>{{ props.info.imei }}</p>
                 </div>
                 <div class="flex gap-2">
                   <label>Token: </label>
@@ -61,7 +62,7 @@ import router from '@/router'
 const props = defineProps({
   isOpen: Boolean,
   title: String,
-  imei: String
+  info: Object
 })
 
 const modalActive = ref(false)
@@ -89,7 +90,7 @@ onUpdated(async () => {
 })
 
 function openStreaming() {
-  router.push({ name: 'StreamingPage', params: { imei: props.imei, token: streamingToken.value } })
+  router.push({ name: 'StreamingPage', params: { imei: props.info.imei, token: streamingToken.value, hullNumber: props.info.hullNumber } })
   // let streamingUrl = `http://47.252.16.64:9966/vss/apiPage/RealVideo.html?token=${streamingToken.value}&deviceId=${props.imei}&chs=1_2&stream=0&wnum=4&panel=1&buffer=2000`
   // window.open(streamingUrl, '_blank');
 }

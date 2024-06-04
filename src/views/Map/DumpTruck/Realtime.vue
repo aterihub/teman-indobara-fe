@@ -1,5 +1,6 @@
 <template>
-  <StreamingModal :isOpen="isStreamingModalPops" @close="streamingModalToggle" title="Launch Streaming" :imei="selectedImei" />
+  <StreamingModal :isOpen="isStreamingModalPops" @close="streamingModalToggle" title="Launch Streaming"
+    :info="selectedDevice" />
 
   <alert :message="geoDataStore.status.message" :modalActive="modalActive" :isError="geoDataStore.status.isError" />
   <MapLoading :loading="loadingStore.loading" />
@@ -181,7 +182,7 @@ import { useGeofencesStore } from '@/stores/geofences/geofencesStore'
 import StreamingModal from '@/components/modal/StreamingModal.vue'
 
 const showGeofences = ref(true)
-const selectedImei = ref('')
+const selectedDevice = ref({})
 
 async function showPolygon() {
   let features = drawVector.value.getSource().getFeatures()
@@ -488,7 +489,7 @@ function initializeMap() {
     style: null,
   })
   clickInteraction.on('select', (event) => {
-    selectedImei.value = ''
+    selectedDevice.value = {}
     const selectedFeature = event.selected[0]
     if (selectedFeature) {
       const geometryType = selectedFeature.getGeometry().getType();
@@ -497,7 +498,8 @@ function initializeMap() {
         return;
       }
       console.log(selectedFeature.get('value'))
-      selectedImei.value = selectedFeature.get('value').imei
+      selectedDevice.value.imei = selectedFeature.get('value').imei
+      selectedDevice.value.hullNumber = selectedFeature.get('value').hullNumber
       isStreamingModalPops.value = true
     } else {
     }

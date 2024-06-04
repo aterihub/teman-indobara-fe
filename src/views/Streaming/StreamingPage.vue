@@ -1,6 +1,7 @@
 <template>
   <sideNav :is-dumptruck-active="true" />
   <div class="content">
+    <h1 class="text-semibold text-left text-2xl">Live Video Streaming for {{ props.hullNumber }} - {{ props.imei }}</h1>
     <iframe
       :src="streamingUrl"
       width="100%" height="100%" frameborder="0" allowfullscreen>
@@ -13,7 +14,7 @@ import sideNav from '@/components/navigation/sideNav.vue'
 import { ref, onMounted } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 
-const props = defineProps(['imei', 'token'])
+const props = defineProps(['imei', 'token', 'hullNumber'])
 const streamingUrl = ref('')
 
 onMounted(() => {

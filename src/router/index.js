@@ -23,7 +23,7 @@ const routes = [
   { path: '/', name: 'Login Page', component: LoginForm, meta: { requiresAuth:false, title: 'Intellisense Fleet Management System - Login' } },
   { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, meta: { requiresAuth:false} },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth:true }},
-  { path: '/streaming/:imei/:token', name: 'StreamingPage', component: StreamingPage, props: true, meta: { requiresAuth:true }},
+  { path: '/streaming/:imei/:token/:hullNumber', name: 'StreamingPage', component: StreamingPage, props: true, meta: { requiresAuth:true }},
   { path: '/dashboard/details/:id', name: 'Dashboard Details', component: DashboardDetails,props: true, meta: { requiresAuth:true }},
   { path: '/dumptruck', name: 'DumpTruck', component: DumpTruck, meta: { requiresAuth:true } },
   { path: '/excavator', name: 'Excavator', component: Excavator, meta: { requiresAuth:true } },
