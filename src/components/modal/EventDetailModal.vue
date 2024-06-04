@@ -50,7 +50,7 @@
                     <h1 class="font-medium">Device not send the captured image</h1>
                   </div> -->
                   <div class="w-fit border rounded-lg flex flex-col overflow-clip">
-                    <img v-if="!imgLoading" id="eventImage" class="object-cover" :src="eventImageSrc"
+                    <img v-if="!imgLoading" id="eventImage" class="object-cover max-w-lg" :src="eventImageSrc"
                       alt="Event Captured" :key="imageKey" @error="handleImageError">
                     <SmallLoading class="h-full w-full" :loading="imgLoading" v-if="imgLoading" />
                   </div>
