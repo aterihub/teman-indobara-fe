@@ -52,11 +52,12 @@
                   <div class="w-fit border rounded-lg flex flex-col overflow-clip">
                     <img v-if="!imgLoading" id="eventImage" class="object-cover" :src="eventImageSrc"
                       alt="Event Captured" :key="imageKey" @error="handleImageError">
-                    <SmallLoading class="h-full w-full" :loading="imgLoading" v-if="imgLoading"/>
+                    <SmallLoading class="h-full w-full" :loading="imgLoading" v-if="imgLoading" />
                   </div>
-                  <!-- <video width="320" height="240" controls>
-                    <source :src="eventVideoSrc" type="video/mp4">
+                  <!-- <video controls="" autoplay="" name="media">
+                    <source src="http://vss.howentech.com/fileSrv/fileDown.php?filePath=QzovUHJvZ3JhbSBGaWxlcyAoeDg2KS9Wc3NTZXJ2aWNlL3N0b3JhZ2UvYmluL3g2NC8uLi8uLi8uLi9odGRvY3MvdnNzRmlsZXMvaGZ0cC9BSS8yMDI0MDUyOS8yMDI0MDUxNTAwMS8xNTU5MzdfNjUvMF82NF82NV8yXzE3MTY5OTgzNzcubXA0&token=6e6f64307e566e2d371ac4b840476b9c&ipaddr=127.0.0.1" type="video/mp4">
                   </video> -->
+                  <!-- <video ref="videoPlayer" class="video-js"></video> -->
                 </div>
                 <!-- <div class="text-left flex flex-col gap-4 ">
                   <h1 class="font-semibold">Meta Data: </h1>
@@ -88,9 +89,11 @@
 
 <script setup>
 import { storeToRefs } from 'pinia'
-import { ref, onMounted, onBeforeUpdate } from 'vue'
+import { ref, onBeforeUpdate, onBeforeUnmount } from 'vue'
 import { useEventDevicesStore } from '@/stores/event/eventDevicesStore'
 import SmallLoading from '../SmallLoading.vue'
+import videojs from 'video.js'
+import 'video.js/dist/video-js.css'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -142,6 +145,19 @@ onBeforeUpdate(async () => {
     }
   }
   imgLoading.value = false
+
+  // // Initialize video.js
+  // player = videojs(videoPlayer.value, {
+  //   controls: true,
+  //   autoplay: true,
+  // });
+
+  // // Set the video source to the HEVC encoded MP4 file
+  // player.src({
+  //   // src: 'http://vss.howentech.com/fileSrv/fileDown.php?filePath=QzovUHJvZ3JhbSBGaWxlcyAoeDg2KS9Wc3NTZXJ2aWNlL3N0b3JhZ2UvYmluL3g2NC8uLi8uLi8uLi9odGRvY3MvdnNzRmlsZXMvaGZ0cC9BSS8yMDI0MDUyOS8yMDI0MDUxNTAwMS8xNTU5MzdfNjUvMF82NF82NV8yXzE3MTY5OTgzNzcubXA0&token=6e6f64307e566e2d371ac4b840476b9c&ipaddr=127.0.0.1', // Replace with your actual HEVC MP4 video URL
+  //   src: 'https://www.w3schools.com/html/mov_bbb.mp',
+  //   type: 'video/mp4',
+  // });
 })
 
 function closeModal() {
@@ -151,6 +167,17 @@ function closeModal() {
 function handleImageError(event) {
   event.target.src = require('../../assets/img/image-not-found.png')
 }
+
+// // handle video
+// const videoPlayer = ref(null)
+// let player = null
+
+// onBeforeUnmount(() => {
+//   // Clean up the video player instance
+//   if (player) {
+//     player.dispose();
+//   }
+// });
 
 </script>
 
